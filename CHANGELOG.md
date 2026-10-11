@@ -5,9 +5,11 @@
 - Point repository, documentation, badge and package-metadata links at `zeroemployeeorg/zeocreator` and `zeroemployeeorg.github.io/zeocreator` after the repository move; the old GitHub Pages address no longer resolves. Version tags and commit pins are unchanged.
 - State the required PyPI trusted publisher and that its current configuration is unverified since the move.
 - **CLI output follows Zeocore's `cli_protocol` 1.** Every command except `runtime-provider` prints exactly one JSON line on stdout, the result, which carries `ok`. Lists are wrapped: `capabilities` answers `{"ok": true, "capabilities": [...]}` (or `"tools"` with `--projection openai`), `contracts list` answers `"contracts"`, `contract-schema` answers `"schema"`, and `--version` answers `{"ok": true, "zeocreator": ..., "cli_protocol": "1"}`. The tables are gone; `--json` is still accepted and changes nothing. A usage error prints its usage on stderr and `{"ok": false, "outcome": "invalid_request"}` on stdout; running with no command is a usage error.
-- **Exit codes follow `cli_protocol` 1:** a failed `doctor` check exits 20, not 1; 1 is an internal error, with `{"ok": false, "outcome": "internal"}` and no detail; 2 is invalid input.
+- **Exit codes follow `cli_protocol` 1** (catch-up: merged in #20 without an entry): a failed `doctor` check exits 20, not 1; 1 is an internal error, with `{"ok": false, "outcome": "internal"}` and no detail; 2 is invalid input.
 - `runtime-provider` keeps its canonical bytes, without `ok`, until Runtime confirms a reader for the JSON-lines form; then it changes in one release.
-- Add `make install VERSION=X.Y.Z`, which installs a published release as a tool and runs `doctor`.
+- Add `make install VERSION=X.Y.Z`, which installs a published release as a tool and runs `doctor` (catch-up: merged in #20 without an entry).
+- Publishing runs in the GitHub environments `pypi` and `testpypi`, so an upload waits for approval once the environment requires a reviewer.
+- Drop the direct `rich` dependency, which the CLI no longer uses; Typer still installs it.
 
 ## 0.5.4 — 2026-09-10
 

@@ -2,7 +2,8 @@ name: Publish
 
 # Aligns with Zeocore: verify, retain distributions, OIDC publish, exact-version
 # index smoke tests, then GitHub Release from RELEASE_NOTES.md.
-# Required PyPI publisher: zeocreator / zeroemployeeorg/zeocreator / publish.yml / Any environment.
+# Required PyPI publisher: zeocreator / zeroemployeeorg/zeocreator / publish.yml / environment pypi
+# (TestPyPI: environment testpypi). Each upload waits for that environment's approval.
 # Current index configuration is unverified since the repository move; see docs/release-readiness.md.
 on:
   push:
@@ -92,6 +93,9 @@ jobs:
     if: github.event_name == 'push' || inputs.target == 'pypi' || inputs.target == 'both'
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    environment:
+      name: pypi
+      url: https://pypi.org/p/zeocreator
     permissions:
       id-token: write
     steps:
@@ -109,6 +113,9 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && (inputs.target == 'testpypi' || inputs.target == 'both')
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/zeocreator
     permissions:
       id-token: write
     steps:

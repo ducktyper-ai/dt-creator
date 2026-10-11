@@ -56,8 +56,8 @@ def test_every_command_prints_one_json_result_line(tmp_path: Path) -> None:
 
 
 def test_runtime_provider_keeps_its_canonical_bytes_until_runtime_reads_json_lines() -> None:
-    # The one exception to cli_protocol 1 (ZEOCREATOR-SOW-19): Runtime reads these bytes.
-    # It ends when zeo-rt confirms a reader for {"ok": true, "provider": ...}.
+    # The one exception to cli_protocol 1: a Runtime host reads these bytes as published.
+    # It ends when a Runtime reader for {"ok": true, "provider": ...} exists, in a versioned release.
     from zeo_core.adapters.runtime_host.canonical import canonical_bytes
 
     from zeo_creator.provider import provider_inventory

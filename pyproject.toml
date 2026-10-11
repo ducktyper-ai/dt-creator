@@ -23,7 +23,6 @@ dependencies = [
   "zeocore[runtime-host]==0.11.0",
   "pydantic>=2.6.0",
   "rfc8785==0.1.4",
-  "rich>=13.8.0",
   "typer>=0.27.1",
 ]
 

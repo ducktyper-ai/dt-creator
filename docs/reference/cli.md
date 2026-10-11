@@ -81,8 +81,11 @@ Other seats and tools operate the CLI through this fixed contract:
 - **stdout is JSON lines and nothing else.** No command emits events, so each
   prints exactly one line: the result, which carries `ok`. Diagnostics, such as
   usage text, go to stderr. `--json` is still accepted and changes nothing.
-- **Errors never echo input.** An unknown command, option or contract answers
-  `{"ok": false, "outcome": "invalid_request"}`, naming none of what was sent.
+- **Errors never echo input on stdout.** An unknown command or option answers
+  `{"ok": false, "outcome": "invalid_request"}`, and an unknown contract answers
+  `{"ok": false, "outcome": "invalid_request", "message": "unknown contract"}`.
+  Neither names what was sent. The usage text on stderr can name the unknown
+  option, because stderr carries diagnostics for a person.
 - **The one exception is `runtime-provider`,** whose canonical bytes Runtime
   reads. It ends when Runtime confirms a reader for the JSON-lines form.
 - Exit codes follow Zeocore's `cli_protocol` 1, so they mean the same in every

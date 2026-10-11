@@ -7,8 +7,6 @@ from enum import StrEnum
 from pathlib import Path
 
 import typer
-from rich.console import Console
-from rich.table import Table
 
 from zeo_creator import __version__
 from zeo_creator.contract_schemas import (
@@ -21,17 +19,19 @@ from zeo_creator.registry import capability_manifests, openai_tool_projections
 app = typer.Typer(
     name="zeo-creator",
     help="Inspect ZEO Creator contracts and local compatibility.",
-    no_args_is_help=True,
 )
-console = Console()
 contracts_app = typer.Typer(help="Discover and export packaged public contract schemas.")
 app.add_typer(contracts_app, name="contracts")
 
 
-# Exit status follows Zeocore's cli_protocol 1: 0 done, 1 internal error, 2 invalid
-# input or command, 20 held or refused (a failed check). Codes 10 to 13 concern remote
-# operations, which this CLI never performs.
+# Zeocore's cli_protocol 1: stdout is JSON lines and nothing else, and the result is the
+# last line, carrying "ok". Exit status: 0 done, 1 internal error, 2 invalid input or
+# command, 20 held or refused (a failed check). Codes 10 to 13 concern remote operations,
+# which this CLI never performs. runtime-provider is the one, time-limited exception: it
+# keeps its canonical bytes until Runtime confirms a reader for the JSON-lines form.
+CLI_PROTOCOL = "1"
 EXIT_INTERNAL = 1
+EXIT_INVALID = 2
 EXIT_REFUSED = 20
 
 
@@ -40,9 +40,14 @@ class ProjectionFormat(StrEnum):
     OPENAI = "openai"
 
 
+def _emit(result: dict[str, object]) -> None:
+    """Write the result as one JSON line."""
+    typer.echo(json.dumps(result, ensure_ascii=False, sort_keys=True))
+
+
 def _version_callback(value: bool) -> None:
     if value:
-        typer.echo(f"zeo-creator {__version__}")
+        _emit({"ok": True, "zeocreator": __version__, "cli_protocol": CLI_PROTOCOL})
         raise typer.Exit()
 
 
@@ -66,36 +71,24 @@ def capabilities(
         "--projection",
         help="Render canonical manifests or OpenAI-compatible function tools.",
     ),
-    json_output: bool = typer.Option(False, "--json", help="Emit machine-readable JSON."),
+    json_output: bool = typer.Option(False, "--json", help="Accepted; output is always JSON."),
 ) -> None:
     """List the stable continuous editorial and creator capabilities."""
+    del json_output
     if projection == ProjectionFormat.OPENAI:
-        rows = [item.model_dump(mode="json") for item in openai_tool_projections()]
-        typer.echo(json.dumps(rows, indent=2))
+        tools = [item.model_dump(mode="json") for item in openai_tool_projections()]
+        _emit({"ok": True, "tools": tools})
         return
-    manifests = capability_manifests()
-    if json_output:
-        typer.echo(json.dumps([item.model_dump(mode="json") for item in manifests], indent=2))
-        return
-    table = Table(title="ZEO Creator capabilities")
-    table.add_column("Capability ID")
-    table.add_column("Effects")
-    table.add_column("Required services")
-    for manifest in manifests:
-        table.add_row(
-            manifest.id.canonical(),
-            ", ".join(sorted(item.value for item in manifest.effects.kinds)),
-            ", ".join(sorted(manifest.requirements.services)) or "none",
-        )
-    console.print(table)
+    manifests = [item.model_dump(mode="json") for item in capability_manifests()]
+    _emit({"ok": True, "capabilities": manifests})
 
 
 @contracts_app.command("list")
 def contracts_list(
-    json_output: bool = typer.Option(False, "--json", help="Emit machine-readable JSON."),
+    json_output: bool = typer.Option(False, "--json", help="Accepted; output is always JSON."),
 ) -> None:
     """List versioned contracts included in this installation."""
-    entries = list_contract_schemas()
+    del json_output
     rows = [
         {
             "name": item.name,
@@ -103,19 +96,9 @@ def contracts_list(
             "filename": item.filename,
             "schema_digest": item.schema_digest,
         }
-        for item in entries
+        for item in list_contract_schemas()
     ]
-    if json_output:
-        typer.echo(json.dumps(rows, indent=2))
-        return
-    table = Table(title="ZEO Creator contracts")
-    table.add_column("Name")
-    table.add_column("Version")
-    table.add_column("Schema")
-    table.add_column("Digest")
-    for item in entries:
-        table.add_row(item.name, item.version, item.filename, item.schema_digest)
-    console.print(table)
+    _emit({"ok": True, "contracts": rows})
 
 
 @contracts_app.command("export")
@@ -124,7 +107,7 @@ def contracts_export(
 ) -> None:
     """Export packaged schemas without importing source checkout files."""
     written = export_contract_schemas(output)
-    typer.echo(json.dumps({"output": str(output), "files": len(written)}, indent=2))
+    _emit({"ok": True, "output": str(output), "files": len(written)})
 
 
 @app.command("contract-schema")
@@ -136,13 +119,16 @@ def contract_schema(
     try:
         schema = read_contract_schema(name, version)
     except KeyError as exc:
-        typer.echo(str(exc), err=True)
-        raise typer.Exit(2) from exc
-    typer.echo(json.dumps(schema, indent=2))
+        # The message names no input: an error never echoes what the caller sent.
+        _emit({"ok": False, "outcome": "invalid_request", "message": "unknown contract"})
+        raise typer.Exit(EXIT_INVALID) from exc
+    _emit({"ok": True, "schema": schema})
 
 
 @app.command()
-def doctor(json_output: bool = typer.Option(False, "--json")) -> None:
+def doctor(
+    json_output: bool = typer.Option(False, "--json", help="Accepted; output is always JSON."),
+) -> None:
     """Check the declared Python, Zeocore, manifest, and projection boundary."""
     zeocore_version = importlib.metadata.version("zeocore")
     checks = {
@@ -157,11 +143,8 @@ def doctor(json_output: bool = typer.Option(False, "--json")) -> None:
         "zeocore": zeocore_version,
         "checks": checks,
     }
-    if json_output:
-        typer.echo(json.dumps(payload, indent=2))
-    else:
-        for name, passed in checks.items():
-            console.print(f"{'ready' if passed else 'failed':>6}  {name}")
+    del json_output
+    _emit(payload)
     if not payload["ok"]:
         raise typer.Exit(EXIT_REFUSED)
 
@@ -172,6 +155,7 @@ def runtime_provider() -> None:
 
     Runtime supplies environment_digest and generation to form ProviderBinding.
     This is offline metadata preparation, not scoped discovery or authorization.
+    Its bytes stay as they are, without "ok", until Runtime reads the JSON-lines form.
     """
     from zeo_core.adapters.runtime_host.canonical import canonical_bytes
 
@@ -180,13 +164,24 @@ def runtime_provider() -> None:
     typer.echo(canonical_bytes(provider_inventory()).decode())
 
 
+def _is_usage_error(exc: Exception) -> bool:
+    # Typer vendors Click and exports no UsageError, so recognise it by its shape.
+    return getattr(exc, "exit_code", None) == EXIT_INVALID and callable(getattr(exc, "show", None))
+
+
 def main() -> None:
     try:
-        app()
-    except Exception:
+        code = app(standalone_mode=False)
+    except Exception as exc:
+        if _is_usage_error(exc):
+            # Usage goes to stderr; stdout gets the result, which never echoes the input.
+            exc.show()  # type: ignore[attr-defined]
+            _emit({"ok": False, "outcome": "invalid_request"})
+            sys.exit(EXIT_INVALID)
         # An internal error never echoes input or detail on stdout.
-        typer.echo(json.dumps({"ok": False, "outcome": "internal"}))
+        _emit({"ok": False, "outcome": "internal"})
         sys.exit(EXIT_INTERNAL)
+    sys.exit(code if isinstance(code, int) else 0)
 
 
 if __name__ == "__main__":

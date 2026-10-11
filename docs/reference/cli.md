@@ -5,19 +5,13 @@ production workflow orchestration.
 
 ## `zeo-creator capabilities`
 
-List the complete capability catalog:
+List the canonical capability manifests, as `{"ok": true, "capabilities": [...]}`:
 
 ```console
 zeo-creator capabilities
 ```
 
-Emit canonical JSON:
-
-```console
-zeo-creator capabilities --json
-```
-
-Emit OpenAI-compatible function projections:
+Emit OpenAI-compatible function projections, as `{"ok": true, "tools": [...]}`:
 
 ```console
 zeo-creator capabilities --projection openai
@@ -26,7 +20,10 @@ zeo-creator capabilities --projection openai
 ## `zeo-creator runtime-provider`
 
 Added in 0.5.4. Emit the complete installed inventory as
-one canonical JSON document for trusted Runtime provisioning:
+one canonical JSON document for trusted Runtime provisioning. It is the one exception
+to the [operating protocol](#operating-protocol): its line is the inventory itself,
+without `ok`, until Runtime confirms a reader for the JSON-lines form. Then it changes
+in one release, to `{"ok": true, "provider": <the same inventory>}`.
 
 ```console
 zeo-creator runtime-provider
@@ -42,15 +39,17 @@ Check the interpreter, exact Zeocore version, manifest discovery, and projection
 compatibility:
 
 ```console
-zeo-creator doctor --json
+zeo-creator doctor
 ```
+
+The result carries `ok` and each check. A failed check exits 20.
 
 ## Contract schemas
 
-List the stable contract catalog:
+List the stable contract catalog, as `{"ok": true, "contracts": [...]}`:
 
 ```console
-zeo-creator contracts list --json
+zeo-creator contracts list
 ```
 
 Export the schemas bundled in the installed wheel:
@@ -59,7 +58,7 @@ Export the schemas bundled in the installed wheel:
 zeo-creator contracts export --output=./schemas
 ```
 
-Print one named contract version:
+Print one named contract version, as `{"ok": true, "schema": {...}}`:
 
 ```console
 zeo-creator contract-schema --name=content-brief --version=1
@@ -71,14 +70,21 @@ zeo-creator contract-schema --name=content-brief --version=1
 zeo-creator --version
 ```
 
+The result is `{"ok": true, "zeocreator": "X.Y.Z", "cli_protocol": "1"}`.
+
 ## Operating protocol
 
 Other seats and tools operate the CLI through this fixed contract:
 
-- `--help` on the root and on every command.
-- Machine-readable output: `capabilities --json`, `contracts list --json` and
-  `doctor --json` emit JSON when asked. `contracts export`, `contract-schema`
-  and `runtime-provider` always emit JSON.
+- `--help` on the root and on every command. Help is human-readable text and
+  the only output that isn't JSON.
+- **stdout is JSON lines and nothing else.** No command emits events, so each
+  prints exactly one line: the result, which carries `ok`. Diagnostics, such as
+  usage text, go to stderr. `--json` is still accepted and changes nothing.
+- **Errors never echo input.** An unknown command, option or contract answers
+  `{"ok": false, "outcome": "invalid_request"}`, naming none of what was sent.
+- **The one exception is `runtime-provider`,** whose canonical bytes Runtime
+  reads. It ends when Runtime confirms a reader for the JSON-lines form.
 - Exit codes follow Zeocore's `cli_protocol` 1, so they mean the same in every
   ZEO tool:
 

@@ -15,7 +15,7 @@ runner = CliRunner()
 def test_contract_catalog_and_single_schema() -> None:
     listing = runner.invoke(app, ["contracts", "list", "--json"])
     assert listing.exit_code == 0
-    rows = json.loads(listing.stdout)
+    rows = json.loads(listing.stdout)["contracts"]
     assert {item["name"] for item in rows} >= {
         "content-brief",
         "artifact-manifest",
@@ -26,7 +26,7 @@ def test_contract_catalog_and_single_schema() -> None:
 
     schema = runner.invoke(app, ["contract-schema", "--name", "content-brief", "--version", "1"])
     assert schema.exit_code == 0
-    assert json.loads(schema.stdout)["title"] == "ContentBrief"
+    assert json.loads(schema.stdout)["schema"]["title"] == "ContentBrief"
     entry = next(item for item in rows if item["name"] == "content-brief")
     assert entry["schema_digest"] == canonical_digest(read_contract_schema("content-brief", "1"))
 

@@ -37,7 +37,7 @@ error codes.
 | `creator.prepare_email_delivery@4.0.0` | Supplied email artifacts | EmailDeliveryPackage | Input-only read |
 | `creator.assess_email_program@4.0.0` | Supplied email artifacts | EmailProgramAssessment | Input-only read |
 
-Use `zeo-creator capabilities --json` for canonical manifests or
+Use `zeo-creator capabilities` for canonical manifests or
 `zeo-creator capabilities --projection openai` for function-tool projections.
 
 Zeocore 0.9 requires every manifest to carry at least one effect kind. Pure

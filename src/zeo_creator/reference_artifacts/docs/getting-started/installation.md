@@ -49,7 +49,8 @@ python -m zeo_creator.reference.email_receipt_conformance
 zeo-creator contracts export --output=./schemas
 ```
 
-Version reports `zeo-creator 0.5.4`. Doctor reports `ok: true`, Python 3.14+,
+Version reports `zeo-creator 0.5.4` (from the next release, the JSON line
+`{"ok": true, "zeocreator": ...}`). Doctor reports `ok: true`, Python 3.14+,
 Zeocore 0.11.0, 29 manifests and 29 projections. The receipt command verifies 135
 portable cases; it does not authenticate provider receipts. The email example
 prints eight programs and 104 simulated proposals with partial assessments.

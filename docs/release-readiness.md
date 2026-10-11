@@ -42,8 +42,9 @@ before upload and waits for index smoke tests before announcing the release.
 
 Publishing requires a trusted publisher for project `zeocreator` with owner
 `zeroemployeeorg`, repository `zeocreator`, workflow filename `publish.yml` and
-environment unrestricted (`Any`). The publishing job therefore omits an
-environment constraint. No PyPI API token is stored. See
+environment `pypi` (TestPyPI: environment `testpypi`). Each publishing job runs in
+that GitHub environment, so an upload waits for the environment's required
+approval. No PyPI API token is stored. See
 [PyPI trusted publishing](https://docs.pypi.org/trusted-publishers/using-a-publisher/).
 
 The repository moved from `profrodai/zeocreator` to `zeroemployeeorg/zeocreator`

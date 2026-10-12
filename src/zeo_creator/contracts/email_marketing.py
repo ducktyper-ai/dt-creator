@@ -160,6 +160,27 @@ def exact_ctas(rows: tuple[EmailCTA, ...]) -> dict[str, EmailCTA]:
     return {row.cta_id: row for row in rows}
 
 
+def check_public_link(url: str) -> None:
+    """Refuse anything but an absolute HTTPS URL without userinfo, templating or tracking."""
+    parsed = urlsplit(url)
+    if (
+        parsed.scheme != "https"
+        or not parsed.hostname
+        or parsed.username
+        or parsed.password
+        or "{" in url
+        or "}" in url
+    ):
+        raise ValueError("links require absolute HTTPS URLs without userinfo or tracking values")
+    for key, value in parse_qsl(parsed.query, keep_blank_values=True):
+        if (
+            key.casefold().startswith(("utm_", "mc_", "hs", "email", "contact", "subscriber"))
+            or key.casefold() in {"fbclid", "gclid"}
+            or "@" in value
+        ):
+            raise ValueError("links must not carry tracking or subscriber parameters")
+
+
 class EmailLink(EmailModel):
     link_id: OpaqueRef
     url: Annotated[str, Field(min_length=1, max_length=2048)]
@@ -168,25 +189,7 @@ class EmailLink(EmailModel):
 
     @model_validator(mode="after")
     def public_link(self) -> Self:
-        parsed = urlsplit(self.url)
-        if (
-            parsed.scheme != "https"
-            or not parsed.hostname
-            or parsed.username
-            or parsed.password
-            or "{" in self.url
-            or "}" in self.url
-        ):
-            raise ValueError(
-                "links require absolute HTTPS URLs without userinfo or tracking values"
-            )
-        for key, value in parse_qsl(parsed.query, keep_blank_values=True):
-            if (
-                key.casefold().startswith(("utm_", "mc_", "hs", "email", "contact", "subscriber"))
-                or key.casefold() in {"fbclid", "gclid"}
-                or "@" in value
-            ):
-                raise ValueError("links must not carry tracking or subscriber parameters")
+        check_public_link(self.url)
         return self
 
 

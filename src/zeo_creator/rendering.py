@@ -12,9 +12,11 @@ from typing import Literal, Self
 from pydantic import Field, model_validator
 
 from zeo_creator.contracts.common import CreatorModel, canonical_digest
+from zeo_creator.contracts.email_marketing import check_public_link
 
-_LANGUAGE = r"^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$"
-_HTTPS = re.compile(r"^https://[^\s<>\"']+$")
+_LANGUAGE = re.compile(r"[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*")
+_CONTROL = re.compile(r"[\x00-\x1f\x7f]")
+_DIRECTIONS = ("ltr", "rtl")
 _HIDDEN = (
     "display:none;max-height:0;max-width:0;overflow:hidden;"
     "opacity:0;font-size:1px;line-height:1px;mso-hide:all"
@@ -23,9 +25,22 @@ _IMAGE = "display:block;max-width:100%;height:auto;border:0"
 
 
 def _https(url: str) -> str:
-    if not _HTTPS.match(url):
-        raise ValueError("email links and images must use https URLs")
+    # The same rule as EmailLink, so the fragment never carries a link the delivery
+    # manifest would refuse, plus a bound on length and no control characters.
+    if len(url) > 2048 or _CONTROL.search(url):
+        raise ValueError("links require clean absolute HTTPS URLs of at most 2048 characters")
+    check_public_link(url)
     return url
+
+
+def _text(value: str) -> str:
+    # Escape for HTML text and double-quoted attributes. Braces become entities, so
+    # a template language evaluating the slot (HubSpot's HubL) never sees {{ }}.
+    return escape(value, quote=True).replace("{", "&#123;").replace("}", "&#125;")
+
+
+def _same_target(label: str, url: str) -> bool:
+    return label.casefold().rstrip("/") == url.casefold().rstrip("/")
 
 
 class BodyLink(CreatorModel):
@@ -35,7 +50,7 @@ class BodyLink(CreatorModel):
     @model_validator(mode="after")
     def descriptive_https_link(self) -> Self:
         _https(self.url)
-        if self.label.casefold() == self.url.casefold():
+        if _same_target(self.label, self.url):
             raise ValueError("a link label must describe its target, not repeat the URL")
         return self
 
@@ -73,6 +88,8 @@ class BodyBlock(CreatorModel):
             if not self.heading:
                 raise ValueError("a heading link needs a heading")
             _https(self.heading_href)
+            if _same_target(self.heading, self.heading_href):
+                raise ValueError("a link label must describe its target, not repeat the URL")
         return self
 
 
@@ -109,37 +126,40 @@ def render_email_body(
     preheader: str | None = None,
 ) -> RenderedEmailBody:
     """Render blocks to an escaped HTML fragment and its plain-text twin."""
-    if not re.match(_LANGUAGE, language):
+    if not _LANGUAGE.fullmatch(language):
         raise ValueError("language must be a BCP 47 tag")
+    if direction not in _DIRECTIONS:
+        raise ValueError("direction must be ltr or rtl")
     if not blocks:
         raise ValueError("an email body needs at least one block")
-    html: list[str] = [f'<div lang="{escape(language)}" dir="{direction}">']
+    html: list[str] = [f'<div lang="{_text(language)}" dir="{_text(direction)}">']
     plain: list[str] = []
     if preheader:
-        html.append(f'<div style="{_HIDDEN}" aria-hidden="true">{escape(preheader)}</div>')
+        html.append(f'<div style="{_HIDDEN}" aria-hidden="true">{_text(preheader)}</div>')
     for block in blocks:
         html.append("<section>")
         text: list[str] = []
         if block.heading and block.heading_href:
             html.append(
-                f'<h2><a href="{escape(block.heading_href, quote=True)}">'
-                f"{escape(block.heading)}</a></h2>"
+                f'<h2><a href="{_text(block.heading_href)}">{_text(block.heading)}</a></h2>'
             )
-            text.append(f"{block.heading}\n{block.heading_href}")
+            text.append(f"{block.heading}: {block.heading_href}")
         elif block.heading:
-            html.append(f"<h2>{escape(block.heading)}</h2>")
+            html.append(f"<h2>{_text(block.heading)}</h2>")
             text.append(block.heading)
         if block.image:
             image = block.image
             html.append(
-                f'<img src="{escape(image.src, quote=True)}" alt="{escape(image.alt, quote=True)}"'
+                f'<img src="{_text(image.src)}" alt="{_text(image.alt)}"'
                 f' width="{image.width}" style="{_IMAGE}">'
             )
+            if not image.decorative:
+                text.append(f"Image: {image.alt}")
         for paragraph in block.paragraphs:
-            html.append(f"<p>{escape(paragraph)}</p>")
+            html.append(f"<p>{_text(paragraph)}</p>")
             text.append(paragraph)
         for link in block.links:
-            html.append(f'<p><a href="{escape(link.url, quote=True)}">{escape(link.label)}</a></p>')
+            html.append(f'<p><a href="{_text(link.url)}">{_text(link.label)}</a></p>')
             text.append(f"{link.label}: {link.url}")
         html.append("</section>")
         plain.append("\n\n".join(text))

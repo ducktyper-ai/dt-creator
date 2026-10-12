@@ -10,6 +10,7 @@
 - Add `make install VERSION=X.Y.Z`, which installs a published release as a tool and runs `doctor` (catch-up: merged in #20 without an entry).
 - Publishing runs in the GitHub environments `pypi` and `testpypi`, so an upload waits for approval once the environment requires a reviewer.
 - Drop the direct `rich` dependency, which the CLI no longer uses; Typer still installs it.
+- Add `zeo_creator.rendering.render_email_body`, a pure renderer from structured blocks to an accessible, escaped HTML fragment for a template slot, with its plain-text twin and digests that match `EmailDeliveryMaterial`.
 - **Require `zeocore[runtime-host]==0.15.0`** (was 0.11.0). Zeocore 0.15.0 makes every runtime-host name Creator uses public, and its runtime-host-v1 protocol files are byte-identical to 0.11.0's. `doctor` reports the check as `zeocore_0_15_0`.
 
 ## 0.5.4 — 2026-09-10

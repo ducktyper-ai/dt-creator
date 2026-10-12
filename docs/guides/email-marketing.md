@@ -262,6 +262,39 @@ shared host do not by themselves establish completed Creator/Runtime email
 wiring or authenticated live interoperability.
 
 
+## Rendering an email body
+
+`zeo_creator.rendering.render_email_body` turns structured blocks into an
+accessible HTML **fragment** for a template's content slot, plus its plain-text
+twin. It never produces a full document: the template owns the frame, brand
+styling and footer.
+
+```python
+from zeo_creator.rendering import BodyBlock, BodyLink, render_email_body
+
+body = render_email_body(
+    language="en",
+    preheader="Three releases this week",
+    blocks=(
+        BodyBlock(
+            heading="What changed",
+            paragraphs=("Three releases shipped.",),
+            links=(BodyLink(label="Read the notes", url="https://example.org/notes"),),
+        ),
+    ),
+)
+```
+
+- **Escaping:** every text node and attribute is escaped.
+- **The wrapper:** it declares `lang` (BCP 47) and `dir`.
+- **Structure:** headings are `h2`, and text is `p`.
+- **Links:** they must use https, and their labels must describe the target, never repeat the URL.
+- **Images:** they need alternative text unless marked decorative, and they scale to the column.
+- **Plain text:** it carries every heading, paragraph and `label: url` link.
+- **Digests:** `html_digest` and `plain_text_digest` are computed exactly as `EmailDeliveryMaterial` computes them. So the result feeds a `NewsletterIssueDraft` or an email draft unchanged.
+
+The renderer applies no voice, lexicon or visual style. It never maps to a provider's draft format: that mapping belongs to the runner's adapter.
+
 ## Receipt results and lifecycle preconditions
 
 Email v4 replaces independent optional receipt fields with a required `result`, a

@@ -223,7 +223,7 @@ def _commands(group: Any, prefix: str = "") -> list[dict[str, object]]:
         found.append(
             {
                 "command": path,
-                "summary": (command.help or "").strip().splitlines()[0],
+                "summary": next(iter((command.help or "").strip().splitlines()), ""),
                 "options": _options(command),
                 "output_schemas": list(OUTPUT_SCHEMAS[path]),
             }

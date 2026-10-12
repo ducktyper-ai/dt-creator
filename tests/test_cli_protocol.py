@@ -22,6 +22,7 @@ def test_every_command_has_help() -> None:
         ["contract-schema"],
         ["doctor"],
         ["runtime-provider"],
+        ["help"],
     ):
         result = runner.invoke(app, [*args, "--help"])
         assert result.exit_code == 0, args

@@ -170,6 +170,9 @@ def check_public_link(url: str) -> None:
         or parsed.password
         or "{" in url
         or "}" in url
+        # Browsers read a backslash as a path separator that urlsplit does not, so a
+        # host like "evil.example\@trusted.example" would display one site and open another.
+        or "\\" in url
     ):
         raise ValueError("links require absolute HTTPS URLs without userinfo or tracking values")
     for key, value in parse_qsl(parsed.query, keep_blank_values=True):

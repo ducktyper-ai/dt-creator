@@ -140,6 +140,8 @@ def test_links_follow_the_delivery_manifest_rule() -> None:
         "https://example.org/?utm_source=x",
         "https://example.org/a\x07b",
         "https://example.org/" + "a" * 2048,
+        "https://evil.example\\@trusted.example/",
+        "https://example.org\\path",
     ):
         with pytest.raises(ValidationError, match=r"HTTPS|tracking"):
             BodyLink(label="Open", url=url)

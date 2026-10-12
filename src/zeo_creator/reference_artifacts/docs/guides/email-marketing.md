@@ -285,12 +285,12 @@ body = render_email_body(
 )
 ```
 
-- **Escaping:** every text node and attribute is escaped.
-- **The wrapper:** it declares `lang` (BCP 47) and `dir`.
+- **Escaping:** every text node and attribute is escaped. Braces become `&#123;` and `&#125;`, so a template language that evaluates the slot, such as HubSpot's HubL, never sees `{{ }}` from the copy. The plain text keeps the braces, so don't feed it to a template engine.
+- **The wrapper:** it declares `lang` (a BCP 47 tag) and `dir`, which must be `ltr` or `rtl`.
 - **Structure:** headings are `h2`, and text is `p`.
-- **Links:** they must use https, and their labels must describe the target, never repeat the URL.
+- **Links:** they follow the same rule as `EmailLink`: an absolute https URL with no userinfo, template braces, tracking or subscriber parameters, and no control characters, at most 2048 characters. So the fragment never carries a link the delivery manifest would refuse. A label, including a linked heading, must describe its target, never repeat the URL.
 - **Images:** they need alternative text unless marked decorative, and they scale to the column.
-- **Plain text:** it carries every heading, paragraph and `label: url` link.
+- **Plain text:** it carries every heading, every informative image's alternative text (`Image: ...`), every paragraph, and every link and heading link as `label: url`.
 - **Digests:** `html_digest` and `plain_text_digest` are computed exactly as `EmailDeliveryMaterial` computes them. So the result feeds a `NewsletterIssueDraft` or an email draft unchanged.
 
 The renderer applies no voice, lexicon or visual style. It never maps to a provider's draft format: that mapping belongs to the runner's adapter.

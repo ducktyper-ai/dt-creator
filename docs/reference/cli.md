@@ -58,7 +58,7 @@ Export the schemas bundled in the installed wheel:
 zeo-creator contracts export --output=./schemas
 ```
 
-Print one named contract version, as `{"ok": true, "schema": {...}}`:
+Print one named contract version, as `{"ok": true, "json_schema": {...}}`:
 
 ```console
 zeo-creator contract-schema --name=content-brief --version=1
@@ -72,12 +72,25 @@ zeo-creator --version
 
 The result is `{"ok": true, "zeocreator": "X.Y.Z", "cli_protocol": "1"}`.
 
+## `zeo-creator help --json`
+
+The machine catalogue. An agent learns the CLI from it rather than from the
+source: every command, with its options (flags, type, required, default,
+choices), its output schema ids, the exit codes and the error schema.
+
+```console
+zeo-creator help --json
+```
+
 ## Operating protocol
 
 Other seats and tools operate the CLI through this fixed contract:
 
-- `--help` on the root and on every command. Help is human-readable text and
-  the only output that isn't JSON.
+- `zeo-creator help --json` is the machine catalogue. `--help` on the root and on
+  every command prints human-readable text, the only output that isn't JSON.
+- **Every result names its schema:** `"schema": "zeocreator.<thing>/v1"`, for
+  example `zeocreator.doctor/v1`, `zeocreator.contracts/v1` or
+  `zeocreator.error/v1`. The catalogue lists each command's schema ids.
 - **stdout is JSON lines and nothing else.** No command emits events, so each
   prints exactly one line: the result, which carries `ok`. Diagnostics, such as
   usage text, go to stderr. `--json` is still accepted and changes nothing.
@@ -94,7 +107,7 @@ Other seats and tools operate the CLI through this fixed contract:
 | Code | Meaning |
 |---|---|
 | `0` | Done |
-| `1` | Internal error: stdout is `{"ok": false, "outcome": "internal"}`, with no detail |
+| `1` | Internal error: stdout is `{"ok": false, "outcome": "internal", "schema": "zeocreator.error/v1"}`, with no detail |
 | `2` | Invalid input or command: an unknown command, option or contract |
 | `20` | Refused: a check failed (`doctor` reports `"ok": false`) |
 

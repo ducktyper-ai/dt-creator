@@ -34,6 +34,7 @@ def _one_result(stdout: str) -> dict[str, object]:
     assert isinstance(result, dict)
     assert "ok" in result
     assert "event" not in result
+    assert str(result["schema"]).startswith("zeocreator.") and str(result["schema"]).endswith("/v1")
     return result
 
 
@@ -49,6 +50,8 @@ def test_every_command_prints_one_json_result_line(tmp_path: Path) -> None:
         ["contract-schema", "--name", "content-brief", "--version", "1"],
         ["doctor"],
         ["doctor", "--json"],
+        ["help"],
+        ["help", "--json"],
     ):
         result = runner.invoke(app, args)
         assert result.exit_code == 0, args
@@ -88,7 +91,11 @@ def test_a_usage_error_answers_invalid_on_stdout(
             cli.main()
         assert exited.value.code == 2, argv
         out = capsys.readouterr().out
-        assert json.loads(out) == {"ok": False, "outcome": "invalid_request"}, argv
+        assert json.loads(out) == {
+            "ok": False,
+            "outcome": "invalid_request",
+            "schema": "zeocreator.error/v1",
+        }, argv
         assert "no-such" not in out
 
 
@@ -111,7 +118,7 @@ def test_an_internal_error_exits_one_without_detail(
         cli.main()
     assert exited.value.code == 1
     out = capsys.readouterr().out
-    assert json.loads(out) == {"ok": False, "outcome": "internal"}
+    assert json.loads(out) == {"ok": False, "outcome": "internal", "schema": "zeocreator.error/v1"}
     assert "secret detail" not in out
 
 
@@ -123,3 +130,37 @@ def test_main_exits_with_the_command_status(
         cli.main()
     assert exited.value.code == 0
     assert _one_result(capsys.readouterr().out)["ok"] is True
+
+
+def _leaf_commands(group, prefix=""):
+    for name, command in group.commands.items():
+        if getattr(command, "commands", None) is not None:
+            yield from _leaf_commands(command, f"{prefix}{name} ")
+        else:
+            yield f"{prefix}{name}"
+
+
+def test_help_json_catalogues_every_command_exit_code_and_schema(tmp_path: Path) -> None:
+    import typer.main
+
+    catalogue = _one_result(runner.invoke(app, ["help", "--json"]).stdout)
+    assert catalogue["schema"] == "zeocreator.help/v1"
+    listed = {item["command"]: item for item in catalogue["commands"]}
+    assert set(listed) == set(_leaf_commands(typer.main.get_command(app)))
+    assert [item["code"] for item in catalogue["exit_codes"]] == [0, 1, 2, 20]
+    contract = next(o for o in listed["contract-schema"]["options"] if "--name" in o["flags"])
+    assert contract["required"] is True
+    projection = next(o for o in listed["capabilities"]["options"] if "--projection" in o["flags"])
+    assert projection["choices"] == ["manifest", "openai"]
+    # Each command's real output carries one of the schema ids the catalogue lists for it.
+    for args, command in (
+        (["capabilities"], "capabilities"),
+        (["capabilities", "--projection", "openai"], "capabilities"),
+        (["contracts", "list"], "contracts list"),
+        (["contracts", "export", f"--output={tmp_path}"], "contracts export"),
+        (["contract-schema", "--name", "content-brief", "--version", "1"], "contract-schema"),
+        (["doctor"], "doctor"),
+        (["help"], "help"),
+    ):
+        result = _one_result(runner.invoke(app, args).stdout)
+        assert result["schema"] in listed[command]["output_schemas"], args

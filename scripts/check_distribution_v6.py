@@ -2,8 +2,8 @@
 
 import json
 import zipfile
-from pathlib import Path
 
+from scripts.build_paths import dist_dir
 from scripts.check_distribution_v5 import main as previous_check
 from zeo_creator.reference.email_receipt_conformance import (
     creator_validators,
@@ -14,7 +14,7 @@ from zeo_creator.reference.email_receipt_conformance import (
 
 def main() -> None:
     previous_check()
-    with zipfile.ZipFile(next(Path("dist").glob("*.whl"))) as archive:
+    with zipfile.ZipFile(next(dist_dir().glob("*.whl"))) as archive:
         schema = json.loads(archive.read("zeo_creator/schemas/email-remote-result.v4.schema.json"))
         assert schema == result_schema()
         corpus = json.loads(

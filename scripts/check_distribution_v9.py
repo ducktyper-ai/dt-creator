@@ -6,13 +6,14 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+from scripts.build_paths import dist_dir
 from scripts.check_distribution_v8 import main as previous_check
 
 
 def main() -> None:
     previous_check()
     root = Path.cwd()
-    wheel = next((root / "dist").glob("*.whl"))
+    wheel = next(dist_dir(root).glob("*.whl"))
     # Reuse the exact existing lock, including the test runner. Never resolve
     # floating test dependencies or import this checkout from the wheel proof.
     requirements = subprocess.run(

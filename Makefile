@@ -6,6 +6,10 @@ UV ?= uv
 ZEO_CREATOR := $(UV) run zeo-creator
 ARGS ?=
 VERSION ?=
+# Build output. Point these outside the checkout (for example on a scratch volume)
+# to keep the working tree free of builds; the defaults keep them in place.
+DIST_DIR ?= dist
+SITE_DIR ?= site
 
 help:
 	@echo "ZEO Creator — capability package diagnostics"
@@ -72,7 +76,7 @@ format:
 	$(UV) run ruff format src tests scripts examples
 
 docs:
-	$(UV) run mkdocs build --strict
+	$(UV) run mkdocs build --strict --site-dir "$(abspath $(SITE_DIR))"
 
 docs-serve:
 	$(UV) run mkdocs serve
@@ -98,9 +102,10 @@ digest-vectors:
 	node contracts/verify-jcs-shared-vectors-v1.mjs
 
 dist-check:
-	rm -rf dist
-	$(UV) build
-	$(UV) run python -m scripts.check_distribution_v10
+	@test -n "$(DIST_DIR)" || { echo "DIST_DIR must not be empty" >&2; exit 2; }
+	rm -rf "$(DIST_DIR)"
+	$(UV) build --out-dir "$(DIST_DIR)"
+	ZEOCREATOR_DIST_DIR="$(abspath $(DIST_DIR))" $(UV) run python -m scripts.check_distribution_v10
 
 release-check:
 	$(UV) run python -m scripts.check_release_v1
@@ -108,4 +113,4 @@ release-check:
 verify: release-check check digest-vectors dist-check
 
 clean:
-	rm -rf .pytest_cache .ruff_cache .mypy_cache .coverage coverage.xml htmlcov dist build site
+	rm -rf .pytest_cache .ruff_cache .mypy_cache .coverage coverage.xml htmlcov build "$(DIST_DIR)" "$(SITE_DIR)"

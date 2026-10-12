@@ -82,9 +82,10 @@ check simply compares against one string.
 
 These are the sha256 values of `contracts/runtime-host-v1/` in Zeocore's source
 tree, measured on 2026-10-09. They are identical at `v0.11.0` (`4fb6dc9c`, the
-current exact pin) and `v0.12.0` (`ddbd9e0d`). Neither the 0.14.0 draft (#89, at
+released 0.5.4 pin) and `v0.12.0` (`ddbd9e0d`). Neither the 0.14.0 draft (#89, at
 `4a4c8414` and `6fc21f8c`) nor the 0.15.0 draft (#90, `e41e3857`) changes the
-directory. Qualifying a new release starts by
+directory, and the released `v0.15.0` (`f15d7222`) is byte-identical to `v0.11.0`
+there (measured 2026-10-12). Qualifying a new release starts by
 comparing against this table; any difference is a protocol change, not a
 qualification.
 
@@ -111,11 +112,16 @@ qualification.
 
 - The range syntax, and whether the qualified list is packaged data or derived
   from the range plus CI evidence.
-- How Creator reads the protocol version. Zeocore exports no constant today.
-  The 0.15.0 draft (#90) adds `zeo_core.contracts.runtime.RUNTIME_HOST_PROTOCOL_VERSION`
-  (1), tested against every runtime-host-v1 schema and the vectors.
-- Zeocore's promotion of the internal tier. The 0.15.0 draft (#90) adds `__all__`
-  to `runtime_host.canonical`, `catalogue` and `host` (covering all 10 internal
-  names and `parse_result`) and to `channel`. Zeocore ships 0.13.0, 0.14.0 and
-  then 0.15.0. Until 0.15.0 is on PyPI and qualified, those names stay internal
-  and are qualified per release as described above.
+- How Creator reads the protocol version. Zeocore 0.15.0 exports
+  `zeo_core.contracts.runtime.RUNTIME_HOST_PROTOCOL_VERSION` (`1`), tested against
+  every runtime-host-v1 schema and the vectors.
+
+## Resolved at Zeocore 0.15.0
+
+Zeocore 0.15.0 (PyPI, tag `v0.15.0`, wheel sha256 `894e4ca8…e629`) promotes the
+internal tier. Installed in a clean environment on 2026-10-12, its `__all__` lists
+contain every name Creator uses there: the seven `runtime_host.canonical` names,
+`catalogue.CandidateCatalogue` and `validate_inventory`, and `host.prepare_request`
+and `parse_result`. Creator's full `make verify` and `make doctor` pass against it,
+with no source change beyond the pin. From 0.15.0 these names are a supported tier,
+not qualified per release.

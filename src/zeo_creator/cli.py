@@ -133,7 +133,7 @@ def doctor(
     zeocore_version = importlib.metadata.version("zeocore")
     checks = {
         "python_3_14_or_newer": sys.version_info >= (3, 14),
-        "zeocore_0_11_0": zeocore_version == "0.11.0",
+        "zeocore_0_15_0": zeocore_version == "0.15.0",
         "twenty_nine_manifests": len(capability_manifests()) == 29,
         "twenty_nine_openai_projections": len(openai_tool_projections()) == 29,
     }

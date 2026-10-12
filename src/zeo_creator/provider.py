@@ -25,7 +25,7 @@ from zeo_core.contracts.runtime import InvocationRequest, ProviderBinding
 from zeo_creator.registry import capability_registry
 
 PROVIDER_FACTORY = "zeo_creator.registry:capability_registry"
-CORE_VERSION = "0.11.0"
+CORE_VERSION = "0.15.0"
 
 
 def provider_inventory() -> dict[str, Any]:

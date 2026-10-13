@@ -118,10 +118,10 @@ Codes 10 to 13 concern remote operations, which this CLI never performs.
 Install a published release as a tool, never a checkout, then check it:
 
 ```console
-make install VERSION=0.5.4
+make install VERSION=0.6.0
 ```
 
-This runs `uv tool install --force "zeocreator==0.5.4"` and then
+This runs `uv tool install --force "zeocreator==0.6.0"` and then
 `zeo-creator doctor --json`. To upgrade, or to roll back, run the same command
 with the version you want.
 

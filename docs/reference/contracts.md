@@ -19,7 +19,7 @@ ZEO Creator versions three surfaces independently:
 
 | Axis | Example | Changes when |
 |---|---|---|
-| Package | `0.5.4` | Code, documentation, or bundled contracts are released |
+| Package | `0.6.0` | Code, documentation, or bundled contracts are released |
 | Capability | `creator.create_content_brief@1.0.0` | Request/response behavior or orchestration-facing semantics change |
 | Contract schema | `content-brief@1` | Serialized contract compatibility changes |
 
@@ -29,7 +29,7 @@ the same major only when existing strict consumers can accept them; otherwise a
 new schema major and filename are required. Capability IDs change independently
 when the invocation contract or observable behavior is incompatible. The earlier
 Git-only development line removed unsafe email preparation APIs without aliases;
-its archived schemas remain available. Version 0.5.4 uses email v4. Pin versions
+its archived schemas remain available. Version 0.6.0 uses email v4. Pin versions
 and follow explicit migration instructions for future incompatible changes.
 
 ## Publication and evidence

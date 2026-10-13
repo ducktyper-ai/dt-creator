@@ -28,7 +28,7 @@ when you need recurring commitments and authorized provider effects.
 
 - Python 3.14 or newer
 - `uv` or another Python package installer
-- Zeocore 0.11.0 with the `runtime-host` extra, installed automatically and pinned exactly
+- Zeocore 0.18.0 with the `runtime-host` extra, installed automatically and pinned exactly
 - No credentials for the quickstart or examples
 
 When you introduce real sources, your runner—not the capability request—must own

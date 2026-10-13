@@ -1,0 +1,10 @@
+{
+  "name": "@zeroemployeeorg/education-core",
+  "version": "0.1.0-alpha.1",
+  "private": true,
+  "type": "module",
+  "exports": "./index.mjs",
+  "engines": { "node": ">=22" },
+  "scripts": { "test": "node --test test/core.test.mjs" },
+  "description": "Unpublished first contract prototype for a shared Astro education foundation"
+}

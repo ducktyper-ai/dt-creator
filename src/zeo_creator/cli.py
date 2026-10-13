@@ -123,7 +123,7 @@ def contract_schema(
         schema = read_contract_schema(name, version)
     except KeyError as exc:
         # The message names no input: an error never echoes what the caller sent.
-        _emit("error", {"ok": False, "outcome": "invalid_request", "message": "unknown contract"})
+        _emit("error", _invalid("unknown contract", "zeo-creator contracts list"))
         raise typer.Exit(EXIT_INVALID) from exc
     _emit("contract-schema", {"ok": True, "json_schema": schema})
 
@@ -145,6 +145,9 @@ def doctor(
         "python": ".".join(str(item) for item in sys.version_info[:3]),
         "zeocore": zeocore_version,
         "checks": checks,
+        "next": [
+            {"check": name, "next": DOCTOR_NEXT[name]} for name, ok in checks.items() if not ok
+        ],
     }
     del json_output
     _emit("doctor", payload)
@@ -220,7 +223,7 @@ def _commands(group: Any, prefix: str = "") -> list[dict[str, object]]:
         found.append(
             {
                 "command": path,
-                "summary": (command.help or "").strip().splitlines()[0],
+                "summary": next(iter((command.help or "").strip().splitlines()), ""),
                 "options": _options(command),
                 "output_schemas": list(OUTPUT_SCHEMAS[path]),
             }
@@ -251,6 +254,42 @@ def help_catalogue(
     )
 
 
+# Each failing doctor check names the command that fixes it, or who must act.
+_REINSTALL = f'uv tool install --force "zeocreator=={__version__}"'
+DOCTOR_NEXT = {
+    "python_3_14_or_newer": f"install Python 3.14 or newer, then run: {_REINSTALL}",
+    "zeocore_0_18_0": 'run: uv pip install "zeocore[runtime-host]==0.18.0", or reinstall zeocreator',
+    "twenty_nine_manifests": f"run: {_REINSTALL}; if it persists, report it to the zeocreator seat",
+    "twenty_nine_openai_projections": (
+        f"run: {_REINSTALL}; if it persists, report it to the zeocreator seat"
+    ),
+}
+INTERNAL_NEXT = "rerun once; if it fails again, report the command to the zeocreator seat"
+
+
+def _invalid(reason: str, next_step: str) -> dict[str, object]:
+    """An invalid-request result: a fixed reason and next step, never the caller's input."""
+    return {"ok": False, "outcome": "invalid_request", "reason": reason, "next": next_step}
+
+
+def _usage_reason(exc: Exception) -> str:
+    # Typer's vendored Click names the problem by class; the reason is a fixed phrase,
+    # so nothing the caller typed reaches stdout.
+    kind = type(exc).__name__
+    if kind == "NoSuchOption":
+        return "unknown option"
+    if kind == "MissingParameter":
+        return "missing required option"
+    if kind in {"BadParameter", "BadOptionUsage", "BadArgumentUsage"}:
+        return "invalid option value"
+    message = str(getattr(exc, "message", "")) or str(exc)
+    if message.startswith("No such command"):
+        return "unknown command"
+    if message.startswith("Missing command"):
+        return "missing command"
+    return "invalid command line"
+
+
 def _is_usage_error(exc: Exception) -> bool:
     # Typer vendors Click and exports no UsageError, so recognise it by its shape.
     return getattr(exc, "exit_code", None) == EXIT_INVALID and callable(getattr(exc, "show", None))
@@ -263,10 +302,10 @@ def main() -> None:
         if _is_usage_error(exc):
             # Usage goes to stderr; stdout gets the result, which never echoes the input.
             exc.show()  # type: ignore[attr-defined]
-            _emit("error", {"ok": False, "outcome": "invalid_request"})
+            _emit("error", _invalid(_usage_reason(exc), "zeo-creator help --json"))
             sys.exit(EXIT_INVALID)
         # An internal error never echoes input or detail on stdout.
-        _emit("error", {"ok": False, "outcome": "internal"})
+        _emit("error", {"ok": False, "outcome": "internal", "next": INTERNAL_NEXT})
         sys.exit(EXIT_INTERNAL)
     sys.exit(code if isinstance(code, int) else 0)
 

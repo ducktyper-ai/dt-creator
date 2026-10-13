@@ -1,14 +1,14 @@
 # ADR 0003: Bounded, qualified Zeocore compatibility
 
-- Status: the bounded range is Proposed and not in force; the exact pin it would replace is now `==0.15.0`
+- Status: the bounded range is Proposed and not in force; the exact pin it would replace is now `==0.18.0`
 - Date: 2026-10-09; updated 2026-10-12
 - Decision owner: Creator seat, under the council's K4 direction of 2026-10-09
 - Supersedes, once accepted: ADR 0002's exact dependency pin only
-- Pin successor: the retained `==0.11.0` pin moved to `==0.15.0` in PR #24, approved by the council on 2026-10-12 (sensitive, a dependency change)
+- Pin successor: the retained `==0.11.0` pin moved to `==0.15.0` in PR #24, approved by the council on 2026-10-12, and then to `==0.18.0` in PR #31 (both sensitive, dependency changes)
 
 The council retained Creator's exact `zeocore[runtime-host]==0.11.0` pin until a
-successor decision is reviewed. That successor is PR #24: Creator pins exactly
-`zeocore[runtime-host]==0.15.0`, approved by the council on 2026-10-12. The pin is
+successor decision is reviewed. That successor was PR #24 (`==0.15.0`, approved by the council on
+2026-10-12), and Creator now pins exactly `zeocore[runtime-host]==0.18.0` (PR #31). The pin is
 still exact; the bounded range below remains a proposal. The council also adopted bounded, qualified compatibility
 as the direction. Applications lock exact environments; a library should not
 demand one global Zeocore release. Creator has no hosted or Broker coupling, so
@@ -63,7 +63,7 @@ its tiers carry different risk:
   `catalogue.validate_inventory` and `CandidateCatalogue`, and every `canonical`
   name above. Zeocore's policy let internal names change in any release, including
   a patch, and 9 of them are in `provider.py`. Zeocore 0.15.0 promotes all of them
-  (see "Resolved at Zeocore 0.15.0"), so from the current `==0.15.0` pin they are a
+  (see "Resolved at Zeocore 0.15.0"), so from the `==0.15.0` pin onward they are a
   supported tier. Before 0.15.0 they were qualified per release, with the shared
   RFC 8785 vectors run against `canonical_bytes` from the installed wheel.
 

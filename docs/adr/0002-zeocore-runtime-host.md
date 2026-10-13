@@ -4,7 +4,7 @@
 - Date: 2026-09-10
 - Decision owner: Creator Principal under Operator upgrade instruction
 - Supersedes: ADR 0001's dependency pin only
-- Pin superseded: the exact pin is now `zeocore[runtime-host]==0.18.0` (0.15.0 by PR #24, then 0.18.0), moved by PR #24 and approved by the council on 2026-10-12; ADR 0003 records the qualification. The rest of this decision stands.
+- Pin superseded: the exact pin is now `zeocore[runtime-host]==0.18.0` (`==0.15.0` by PR #24, approved by the council on 2026-10-12, then `==0.18.0` by PR #31); ADR 0003 records the qualification. The rest of this decision stands.
 
 Creator 0.5.4 consumes exactly `zeocore[runtime-host]==0.11.0`, retaining Python
 3.14+, its 29 canonical capability identities, and all business schema versions.

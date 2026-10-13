@@ -32,7 +32,12 @@ host dependencies install automatically. The distribution remains `zeocreator`, 
 - Exit codes follow Zeocore's `cli_protocol` 1: 0 done, 1 internal error (no detail), 2 invalid
   input, 20 held or refused. **A failed `doctor` check now exits 20, not 1.**
 - A usage error prints its usage on stderr and an `invalid_request` result on stdout, exit 2, and
-  never echoes what you typed on stdout. Running with no command is a usage error.
+  never echoes what you typed on stdout. The result carries a fixed `reason` (`unknown command`,
+  `missing command`, `unknown option`, `missing required option`, `invalid option value`, `unknown
+  contract` or `invalid command line`) and a `next` command to run. Running with no command is a
+  usage error. An internal error carries only a `next` step, still with no detail.
+- `doctor` lists each failing check under `next` with the exact command that fixes it; a healthy
+  install has `"next": []`.
 - `zeo-creator help --json` is a machine catalogue of every command, option, exit code and output
   schema id.
 - `runtime-provider` keeps its canonical bytes, without `ok`, until Runtime confirms a reader for the

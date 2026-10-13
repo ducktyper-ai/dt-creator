@@ -26,10 +26,18 @@ export function canonicalPath(siteInput, path) {
   const bare = path === '/' ? '/' : path.replace(/\/$/, '');
   return bare === '/' ? bare : site.trailingSlash === 'always' ? `${bare}/` : bare;
 }
-/** Whitelist metadata only: input bodies, extension data and entitlement details never propagate. */
-export function compilePublicInventory(siteInput, documents, {asOf} = {}) {
+function publicationDate(value, name) {
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) return dateOnly(value, name);
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/.test(value)) throw new TypeError(`${name} must be a real date or UTC timestamp`);
+  const parsed = new Date(value);
+  const normalized = value.includes('.') ? value : value.replace('Z', '.000Z');
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString() !== normalized) throw new TypeError(`${name} must be a real UTC timestamp`);
+  return value; // Retain source precision and spelling; never silently reduce to a day.
+}
+/** Site-owned trusted code selects publication. Projection never supplies a universal clock. */
+export function projectPublicInventory(siteInput, documents, {selectPublication} = {}) {
   const site = defineSite(siteInput);
-  dateOnly(asOf, 'asOf'); // Explicit publication time makes build eligibility reproducible.
+  if (typeof selectPublication !== 'function') throw new TypeError('Explicit trusted publication selector required');
   if (!Array.isArray(documents)) throw new TypeError('documents must be an array');
   const ids = new Set(), paths = new Set();
   const entries = [];
@@ -41,20 +49,33 @@ export function compilePublicInventory(siteInput, documents, {asOf} = {}) {
     if (!statuses.has(doc.status) || !accessLevels.has(doc.access)) throw new TypeError(`Invalid publication/access classification: ${doc.id}`);
     // Private/draft fields are not inspected or projected into a public manifest.
     if (doc.status !== 'published' || doc.access !== 'public') continue;
-    const publishedAt = dateOnly(doc.publishedAt, 'publishedAt');
-    if (publishedAt > asOf) continue;
+    const selection = selectPublication(doc);
+    if (selection === null) continue;
+    if (!selection || typeof selection !== 'object' || Array.isArray(selection)) throw new TypeError('Publication selector must return null or metadata');
+    const publishedAt = publicationDate(selection.publishedAt, 'publishedAt');
     const path = canonicalPath(site, doc.path);
     if (paths.has(path)) throw new TypeError(`Duplicate public route: ${path}`);
     paths.add(path);
     const canonicalUrl = new URL(path, site.origin).href;
     if (doc.canonicalUrl !== undefined && doc.canonicalUrl !== canonicalUrl) throw new TypeError(`Canonical differs from site/path: ${doc.id}`);
     const entry = {id: doc.id, kind: nonempty(doc.kind, 'kind'), path, title: nonempty(doc.title, 'title'), summary: nonempty(doc.summary, 'summary'), canonicalUrl, publishedAt};
-    if (doc.updatedAt !== undefined) {
-      entry.updatedAt = dateOnly(doc.updatedAt, 'updatedAt');
-      if (entry.updatedAt < publishedAt || entry.updatedAt > asOf) throw new TypeError(`Invalid substantive update date: ${doc.id}`);
-    }
+    if (selection.updatedAt !== undefined) entry.updatedAt = publicationDate(selection.updatedAt, 'updatedAt');
     entries.push(Object.freeze(entry));
   }
   // Code-unit ordering is locale-independent; do not reorder source documents in place.
   return Object.freeze(entries.sort((a, b) => a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
+}
+/** Explicit date-only prototype policy retained; not the Rasa request-clock adapter. */
+export function compilePublicInventory(siteInput, documents, {asOf} = {}) {
+  dateOnly(asOf, 'asOf');
+  return projectPublicInventory(siteInput, documents, {selectPublication(doc) {
+    const publishedAt = dateOnly(doc.publishedAt, 'publishedAt');
+    if (publishedAt > asOf) return null;
+    const selection = {publishedAt};
+    if (doc.updatedAt !== undefined) {
+      selection.updatedAt = dateOnly(doc.updatedAt, 'updatedAt');
+      if (selection.updatedAt < publishedAt || selection.updatedAt > asOf) throw new TypeError(`Invalid substantive update date: ${doc.id}`);
+    }
+    return selection;
+  }});
 }

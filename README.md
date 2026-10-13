@@ -1,17 +1,21 @@
 # Education core prototype
 
-Unpublished `0.1.0-alpha.1` contract prototype. Pure ESM, Node22+, no dependencies,
+Unpublished `0.1.0-alpha.2` contract prototype. Pure ESM, Node22+, no dependencies,
 service/filesystem access or Astro-version assumption. This is the first small
 piece of the operator's shared Astro education foundation, not a complete framework.
 
-Astro collection adapters can project eligible public metadata through
-`compilePublicInventory(site, documents, {asOf: 'YYYY-MM-DD'})` for discovery,
-SEO, feeds, search and OG targets. The explicit time makes publication eligibility
-reproducible. Draft, retired, review, member and paid documents are excluded;
+Astro collection adapters project public metadata through
+`projectPublicInventory(site, documents, {selectPublication})` for discovery,
+SEO, feeds, search and OG targets. Trusted site-owned code selects eligibility and
+returns `null` or public publication metadata; exact UTC timestamps are preserved.
+No universal clock or date-only schedule is inferred. The earlier
+`compilePublicInventory(site, documents, {asOf: 'YYYY-MM-DD'})` remains an explicit
+date-only prototype policy and must not implement Rasa's request-time casebook clock.
+Draft, retired, review, member and paid documents are excluded;
 unknown input properties and all bodies are dropped. Public course teasers must
 be separately authored public documents; this module does not release paid bodies.
 
-Run `node --test packages/education-core/test/core.test.mjs` from the repository.
+Run `node --test packages/education-core/test/*.test.mjs` from the repository.
 Tests exercise ProfRod and Rasa origin/route policies, privacy exclusions,
 canonical and duplicate-route failures, dates and immutable deterministic output.
 These fixtures are not parity tests of the actual site adapters. Layouts, Astro

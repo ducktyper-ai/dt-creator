@@ -137,8 +137,8 @@ def doctor(
     checks = {
         "python_3_14_or_newer": sys.version_info >= (3, 14),
         "zeocore_0_15_0": zeocore_version == "0.15.0",
-        "twenty_nine_manifests": len(capability_manifests()) == 29,
-        "twenty_nine_openai_projections": len(openai_tool_projections()) == 29,
+        "thirty_manifests": len(capability_manifests()) == 30,
+        "thirty_openai_projections": len(openai_tool_projections()) == 30,
     }
     payload = {
         "ok": all(checks.values()),

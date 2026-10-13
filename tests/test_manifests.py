@@ -32,6 +32,7 @@ EXPECTED_IDS = {
     "creator.plan_content_portfolio@1.0.0",
     "creator.create_content_brief@1.0.0",
     "creator.validate_delivery@1.0.0",
+    "creator.evaluate_rubric@1.0.0",
     "creator.prepare_distribution@1.0.0",
     "creator.assess_performance@1.0.0",
     "creator.identify_engagement_opportunities@1.0.0",

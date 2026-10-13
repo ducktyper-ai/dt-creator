@@ -13,7 +13,7 @@
 - **Agentic experience (standard v1):** `zeo-creator help --json` is a machine catalogue of every command, option, exit code and output schema id. Every result carries `"schema": "zeocreator.<thing>/v1"`. `contract-schema` now answers the schema under `json_schema` (unreleased rename; `schema` is the id). Shell-completion options are gone.
 - Email links refuse a backslash, which browsers read as a path separator but URL parsers don't, so a link can't show one host and open another. This applies to `EmailLink` and the body renderer alike.
 - Add `zeo_creator.rendering.render_email_body`, a pure renderer from structured blocks to an accessible, escaped HTML fragment for a template slot, with its plain-text twin and digests that match `EmailDeliveryMaterial`.
-- **Require `zeocore[runtime-host]==0.15.0`** (was 0.11.0). Zeocore 0.15.0 makes every runtime-host name Creator uses public, and its runtime-host-v1 protocol files are byte-identical to 0.11.0's. `doctor` reports the check as `zeocore_0_15_0`.
+- **Require `zeocore[runtime-host]==0.18.0`** (was 0.11.0; qualified at 0.15.0 and again at 0.18.0, whose runtime-host-v1 protocol files are byte-identical). Zeocore 0.15.0 makes every runtime-host name Creator uses public, and its runtime-host-v1 protocol files are byte-identical to 0.11.0's. `doctor` reports the check as `zeocore_0_18_0`.
 
 ## 0.5.4 — 2026-09-10
 

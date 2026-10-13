@@ -128,3 +128,12 @@ contain every name Creator uses there: the seven `runtime_host.canonical` names,
 and `parse_result`. Creator's full `make verify` and `make doctor` pass against it,
 with no source change beyond the pin. From 0.15.0 these names are a supported tier,
 not qualified per release.
+
+## Qualified at Zeocore 0.18.0 (2026-10-13)
+
+Zeocore 0.16.0, 0.17.0, 0.17.1 and 0.18.0 are on PyPI. `contracts/runtime-host-v1/` is
+byte-identical to 0.15.0's at every one of those tags. Creator's full `make verify` and `make doctor`
+pass against 0.18.0, with the pin as the only change, and no reference artifact or contract digest
+moves. Creator now pins `==0.18.0`. The bounded range above remains a proposal: Zeocore now
+releases on every merge, so an exact pin needs a Creator PR per qualified release, and that cost is
+the case for deciding the range.

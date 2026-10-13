@@ -5,6 +5,7 @@ import json
 import sys
 from enum import StrEnum
 from pathlib import Path
+from typing import Any
 
 import typer
 
@@ -19,6 +20,7 @@ from zeo_creator.registry import capability_manifests, openai_tool_projections
 app = typer.Typer(
     name="zeo-creator",
     help="Inspect ZEO Creator contracts and local compatibility.",
+    add_completion=False,
 )
 contracts_app = typer.Typer(help="Discover and export packaged public contract schemas.")
 app.add_typer(contracts_app, name="contracts")
@@ -40,14 +42,15 @@ class ProjectionFormat(StrEnum):
     OPENAI = "openai"
 
 
-def _emit(result: dict[str, object]) -> None:
-    """Write the result as one JSON line."""
-    typer.echo(json.dumps(result, ensure_ascii=False, sort_keys=True))
+def _emit(kind: str, result: dict[str, object]) -> None:
+    """Write the result as one JSON line, tagged with its versioned schema id."""
+    tagged = {**result, "schema": f"zeocreator.{kind}/v1"}
+    typer.echo(json.dumps(tagged, ensure_ascii=False, sort_keys=True))
 
 
 def _version_callback(value: bool) -> None:
     if value:
-        _emit({"ok": True, "zeocreator": __version__, "cli_protocol": CLI_PROTOCOL})
+        _emit("version", {"ok": True, "zeocreator": __version__, "cli_protocol": CLI_PROTOCOL})
         raise typer.Exit()
 
 
@@ -77,10 +80,10 @@ def capabilities(
     del json_output
     if projection == ProjectionFormat.OPENAI:
         tools = [item.model_dump(mode="json") for item in openai_tool_projections()]
-        _emit({"ok": True, "tools": tools})
+        _emit("tools", {"ok": True, "tools": tools})
         return
     manifests = [item.model_dump(mode="json") for item in capability_manifests()]
-    _emit({"ok": True, "capabilities": manifests})
+    _emit("capabilities", {"ok": True, "capabilities": manifests})
 
 
 @contracts_app.command("list")
@@ -98,7 +101,7 @@ def contracts_list(
         }
         for item in list_contract_schemas()
     ]
-    _emit({"ok": True, "contracts": rows})
+    _emit("contracts", {"ok": True, "contracts": rows})
 
 
 @contracts_app.command("export")
@@ -107,7 +110,7 @@ def contracts_export(
 ) -> None:
     """Export packaged schemas without importing source checkout files."""
     written = export_contract_schemas(output)
-    _emit({"ok": True, "output": str(output), "files": len(written)})
+    _emit("export", {"ok": True, "output": str(output), "files": len(written)})
 
 
 @app.command("contract-schema")
@@ -120,9 +123,9 @@ def contract_schema(
         schema = read_contract_schema(name, version)
     except KeyError as exc:
         # The message names no input: an error never echoes what the caller sent.
-        _emit({"ok": False, "outcome": "invalid_request", "message": "unknown contract"})
+        _emit("error", {"ok": False, "outcome": "invalid_request", "message": "unknown contract"})
         raise typer.Exit(EXIT_INVALID) from exc
-    _emit({"ok": True, "schema": schema})
+    _emit("contract-schema", {"ok": True, "json_schema": schema})
 
 
 @app.command()
@@ -144,7 +147,7 @@ def doctor(
         "checks": checks,
     }
     del json_output
-    _emit(payload)
+    _emit("doctor", payload)
     if not payload["ok"]:
         raise typer.Exit(EXIT_REFUSED)
 
@@ -164,6 +167,90 @@ def runtime_provider() -> None:
     typer.echo(canonical_bytes(provider_inventory()).decode())
 
 
+EXIT_CODES = (
+    (0, "done"),
+    (EXIT_INTERNAL, "internal error; the result carries no detail"),
+    (EXIT_INVALID, "invalid input or command; nothing was done"),
+    (EXIT_REFUSED, "held or refused: a check failed"),
+)
+OUTPUT_SCHEMAS = {
+    "help": ("zeocreator.help/v1",),
+    "capabilities": ("zeocreator.capabilities/v1", "zeocreator.tools/v1"),
+    "contracts list": ("zeocreator.contracts/v1",),
+    "contracts export": ("zeocreator.export/v1",),
+    "contract-schema": ("zeocreator.contract-schema/v1",),
+    "doctor": ("zeocreator.doctor/v1",),
+    # The named exception to cli_protocol 1: one line of canonical inventory bytes.
+    "runtime-provider": ("zeocreator.runtime-provider/canonical",),
+}
+
+
+def _options(command: Any) -> list[dict[str, object]]:
+    options = []
+    for param in command.params:
+        if not getattr(param, "opts", None) or param.name == "help":
+            continue
+        choices = getattr(param.type, "choices", None)
+        options.append(
+            {
+                "flags": list(param.opts),
+                "type": param.type.name,
+                "required": bool(param.required),
+                "default": None if callable(param.default) else _jsonable(param.default),
+                "choices": [str(item) for item in choices] if choices else None,
+                "help": getattr(param, "help", None),
+            }
+        )
+    return options
+
+
+def _jsonable(value: object) -> object:
+    if value is None or isinstance(value, (bool, int, float, str)):
+        return value
+    return str(getattr(value, "value", value))
+
+
+def _commands(group: Any, prefix: str = "") -> list[dict[str, object]]:
+    found: list[dict[str, object]] = []
+    for name, command in sorted(group.commands.items()):
+        path = f"{prefix}{name}"
+        if getattr(command, "commands", None) is not None:
+            found.extend(_commands(command, f"{path} "))
+            continue
+        found.append(
+            {
+                "command": path,
+                "summary": (command.help or "").strip().splitlines()[0],
+                "options": _options(command),
+                "output_schemas": list(OUTPUT_SCHEMAS[path]),
+            }
+        )
+    return found
+
+
+@app.command("help")
+def help_catalogue(
+    json_output: bool = typer.Option(False, "--json", help="Accepted; output is always JSON."),
+) -> None:
+    """Print the machine catalogue: every command, option, exit code and output schema."""
+    del json_output
+    root_command = typer.main.get_command(app)
+    _emit(
+        "help",
+        {
+            "ok": True,
+            "product": "zeocreator",
+            "version": __version__,
+            "cli_protocol": CLI_PROTOCOL,
+            "global_options": _options(root_command),
+            "commands": _commands(root_command),
+            "exit_codes": [{"code": code, "meaning": meaning} for code, meaning in EXIT_CODES],
+            "error_schema": "zeocreator.error/v1",
+            "version_schema": "zeocreator.version/v1",
+        },
+    )
+
+
 def _is_usage_error(exc: Exception) -> bool:
     # Typer vendors Click and exports no UsageError, so recognise it by its shape.
     return getattr(exc, "exit_code", None) == EXIT_INVALID and callable(getattr(exc, "show", None))
@@ -176,10 +263,10 @@ def main() -> None:
         if _is_usage_error(exc):
             # Usage goes to stderr; stdout gets the result, which never echoes the input.
             exc.show()  # type: ignore[attr-defined]
-            _emit({"ok": False, "outcome": "invalid_request"})
+            _emit("error", {"ok": False, "outcome": "invalid_request"})
             sys.exit(EXIT_INVALID)
         # An internal error never echoes input or detail on stdout.
-        _emit({"ok": False, "outcome": "internal"})
+        _emit("error", {"ok": False, "outcome": "internal"})
         sys.exit(EXIT_INTERNAL)
     sys.exit(code if isinstance(code, int) else 0)
 

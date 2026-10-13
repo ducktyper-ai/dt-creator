@@ -1221,7 +1221,7 @@ wheels = [
 
 [[package]]
 name = "zeocore"
-version = "0.15.0"
+version = "0.18.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -1229,12 +1229,13 @@ dependencies = [
     { name = "pydantic", extra = ["email"] },
     { name = "python-dotenv" },
     { name = "pyyaml" },
+    { name = "rfc8785" },
     { name = "rich" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f8/a0/5a871f3b9f271394e5c6af6d85cfe27632c89adc9d7b50f9aa6e4236eee8/zeocore-0.15.0.tar.gz", hash = "sha256:53470366f351ee55061bbd95a741770ad249692891bc48797c8e3db4311c844f", size = 1847819, upload-time = "2026-10-12T02:52:58.571Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/3f/e5/98223722116770840850ceb5a19bfadd0f03f7eed5c47998e7f44d1b6a55/zeocore-0.18.0.tar.gz", hash = "sha256:cb57b72dd30d829208d65d51893c5cad652d1bbdca96e2ed44e7f0526e58bf5b", size = 1928447, upload-time = "2026-10-13T17:58:00.278Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ba/07/60f9d98310628953209f5d584d5371bae321d0bb0d0d10e19477739e878d/zeocore-0.15.0-py3-none-any.whl", hash = "sha256:894e4ca8c99c9569d449ec151b39be8658010eca917975497001ebb2dd60e629", size = 898977, upload-time = "2026-10-12T02:52:56.498Z" },
+    { url = "https://files.pythonhosted.org/packages/3d/cc/db057cc1777fa486caabecde1ef5a8de8df504138ccbb1d170ea4b3a6369/zeocore-0.18.0-py3-none-any.whl", hash = "sha256:38189211b8d96ed3fb965b22ae4d4489c28f165c1adc9ce4f97f8a94d18a7626", size = 922951, upload-time = "2026-10-13T17:57:58.501Z" },
 ]
 
 [package.optional-dependencies]
@@ -1269,7 +1270,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.6.0" },
     { name = "rfc8785", specifier = "==0.1.4" },
     { name = "typer", specifier = ">=0.27.1" },
-    { name = "zeocore", extras = ["runtime-host"], specifier = "==0.15.0" },
+    { name = "zeocore", extras = ["runtime-host"], specifier = "==0.18.0" },
 ]
 
 [package.metadata.requires-dev]

@@ -10,3 +10,6 @@ ZEO Creator is a governed capability package, not a workflow runtime.
 
 Governed work lives in the associated organization corpus and must follow its
 active statement of work.
+
+To propose or contribute a change, read [CONTRIBUTING.md](CONTRIBUTING.md): how to propose, what
+is welcome, the owner-only areas, how to build and submit, and the maintainer's response times.

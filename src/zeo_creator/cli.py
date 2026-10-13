@@ -258,7 +258,7 @@ def help_catalogue(
 _REINSTALL = f'uv tool install --force "zeocreator=={__version__}"'
 DOCTOR_NEXT = {
     "python_3_14_or_newer": f"install Python 3.14 or newer, then run: {_REINSTALL}",
-    "zeocore_0_15_0": 'run: uv pip install "zeocore[runtime-host]==0.15.0", or reinstall zeocreator',
+    "zeocore_0_18_0": 'run: uv pip install "zeocore[runtime-host]==0.18.0", or reinstall zeocreator',
     "twenty_nine_manifests": f"run: {_REINSTALL}; if it persists, report it to the zeocreator seat",
     "twenty_nine_openai_projections": (
         f"run: {_REINSTALL}; if it persists, report it to the zeocreator seat"

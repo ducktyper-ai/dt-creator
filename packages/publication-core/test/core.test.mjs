@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {defineSite, canonicalPath, defineMetadataSchema, projectPublicInventory, utcInstant} from '../index.mjs';
-import {verifyContract, verifyDeclarationExports} from '../tools/check-contract.mjs';
+import {verifyContract, verifyDeclarationExports, verifyNodeMajor} from '../tools/check-contract.mjs';
 const site = {id:'example', origin:'https://example.org', trailingSlash:'never'};
 const stamp = '2026-10-14T01:00:00Z', now = Date.parse(stamp);
 const schemaInput = {kinds:['entry'],statuses:['pending','approved','withdrawn'],accessLevels:['open','restricted'],publishedStatus:'approved',publicAccess:'open',validateSource:()=>true};
@@ -129,4 +129,9 @@ test('sparse document collections fail before every callback',()=>{
 test('sparse nested metadata is refused rather than silently changing its shape',()=>{
   const values=['one'];values.length++;
   assert.throws(()=>project([doc({sourceMetadata:{values}})]),/Sparse metadata arrays/);
+});
+
+test('gate requires the admitted Node24 major and refuses other runtimes',()=>{
+  verifyNodeMajor('24.19.0','24');
+  for(const version of ['22.0.0','23.1.0','25.0.0','26.7.0'])assert.throws(()=>verifyNodeMajor(version,'24'),/admitted Node major/);
 });

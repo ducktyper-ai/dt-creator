@@ -4,9 +4,23 @@
   "private": true,
   "type": "module",
   "types": "./index.d.ts",
-  "exports": {".": {"types": "./index.d.ts", "import": "./index.mjs"}},
-  "files": ["index.mjs", "index.d.ts", "README.md", "CHANGELOG.md"],
-  "engines": {"node": ">=22"},
-  "scripts": {"test": "node --test test/*.test.mjs"},
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.mjs"
+    }
+  },
+  "files": [
+    "index.mjs",
+    "index.d.ts",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
   "description": "Unreleased pure publication and inventory fundamentals; caller-owned policy"
 }

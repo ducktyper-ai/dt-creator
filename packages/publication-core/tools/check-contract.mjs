@@ -7,10 +7,17 @@ export function verifyDeclarationExports(names, declaration) {
   assert.equal(new Set(declared).size, declared.length, 'Duplicate runtime declarations');
   assert.deepEqual([...names].sort(), declared.sort(), 'Runtime and declaration exports differ');
 }
+export function verifyNodeMajor(version, expected) {
+  assert.equal(String(version).split('.')[0], expected, 'Publication gate requires the admitted Node major');
+}
 export function verifyContract() {
   const root = new URL('../', import.meta.url);
   const manifest = JSON.parse(readFileSync(new URL('package.json', root), 'utf8'));
   assert.equal(manifest.private, true, 'Unreleased package must remain private');
+  const admittedMajor = readFileSync(new URL('.node-version', root), 'utf8').trim();
+  assert.equal(admittedMajor, '24');
+  assert.equal(manifest.engines.node, '>=24 <25');
+  verifyNodeMajor(process.versions.node, admittedMajor);
   assert.equal(manifest.type, 'module');
   assert.deepEqual(Object.keys(manifest.exports), ['.']);
   assert.deepEqual(manifest.exports['.'], {types: './index.d.ts', import: './index.mjs'});

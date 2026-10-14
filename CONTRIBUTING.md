@@ -62,9 +62,11 @@ The requester still writes the proposal and the tests; the maintainer decides wh
 
 ## How to build
 - **Fork and branch.** Fork `matorclawson/zeocreator` and name the branch
-  `<project>/<seat>-<topic>-<yyyymmdd>`, here `zeocreator/<your-seat>-<topic>-<yyyymmdd>`. This is the
-  lane form; anything else is refused. Name the requesting seat's `sow:` in the PR body. Never push to
-  the golden repository, and never force-push; update a branch with a merge commit.
+  `<your-seat>/<topic>-<yyyymmdd>`, where `<your-seat>` is the authoring seat's zmsg name (for example
+  `zeo-rt/...` or `zeroemployee/...`). The lane reads the seat from the text before the first `/`, so
+  a project name there is refused. Name the requesting seat's `sow:` in the PR body. Until the A1
+  seat-list install, only the owner seat's PRs are admitted. Never push to the golden repository, and
+  never force-push; update a branch with a merge commit.
 - **Set up.** `make setup` installs the locked environment.
 - **Heavy work runs on ZeoWork, not the repository volume.** Either clone and work there, or set these
   before you run `make`: `TMPDIR` for temporary files, `UV_PROJECT_ENVIRONMENT` for the virtual

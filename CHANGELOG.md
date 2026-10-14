@@ -5,6 +5,13 @@ Pin exact reviewed commits when evaluating them; never use a floating version or
 this history as permission to merge/deploy. Shared home and real site adapters
 remain required before an installable release.
 
+## 0.1.0-alpha.4
+
+Register explicit site-owned extension kinds, assert absolute London winter/DST
+values, and log source head/clock/input hashes in opt-in source probes. Document
+platform clock ownership and the legacy wrapper's UTC-only meaning. Labelled spike
+approval for alpha.3 does not extend to this successor or permit main merge.
+
 ## 0.1.0-alpha.3
 
 Validate all routable content and collisions before publication selection, wire

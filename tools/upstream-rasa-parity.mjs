@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {projectPublicInventory} from '../index.mjs';
 import {utcAvailability} from '../policies.mjs';
+import {probeContext} from './probe-context.mjs';
 const repo = process.argv[2];
 if (!repo || process.argv.length !== 3) throw Error('Pass the existing Rasa repository containing the accepted object');
 const baseline = 'f6acbd6c822ddb9273bf5decd58b4e647d2c8cfd';
@@ -25,6 +26,7 @@ const validCases=cases.filter(x=>!upstream.publicationProblem(x.data));
 const documents=validCases.map(entry=>({id:entry.id,kind:'article',path:`/library/casebook/${entry.id}/`,title:entry.id,summary:'Source-owned casebook publication probe.',status:entry.data.draft===false?'published':'draft',access:'public',availableAt:utcAvailability(entry.data.publishAt),sourceMetadata:entry.data,body:'NEVER_PUBLIC_METADATA'}));
 for(const offset of [-1,0,1]){
   const now=boundary+offset;
+  console.log(JSON.stringify(probeContext(now)));
   const projected=projectPublicInventory(site,documents,{now,selectPublication(doc,evaluatedAt){return upstream.isCasebookPublished(doc.sourceMetadata,evaluatedAt)?{publishedAt:doc.sourceMetadata.publishAt}:null;}});
   assert.deepEqual(projected.entries.map(x=>x.id),validCases.filter(x=>upstream.isCasebookPublished(x.data,now)).map(x=>x.id));
   if(offset>=0)assert.equal(projected.entries[0].publishedAt,timestamp);

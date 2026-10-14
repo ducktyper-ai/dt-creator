@@ -1,6 +1,6 @@
 # Education core prototype
 
-Unpublished `0.1.0-alpha.3` contract prototype. Pure ESM, Node22+, no dependencies,
+Unpublished `0.1.0-alpha.4` contract prototype. Pure ESM, Node22+, no dependencies,
 service/filesystem access or Astro-version assumption. This is the first small
 piece of the operator's shared Astro education foundation, not a complete framework.
 
@@ -25,6 +25,20 @@ without an accepted deployment instant remain unsupported, not assigned a fake d
 The earlier
 `compilePublicInventory(site, documents, {asOf: 'YYYY-MM-DD'})` remains an explicit
 date-only prototype policy and must not implement Rasa's request-time casebook clock.
+Its UTC-midnight interpretation also is not ProfRod's London-date policy.
+
+Clock supply stays with trusted platform adapters: accepted Rasa middleware takes
+one server `Date.now()` snapshot into `locals.publicationNow`; a Netlify adapter
+must pass that same value to all projections. A ProfRod/Node adapter must obtain
+one trusted owner-policy request clock and pass its milliseconds explicitly;
+the source helper's `PROFROD_PUBLICATION_CLOCK` test/configuration override is not
+a user-controlled request clock or an automatic production grant. Real profiles
+must qualify clock provenance and test-override handling before adoption. Pure
+library functions do not read global time or request/query/env overrides.
+
+Trusted `defineSite` configuration may declare `extensionKinds` as unique names.
+Document data cannot register a kind. Actual extension schemas and public payload
+validation remain owner-adapter responsibilities, not a bypass for private access.
 Draft, retired, review, member and paid documents are excluded;
 unknown input properties and all bodies are dropped. Public course teasers must
 be separately authored public documents; this module does not release paid bodies.
@@ -48,7 +62,9 @@ and `node packages/education-core/tools/upstream-profrod-parity.mjs /owned/SOW31
 The Rasa probe reads its fixed accepted git object; the ProfRod probe verifies the
 owner archive and all payload hashes without extraction, then tests original
 London-clock note selection and DST freshness. These are source-function observations,
-not full collection/Netlify/Node/browser or production adoption evidence.
+not full collection/Netlify/Node/browser or production adoption evidence. They log
+the local source head, exact evaluation clock and core input digests; these local
+observations are not authenticated CI or receipt-custody evidence.
 
 The original design is retained in the **fork**, not asserted merged into gold, at
 `81c238378f1fc19cc24900a5ba70b8684917fe1c`,

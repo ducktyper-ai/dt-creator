@@ -19,7 +19,14 @@ export function defineSite(input) {
   const url = new URL(input.origin);
   if (url.protocol !== 'https:' || url.username || url.password || url.pathname !== '/' || url.search || url.hash) throw new TypeError('Site origin must be an HTTPS origin without credentials, path or query');
   if (!['always', 'never'].includes(input.trailingSlash)) throw new TypeError('Choose explicit trailingSlash always or never');
-  return Object.freeze({id: input.id, origin: url.origin, trailingSlash: input.trailingSlash});
+  const extensionKinds=input.extensionKinds===undefined?[]:input.extensionKinds;
+  if(!Array.isArray(extensionKinds))throw new TypeError('extensionKinds must be an explicit array');
+  const seen=new Set(kinds);
+  for(const kind of extensionKinds){
+    if(typeof kind!=='string'||!/^[a-z][a-z0-9-]*$/.test(kind)||seen.has(kind))throw new TypeError('Extension kinds must be unique declared lowercase names');
+    seen.add(kind);
+  }
+  return Object.freeze({id: input.id, origin: url.origin, trailingSlash: input.trailingSlash,extensionKinds:Object.freeze([...extensionKinds])});
 }
 export function canonicalPath(siteInput, path) {
   const site = defineSite(siteInput);
@@ -51,7 +58,7 @@ export function projectPublicInventory(siteInput, documents, {now, selectPublica
     if (ids.has(doc.id)) throw new TypeError(`Duplicate content ID: ${doc.id}`);
     ids.add(doc.id);
     if (!statuses.has(doc.status) || !accessLevels.has(doc.access)) throw new TypeError(`Invalid publication/access classification: ${doc.id}`);
-    if (!kinds.has(doc.kind)) throw new TypeError(`Unknown content kind: ${doc.id}`);
+    if (!kinds.has(doc.kind)&&!site.extensionKinds.includes(doc.kind)) throw new TypeError(`Unknown content kind: ${doc.id}`);
     const path = canonicalPath(site, doc.path);
     const collisionKey = path.toLowerCase();
     if (paths.has(collisionKey)) throw new TypeError(`Duplicate registered route: ${path}`);

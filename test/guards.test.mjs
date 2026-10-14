@@ -19,6 +19,17 @@ test('case-only aliases cannot reserve two routes',()=>assert.throws(()=>project
 test('unknown and missing kind fail registration',()=>{
   for(const kind of [undefined,'invented'])assert.throws(()=>project([doc({kind})]), /Unknown content kind/);
 });
+test('trusted site configuration explicitly registers an extension kind',()=>{
+  const configured=defineSite({...site,extensionKinds:['field-guide']});
+  const result=projectPublicInventory(configured,[doc({kind:'field-guide'})],{now,selectPublication});
+  assert.equal(result.entries[0].kind,'field-guide');
+  assert.ok(Object.isFrozen(configured.extensionKinds));
+});
+test('malformed, duplicated or base-name extension declarations refuse',()=>{
+  assert.throws(()=>defineSite({...site,extensionKinds:'field-guide'}), /extensionKinds must be an explicit array/);
+  for(const extensionKinds of [['article'],['field-guide','field-guide'],['Bad Kind'],[null]])assert.throws(()=>defineSite({...site,extensionKinds}), /Extension kinds must be unique declared lowercase names/);
+});
+test('document metadata cannot register its own unknown kind',()=>assert.throws(()=>project([doc({kind:'field-guide',extensionKinds:['field-guide']})]), /Unknown content kind/));
 test('required explicit access has no public default',()=>{
   for(const access of [undefined,null,'',false,'Public'])assert.throws(()=>project([doc({access})]), /Invalid publication\/access classification/);
 });

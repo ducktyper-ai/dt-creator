@@ -5,6 +5,7 @@ import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {projectPublicInventory} from '../index.mjs';
 import {londonDateAvailability} from '../policies.mjs';
+import {probeContext} from './probe-context.mjs';
 const packet=process.argv[2];
 if(!packet || process.argv.length!==3)throw Error('Pass the owner-provided SOW311 source archive');
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -37,6 +38,7 @@ for(const [release,date] of [
   const docs=records.filter(x=>upstream.validDate(x.publishedAt)).map(x=>({...x,kind:'note',path:`/notes/${x.id}`,title:x.id,summary:'Source-owned London clock probe.',status:x.draft===true?'draft':'published',access:'public',availableAt:londonDateAvailability(x.publishedAt),body:'NEVER_DISCOVERY_BODY'}));
   for(const offset of [-1,0,1]){
     const now=new Date(Date.parse(release)+offset);
+    console.log(JSON.stringify(probeContext(now.getTime())));
     const selected=new Set(upstream.publishedNotes(records,now).map(x=>x.id));
     const result=projectPublicInventory(site,docs,{now:now.getTime(),selectPublication:(doc,evaluatedAt)=>{assert.equal(evaluatedAt,now.getTime());return selected.has(doc.id)?{publishedAt:doc.publishedAt}:null;}});
     assert.deepEqual(result.entries.map(x=>x.id),[...selected]);

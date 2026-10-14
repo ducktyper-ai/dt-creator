@@ -34,6 +34,15 @@ test('pure London derivation preserves summer and23/25hour DST boundaries',()=>{
   assert.equal(londonDateAvailability('2026-07-01'),availableAt);
   for(const [day,next,hours] of [['2026-03-29','2026-03-30',23],['2026-10-25','2026-10-26',25]])assert.equal((Date.parse(londonDateAvailability(next))-Date.parse(londonDateAvailability(day)))/3600000,hours);
 });
+test('absolute London winter and transition dates match the source policy',()=>{
+  for(const [label,instant] of [
+    ['2026-01-01','2026-01-01T00:00:00.000Z'],
+    ['2026-03-29','2026-03-29T00:00:00.000Z'],
+    ['2026-03-30','2026-03-29T23:00:00.000Z'],
+    ['2026-10-25','2026-10-24T23:00:00.000Z'],
+    ['2026-10-26','2026-10-26T00:00:00.000Z'],
+  ])assert.equal(londonDateAvailability(label),instant);
+});
 test('no derivable date or UTC instant produces a default',()=>{
   for(const value of [undefined,'not a date','2026-02-30'])assert.throws(()=>londonDateAvailability(value), /London publication label must be/);
   assert.throws(()=>utcAvailability('2026-07-01'), /Availability must be an explicit UTC timestamp/);

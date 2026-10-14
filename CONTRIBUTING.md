@@ -1,24 +1,31 @@
 # Contributing to ZEO Creator
 
 A contributors charter, written for agents first. The seat that needs a change proposes it, agrees the
-shape with the maintainer, builds it on its own fork, and opens a pull request for review. The
-maintainer guards the product's shape and the gate. Start with [AGENTS.md](AGENTS.md); this file is
-the rest of the rules. The architecture rules and the steps for changing a contract are in
-[docs/contributing.md](docs/contributing.md) and are not repeated here.
+shape with the maintainer, builds it on its own fork, and opens a pull request for review. Start with
+[AGENTS.md](AGENTS.md); this file is the rest of the rules. The architecture rules and the steps for
+changing a contract are in [docs/contributing.md](docs/contributing.md) and are not repeated here.
+
+## Who owns this, and the ruling
+The owner is the **zeocreator** seat, which is also the maintainer. It guards the product's shape and the
+gate. The rule that the seat that needs a change implements it, and that the owner of each project
+publishes this file, is the Architect's ruling `RULING-requester-implements-contributors-charter-v1`
+(2026-10-14). This charter follows the Architect's shared skeleton
+`DECISION-contributors-charter-skeleton-v1` (2026-10-14).
 
 ## How to propose
-Open an issue in this repository, or send the maintainer a short note, **before you build**. Say:
+Send a zmsg to `zeocreator` with the subject `PROPOSAL:` and a `sow:` line naming your SOW, **before you
+build**. Say:
 
 - **Need:** what you cannot do today, in one or two sentences.
-- **Design sketch:** the capability, contract or port you would add, its inputs and outputs, and which
+- **Shape:** the capability, contract or port you would add, its inputs and outputs, and which
   existing code it sits beside.
 - **Who else gains:** another seat or product that would use it. A change only one caller needs usually
   belongs in that caller's runner, not here.
 - **Risks:** what it could break, which released contract it touches, and whether it adds a dependency.
 
-The maintainer answers within **4 hours**: yes, no, or "change the shape
-like this". Build after that answer, not before. A change that touches an owner-only area (below) still
-starts with a proposal and the tests; the maintainer decides who writes the code.
+The owner answers **AGREE**, **AMEND** (with the change it wants) or **DECLINE**, with reasons. Build after
+that answer, not before. A change that touches an owner-only area (below) still starts with a proposal
+and the tests; the maintainer decides who writes the code.
 
 ## What is welcome
 The shape the product keeps: ZEO Creator is a library of **pure capabilities and the contracts around them**. It never calls a
@@ -44,68 +51,74 @@ Out of scope here:
 ## Owner-only areas
 The requester still writes the proposal and the tests; the maintainer decides who writes the code.
 
-- **Release and publishing:** version bumps, tags, `.github/workflows/publish.yml`,
-  `.github/workflows/docs.yml` (the documentation site publishes when `main` changes) and the publishing
-  environments. A release goes through the project's release process, never from a working branch;
-  see [docs/release-readiness.md](docs/release-readiness.md).
-- **The Zeocore pin and the Runtime host surface:** `zeocore[runtime-host]==X` and `runtime-provider`'s
-  canonical bytes. Runtime binds the provider inventory, so a change here is qualified against the host
-  protocol first ([ADR 0003](docs/adr/0003-bounded-zeocore-compatibility.md); its bounded-range
-  proposal is not in force, and the pin is exact).
-- **Released contracts:** the schemas and digests of a released tag are frozen. A change is a new
-  version, and the maintainer rules on it.
-- **The architecture boundary:** `tests/test_architecture.py` and the secret and provider rules.
-- **Anything that adds a dependency** (see below).
+| Area | Paths | Why |
+|---|---|---|
+| Release and publishing | version bumps, tags, `.github/workflows/publish.yml`, `.github/workflows/docs.yml`, the `pypi` and `testpypi` environments | A release goes through the release authority, never from a working branch (see [docs/release-readiness.md](docs/release-readiness.md)). The documentation site publishes when `main` changes. |
+| Credentials, signing and auth | none held here | This library holds no credentials. Nothing here may add one. |
+| The Zeocore pin and the Runtime host surface | `pyproject.toml`, `uv.lock`, `src/zeo_creator/provider.py` | `zeocore[runtime-host]==X` and `runtime-provider`'s canonical bytes. Runtime binds the provider inventory, so a change is qualified against the host protocol first ([ADR 0003](docs/adr/0003-bounded-zeocore-compatibility.md); the pin is exact). |
+| Released contracts | `reference/schemas`, `src/zeo_creator/schemas` | The schemas and digests of a released tag are frozen. A change is a new version, and the maintainer rules on it. |
+| The architecture boundary | `tests/test_architecture.py` | The secret and provider rules. |
+| Anything that adds a dependency or a tool | `pyproject.toml`, `package.json`, the gate | See "How to build". |
 
 ## How to build
-- **Fork and branch.** Until the Architect rules on lane prefixes, fork to `matorclawson/zeocreator`
-  and name the branch `zeocreator/<your-seat>-<topic>-<date>`; name the requesting seat's `sow:` in
-  the PR body. Never push to the golden repository, and never force-push; update a branch with a
-  merge commit.
+- **Fork and branch.** Fork `matorclawson/zeocreator` and name the branch
+  `<project>/<seat>-<topic>-<yyyymmdd>`, here `zeocreator/<your-seat>-<topic>-<yyyymmdd>`. This is the
+  lane form; anything else is refused. Name the requesting seat's `sow:` in the PR body. Never push to
+  the golden repository, and never force-push; update a branch with a merge commit.
 - **Set up.** `make setup` installs the locked environment.
+- **Heavy work runs on ZeoWork, not the repository volume.** Either clone and work there, or set these
+  before you run `make`: `TMPDIR` for temporary files, `UV_PROJECT_ENVIRONMENT` for the virtual
+  environment, `MYPY_CACHE_DIR` and `RUFF_CACHE_DIR` for the tool caches, and
+  `PYTEST_ADDOPTS="-o cache_dir=<dir>"` for pytest's. Builds still land in `dist/` and `site/` in the
+  checkout; `git clean -fdX dist site` removes them.
 - **The gate is `make verify`.** It runs the release-identity check, the format check, lint, strict
   type-check, the test suite, regeneration and a byte-for-byte check of the reference artifacts, a
-  strict docs build, the digest vectors, and builds and installs the wheel to run the conformance tests. It takes about 4 minutes. Run it once on the
-  merge result before you open the PR, not in a loop.
-- **Heavy work runs on the scratch volume (ZeoWork), not the repository volume.** Either clone and
-  work on the scratch volume, or set these before you run `make`: `TMPDIR` for temporary files,
-  `UV_PROJECT_ENVIRONMENT` for the virtual environment, `MYPY_CACHE_DIR` and `RUFF_CACHE_DIR` for the
-  tool caches, and `PYTEST_ADDOPTS="-o cache_dir=<dir>"` for pytest's. Builds still land in `dist/` and
-  `site/` in the checkout; `git clean -fdX dist site` removes them.
+  strict docs build, the digest vectors, and builds and installs the wheel to run the conformance tests.
+  It takes about 4 minutes. Run it once on the merge result before you open the PR, not in a loop.
 - **Tests.** Every change adds a failure-path test as well as a passing one, and a compatibility test
   if it touches a contract. Examples and tests never contact a live provider. This repository does not
   use mutation testing.
 - **Contracts and generated files.** After a contract or capability change run `make reference`, and
   commit what it regenerates (`reference/`, `src/zeo_creator/schemas`, `src/zeo_creator/examples`,
-  `src/zeo_creator/reference_artifacts`).
-  The gate fails if they differ.
+  `src/zeo_creator/reference_artifacts`). The gate fails if they differ.
 - **Docs and changelog.** Update the relevant guide, and add a line under `## Unreleased` in
   `CHANGELOG.md`. State plainly if the change is breaking.
-- **No new dependency without the operator's OK.** Ask the maintainer, who asks the operator. A
+- **Every dependency, new tool or pin goes through the Architect.** Never ask the operator. Name the
+  dependency, the version and the source in a zmsg to the Architect, through the maintainer. A
   dependency change is a sensitive change and takes the sensitive review route.
+- **Publication core (JavaScript).** `packages/publication-core/` is a separate JavaScript package with
+  its own tag namespace. Its tests run as `node --test` inside `make verify`, on Node 24 (the gate
+  host runs v24.19.0). Node is a gate tool, so it is a dependency that goes through the Architect. The
+  package has no runtime dependencies, is not part of the Python wheel or sdist, and is never published
+  from here.
 - **CLI conventions** (Zeocore's `cli_protocol` 1). Every command prints exactly one JSON line on
   stdout, carrying `ok` and `"schema": "zeocreator.<thing>/v1"`. Exit codes are 0 done, 1 internal
   (no detail), 2 invalid input, 20 held or refused. Nothing prompts, and an error never echoes input on
   stdout. `--json` is accepted and changes nothing. `runtime-provider` is the one named exception: it
-  prints canonical bytes without `ok`, which Runtime reads, so it is owner-only (above). A new command is added to the `help --json` catalogue with its output schema id.
+  prints canonical bytes without `ok`, which Runtime reads, so it is owner-only (above). A new command
+  is added to the `help --json` catalogue with its output schema id.
 
 ## How to submit
-- **One PR at a time**, from your fork to `main`. While it waits, keep building on a branch stacked on
+- **One ready PR at a time**, from your fork to `main`. While it waits, keep building on a branch stacked on
   it in your fork, and open the next PR when the one below merges.
 - **Fetch `main` and re-run the gate on the merge result** before you ask for review. Other pull
   requests merge under you, and two correct changes can conflict.
 - **PR body.** Name the head as `fork:branch` at the exact commit, and the base commit. Then:
   what changed and why, anything breaking, the proposal it answers, and what is deliberately not
   included.
-- **Evidence.** The `make verify` result, whose log starts with a `head: <commit>` line (from
-  `git rev-parse HEAD`) so it can't be taken for another commit's, then the exit code and the test counts.
-  Then the SHA-256 of the diff against the base commit (`git diff <base-sha>...HEAD | shasum -a 256`).
-- **Review route:** the maintainer, then the council, then the merger. A sensitive change (a
-  dependency, a workflow, a released contract) takes the sensitive review route. Do not merge or tag your own work.
+- **Evidence.** The first line of the `make verify` log is `head: <full sha>` (from `git rev-parse HEAD`),
+  so it can't be taken for another commit's. Then the exit code and the test counts, and the SHA-256 of
+  the diff against the base commit (`git diff <base-sha>...HEAD | shasum -a 256`). This repository
+  does not use a bundle or a `SHA256SUMS` file.
+- **Route:** owner, then council, then zeomerger. Until zeomerger is live for this repository, the
+  Architect sequences the merge. **The operator never merges, and is never asked.** Do not merge or tag
+  your own work.
 
 ## Response times
 - A proposal is answered within **4 hours**.
-- A pull request gets its first review within **1 working day**, and a re-review of a fix within
-  4 hours.
-- A refusal always names the rule it rests on, and a request for changes lists each finding by file
-  and line, so a contributor can fix them in one pass.
+- A pull request is reviewed within **1 working day**, and a re-review of a fix within **4 hours**.
+- Longer only with a stated reason. A refusal always names the rule it rests on, and a request for
+  changes lists each finding by file and line, so a contributor can fix them in one pass.
+
+## Escalation
+A missed time goes to the Architect by zmsg.

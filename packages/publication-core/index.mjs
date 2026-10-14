@@ -106,7 +106,8 @@ export function projectPublicInventory(siteInput, documents, options) {
     if (doc.canonicalUrl !== undefined && doc.canonicalUrl !== canonicalUrl) throw new TypeError('Canonical differs from site/path');
     const candidate = doc.status === config.publishedStatus && doc.access === config.publicAccess;
     const metadata = {id, kind: doc.kind, status: doc.status, access: doc.access, path,
-      title: text(doc.title, 'Title'), summary: text(doc.summary, 'Summary'), canonicalUrl};
+      title: text(doc.title, 'Title'), canonicalUrl};
+    if (doc.summary !== undefined) metadata.summary = doc.summary;
     if (candidate) metadata.availableAt = utcInstant(doc.availableAt);
     if (doc.sourceMetadata !== undefined) metadata.sourceMetadata = doc.sourceMetadata;
     return {metadata: Object.freeze(metadata), candidate};
@@ -124,7 +125,7 @@ export function projectPublicInventory(siteInput, documents, options) {
     if (available > now) throw new TypeError('Selected publication is unavailable at evaluatedAt');
     // availableAt is the source-derived release instant, never a calendar display label.
     const entry = {id: metadata.id, kind: metadata.kind, path: metadata.path,
-      title: metadata.title, summary: metadata.summary, canonicalUrl: metadata.canonicalUrl,
+      title: metadata.title, summary: text(metadata.summary, 'Summary'), canonicalUrl: metadata.canonicalUrl,
       availableAt: metadata.availableAt};
     if (selected.publishedAt !== undefined) {
       entry.publishedAt = utcInstant(selected.publishedAt);

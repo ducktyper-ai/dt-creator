@@ -2,7 +2,7 @@ export interface SiteInput { readonly id: string; readonly origin: string; reado
 export interface Site extends SiteInput {}
 export interface DocumentInput {
   readonly id: string; readonly kind: string; readonly status: string; readonly access: string;
-  readonly path: string; readonly title: string; readonly summary: string;
+  readonly path: string; readonly title: string; readonly summary?: string;
   readonly canonicalUrl?: string; readonly availableAt?: string;
   readonly sourceMetadata?: unknown; readonly [key: string]: unknown;
 }

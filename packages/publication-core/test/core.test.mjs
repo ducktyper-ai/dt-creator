@@ -135,3 +135,13 @@ test('gate requires the admitted Node24 major and refuses other runtimes',()=>{
   verifyNodeMajor('24.19.0','24');
   for(const version of ['22.0.0','23.1.0','25.0.0','26.7.0'])assert.throws(()=>verifyNodeMajor(version,'24'),/admitted Node major/);
 });
+
+test('hidden source summaries need not be fabricated before selection',()=>{
+  const future=doc({summary:undefined,availableAt:'2027-01-01T00:00:00Z'});
+  assert.deepEqual(project([future],{selectPublication:()=>null}).entries,[]);
+  assert.deepEqual(project([doc({summary:undefined,status:'pending'})]).entries,[]);
+  assert.deepEqual(project([doc({summary:undefined,access:'restricted'})]).entries,[]);
+});
+test('a selected public entry still requires a real nonempty summary',()=>{
+  for(const summary of [undefined,'',true])assert.throws(()=>project([doc({summary})]),/Summary must be a nonempty trimmed string/);
+});

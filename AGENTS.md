@@ -6,7 +6,7 @@ ZEO Creator is a governed capability package, not a workflow runtime.
 - Keep credentials and provider SDKs outside contracts, capabilities, and services.
 - Never add live provider execution, scheduling, OAuth, or renderer internals.
 - Use `make verify` and `make doctor` before declaring work ready.
-- Do not publish, push, rename, or change repository visibility without an explicit operator decision.
+- Do not publish, push to the golden repository, rename, or change repository visibility without an explicit operator decision. Work on a fork and open a pull request.
 
 Governed work lives in the associated organization corpus and must follow its
 active statement of work.

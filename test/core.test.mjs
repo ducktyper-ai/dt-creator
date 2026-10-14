@@ -16,27 +16,27 @@ test('public inventory never serializes full body or unknown metadata', () => {
   assert.ok(!Object.hasOwn(result[0],'body'));
 });
 test('draft, review, retired, member and paid material excluded from every projection', () => {
-  const docs=[article(),...['draft','review','retired'].map(status=>article({id:status,status,body:'HIDDEN'})),...['member','paid'].map(access=>article({id:access,access,body:'HIDDEN'}))];
+  const docs=[article(),...['draft','review','retired'].map(status=>article({id:status,path:'/hidden/'+status,status,body:'HIDDEN'})),...['member','paid'].map(access=>article({id:access,path:'/hidden/'+access,access,body:'HIDDEN'}))];
   assert.deepEqual(inventory(docs).map(x=>x.id),['a']);
 });
 test('scheduled future publication excluded using an explicit reproducible time', () => assert.deepEqual(inventory([article({publishedAt:'2026-10-15'})]),[]));
-test('missing publication clock refuses rather than using wall clock', () => assert.throws(()=>compilePublicInventory(profrod,[article()])));
+test('missing publication clock refuses rather than using wall clock', () => assert.throws(()=>compilePublicInventory(profrod,[article()]), /asOf must be YYYY-MM-DD/));
 test('invalid publication/access classification fails closed', () => {
-  assert.throws(()=>inventory([article({status:'Publish'})]));
-  assert.throws(()=>inventory([article({access:undefined})]));
+  assert.throws(()=>inventory([article({status:'Publish'})]), /Invalid publication\/access classification/);
+  assert.throws(()=>inventory([article({access:undefined})]), /Invalid publication\/access classification/);
 });
-test('duplicate IDs refused even across a draft and public document', () => assert.throws(()=>inventory([article(),article({status:'draft'})])));
-test('duplicate route alias with trailing slash refused', () => assert.throws(()=>inventory([article(),article({id:'b',path:'/articles/a/'})])));
-test('wrong site canonical cannot pass by otherwise valid metadata', () => assert.throws(()=>inventory([article({canonicalUrl:'https://rasa.community/articles/a'})])));
+test('duplicate IDs refused even across a draft and public document', () => assert.throws(()=>inventory([article(),article({status:'draft'})]), /Duplicate content ID/));
+test('duplicate route alias with trailing slash refused', () => assert.throws(()=>inventory([article(),article({id:'b',path:'/articles/a/'})]), /Duplicate registered route/));
+test('wrong site canonical cannot pass by otherwise valid metadata', () => assert.throws(()=>inventory([article({canonicalUrl:'https://rasa.community/articles/a'})]), /Canonical differs from site\/path/));
 test('real calendar date validation and substantive modification bounds', () => {
-  for(const patch of [{publishedAt:'2026-02-30'},{updatedAt:'2026-10-11'},{updatedAt:'2026-10-15'}])assert.throws(()=>inventory([article(patch)]));
+  for(const patch of [{publishedAt:'2026-02-30'},{updatedAt:'2026-10-11'},{updatedAt:'2026-10-15'}])assert.throws(()=>inventory([article(patch)]), /real calendar date|Invalid substantive update date/);
   assert.equal(inventory([article({updatedAt:'2026-10-13'})])[0].updatedAt,'2026-10-13');
 });
 test('external, traversal, encoded and query paths rejected', () => {
-  for(const path of ['//evil.example/x','/a/../x','/a/%2e%2e/x','/a?token=x','/a#x','/a\\x','/a//b'])assert.throws(()=>canonicalPath(profrod,path));
+  for(const path of ['//evil.example/x','/a/../x','/a/%2e%2e/x','/a?token=x','/a#x','/a\\x','/a//b'])assert.throws(()=>canonicalPath(profrod,path), /Unsafe or ambiguous content path/);
 });
 test('origin rejects insecure schemes, credentials and base paths', () => {
-  for(const origin of ['http://example.com','https://user:pass@example.com','https://example.com/base','https://example.com?x=1'])assert.throws(()=>defineSite({...profrod,origin}));
+  for(const origin of ['http://example.com','https://user:pass@example.com','https://example.com/base','https://example.com?x=1'])assert.throws(()=>defineSite({...profrod,origin}), /Site origin must be an HTTPS origin/);
 });
 test('stable ordering, frozen output and input remains unchanged', () => {
   const docs=[article({id:'z',path:'/z'}),article()];

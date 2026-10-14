@@ -4,6 +4,7 @@ import {readFileSync} from 'node:fs';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {projectPublicInventory} from '../index.mjs';
+import {londonDateAvailability} from '../policies.mjs';
 const packet=process.argv[2];
 if(!packet || process.argv.length!==3)throw Error('Pass the owner-provided SOW311 source archive');
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
@@ -32,13 +33,14 @@ for(const [release,date] of [
   ['2026-10-26T00:00:00Z','2026-10-26'],
 ]){
   const records=[{id:'due',publishedAt:date},{id:'draft',publishedAt:date,draft:true},{id:'invalid',publishedAt:'2026-02-30'}];
-  const docs=records.map(x=>({...x,kind:'note',path:`/notes/${x.id}`,title:x.id,summary:'Source-owned London clock probe.',status:x.draft===true?'draft':'published',access:'public',body:'NEVER_DISCOVERY_BODY'}));
+  assert.equal(upstream.validDate('2026-02-30'),false);
+  const docs=records.filter(x=>upstream.validDate(x.publishedAt)).map(x=>({...x,kind:'note',path:`/notes/${x.id}`,title:x.id,summary:'Source-owned London clock probe.',status:x.draft===true?'draft':'published',access:'public',availableAt:londonDateAvailability(x.publishedAt),body:'NEVER_DISCOVERY_BODY'}));
   for(const offset of [-1,0,1]){
     const now=new Date(Date.parse(release)+offset);
     const selected=new Set(upstream.publishedNotes(records,now).map(x=>x.id));
-    const result=projectPublicInventory(site,docs,{selectPublication:doc=>selected.has(doc.id)?{publishedAt:doc.publishedAt}:null});
-    assert.deepEqual(result.map(x=>x.id),[...selected]);
-    assert.equal(result.length,offset<0?0:1);
+    const result=projectPublicInventory(site,docs,{now:now.getTime(),selectPublication:(doc,evaluatedAt)=>{assert.equal(evaluatedAt,now.getTime());return selected.has(doc.id)?{publishedAt:doc.publishedAt}:null;}});
+    assert.deepEqual(result.entries.map(x=>x.id),[...selected]);
+    assert.equal(result.entries.length,offset<0?0:1);
     assert.ok(!JSON.stringify(result).includes('NEVER_DISCOVERY_BODY'));
   }
   console.log(`PASS source-owned London midnight ${date}, before/at/after; no generic UTC-day selection`);

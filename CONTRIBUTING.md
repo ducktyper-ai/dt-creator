@@ -86,11 +86,14 @@ The requester still writes the proposal and the tests; the maintainer decides wh
 - **Every dependency, new tool or pin goes through the Architect.** Never ask the operator. Name the
   dependency, the version and the source in a zmsg to the Architect, through the maintainer. A
   dependency change is a sensitive change and takes the sensitive review route.
-- **Publication core (JavaScript).** `packages/publication-core/` is a separate JavaScript package with
-  its own tag namespace. Its tests run as `node --test` inside `make verify`, on Node 24 (the gate
-  host runs v24.19.0). Node is a gate tool, so it is a dependency that goes through the Architect. The
-  package has no runtime dependencies, is not part of the Python wheel or sdist, and is never published
-  from here.
+- **Publication core (JavaScript), arriving with the publication-core move PR.** Until that PR merges,
+  nothing exists at `packages/publication-core/`, and the only Node steps in `make verify` are the
+  `contracts/` vector checks. Once it lands, the package has its own tag namespace, and its tests run as
+  `node --test` inside `make verify`. The Architect accepted Node.js as a gate tool on these conditions:
+  Node 24 LTS, pinned by `engines` in `packages/publication-core/package.json` and a `.node-version`,
+  and `make verify` refuses a different major. The package has zero npm packages; any package, even
+  dev-only, goes to the Architect first with name, version, publisher, downloads and age. It is not part
+  of the Python wheel or sdist, and is never published from here.
 - **CLI conventions** (Zeocore's `cli_protocol` 1). Every command prints exactly one JSON line on
   stdout, carrying `ok` and `"schema": "zeocreator.<thing>/v1"`. Exit codes are 0 done, 1 internal
   (no detail), 2 invalid input, 20 held or refused. Nothing prompts, and an error never echoes input on

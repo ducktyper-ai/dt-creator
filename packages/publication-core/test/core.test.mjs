@@ -145,3 +145,11 @@ test('hidden source summaries need not be fabricated before selection',()=>{
 test('a selected public entry still requires a real nonempty summary',()=>{
   for(const summary of [undefined,'',true])assert.throws(()=>project([doc({summary})]),/Summary must be a nonempty trimmed string/);
 });
+
+test('present malformed hidden or future summary fails before every callback',()=>{
+  let validations=0,selections=0;
+  const counted=defineMetadataSchema({...schemaInput,validateSource:()=>{validations++;return true;}});
+  for(const summary of ['',5,{}])for(const patch of [{status:'pending'},{access:'restricted'},{availableAt:'2027-01-01T00:00:00Z'}])
+    assert.throws(()=>project([doc({summary,...patch})],{schema:counted,selectPublication:()=>{selections++;return null;}}),/Summary must be a nonempty trimmed string/);
+  assert.equal(validations,0);assert.equal(selections,0);
+});

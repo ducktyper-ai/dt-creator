@@ -23,6 +23,14 @@ integration, course graph validation, OG rendering, gate orchestration, entitlem
 services, publishing and deployment remain follow-on work. Existing five-file
 homepage build input is unchanged; this package is not shipped by that build.
 
+Optional read-only source probes accept owner-provided exact source inputs:
+`node packages/education-core/test/upstream-rasa-parity.mjs /existing/rasa/repo`
+and `node packages/education-core/test/upstream-profrod-parity.mjs /owned/SOW311.tar.gz`.
+The Rasa probe reads its fixed accepted git object; the ProfRod probe verifies the
+owner archive and all payload hashes without extraction, then tests original
+London-clock note selection and DST freshness. These are source-function observations,
+not full collection/Netlify/Node/browser or production adoption evidence.
+
 See the exact design in the records repository at
 `81c238378f1fc19cc24900a5ba70b8684917fe1c`,
 `projects/zeo-site/design/shared-astro-education-v1/architecture.md`.

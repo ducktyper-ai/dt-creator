@@ -16,6 +16,8 @@ function dataCopy(value, seen = new Set()) {
   if (typeof value === 'number' && Number.isFinite(value)) return value;
   if (!value || typeof value !== 'object' || seen.has(value)) throw new TypeError('Metadata must be finite acyclic plain data');
   if (!Array.isArray(value)) object(value, 'Metadata');
+  else for (let index = 0; index < value.length; index++)
+    if (!Object.hasOwn(value, index)) throw new TypeError('Sparse metadata arrays are forbidden');
   seen.add(value);
   const copy = Array.isArray(value) ? [] : Object.create(null);
   for (const key of Reflect.ownKeys(value)) {
@@ -30,7 +32,7 @@ function dataCopy(value, seen = new Set()) {
 }
 function registry(values, name) {
   if (!Array.isArray(values) || !values.length) throw new TypeError(`${name} must be a nonempty explicit registry`);
-  const result = values.map(value => text(value, name));
+  const result = Array.from(values, value => text(value, name));
   if (new Set(result).size !== result.length) throw new TypeError(`${name} must be unique`);
   return Object.freeze(result);
 }
@@ -90,7 +92,7 @@ export function projectPublicInventory(siteInput, documents, options) {
   if (!Array.isArray(documents)) throw new TypeError('Documents must be an array');
   const ids = new Set(), paths = new Set();
   // Complete registration precedes every source-policy/selection callback.
-  const registered = documents.map(raw => {
+  const registered = Array.from(documents, raw => {
     const doc = dataCopy(object(raw, 'Document'));
     const id = text(doc.id, 'ID');
     if (ids.has(id)) throw new TypeError('Duplicate content ID');

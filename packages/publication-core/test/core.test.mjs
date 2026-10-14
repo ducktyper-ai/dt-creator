@@ -112,3 +112,21 @@ test('declaration gate rejects omitted and invented runtime exports',()=>{
   assert.throws(()=>verifyDeclarationExports(['one'],'export declare function one(): void;\nexport declare function extra(): void;'));
   assert.throws(()=>verifyDeclarationExports(['one'],'export declare function one(): void;\nexport declare function one(): void;'));
 });
+
+test('sparse registries cannot register missing classifications',()=>{
+  for (const field of ['kinds','statuses','accessLevels']) {
+    const values=[...schemaInput[field]];values.length++;
+    assert.throws(()=>defineMetadataSchema({...schemaInput,[field]:values}),/nonempty trimmed string/);
+  }
+});
+test('sparse document collections fail before every callback',()=>{
+  let validations=0,selections=0;
+  const counted=defineMetadataSchema({...schemaInput,validateSource:()=>{validations++;return true;}});
+  const documents=[doc()];documents.length++;
+  assert.throws(()=>project(documents,{schema:counted,selectPublication:()=>{selections++;return {};}}),/Document must be plain data/);
+  assert.equal(validations,0);assert.equal(selections,0);
+});
+test('sparse nested metadata is refused rather than silently changing its shape',()=>{
+  const values=['one'];values.length++;
+  assert.throws(()=>project([doc({sourceMetadata:{values}})]),/Sparse metadata arrays/);
+});

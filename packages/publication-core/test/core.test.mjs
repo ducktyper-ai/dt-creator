@@ -153,3 +153,28 @@ test('present malformed hidden or future summary fails before every callback',()
     assert.throws(()=>project([doc({summary,...patch})],{schema:counted,selectPublication:()=>{selections++;return null;}}),/Summary must be a nonempty trimmed string/);
   assert.equal(validations,0);assert.equal(selections,0);
 });
+
+test('malformed title and supplied summary strings refuse before any caller callback',()=>{
+  for(const field of ['title','summary']) for(const value of ['\uD800','\uDC00','ok\uD800text']) for(const status of ['approved','pending']){
+    let callbacks=0;
+    const guarded=defineMetadataSchema({...schemaInput,validateSource:()=>{callbacks++;return true;}});
+    assert.throws(()=>project([doc(),doc({id:'two',path:'/two',status,[field]:value})],{schema:guarded,selectPublication:()=>{callbacks++;return {};}}),/well-formed/);
+    assert.equal(callbacks,0);
+  }
+});
+test('ignorable-only title and supplied summary strings refuse even for excluded metadata',()=>{
+  for(const field of ['title','summary']) for(const value of ['\u200B','\u200B \u200C','\u2060','\u{E0100}']){
+    let selected=0;
+    assert.throws(()=>project([doc({[field]:value})],{selectPublication:()=>{selected++;return null;}}),/visible content/);
+    assert.equal(selected,0);
+  }
+});
+test('meaningful joiners combining characters and supplementary text preserve original bytes',()=>{
+  for(const value of ['نام\u200Cگذاری','e\u0301','\u{1F469}\u200D\u{1F52C}','Visible\u200Btext']){
+    const input=doc({title:value,summary:value});
+    const result=project([input]);
+    assert.equal(result.entries[0].title,value);
+    assert.equal(result.entries[0].summary,value);
+    assert.equal(input.title,value);assert.equal(input.summary,value);
+  }
+});

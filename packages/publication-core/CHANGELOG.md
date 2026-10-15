@@ -1,3 +1,6 @@
 # Unreleased preparation
 
 Prepare neutral publication fundamentals for agreed Creator home. Breaking from the unmerged labelled spike: remove built-in education vocabulary, timezone/date-only policies and opt-in source probes; require caller-declared schema and source validation; distinguish UTC publication history from consumer display labels. Add hand-authored declarations and node-only export correspondence checks. Preserve version as an unreleased inherited identifier; no version/tag/publication action is performed. Original five-commit split remains frozen for non-squashed import, followed by a separate neutralization commit.
+
+
+Proposed metadata text validity: reject lone-surrogate or default-ignorable-only titles and supplied summaries before caller callbacks, without rewriting meaningful Unicode. Keep exports, declarations and all caller-owned policies unchanged. Source proposal only; requalify real owners on any accepted successor before adoption.

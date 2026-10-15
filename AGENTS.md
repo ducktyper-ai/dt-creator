@@ -57,3 +57,6 @@ scratch directory first.
 Work on a branch of your own fork and open one pull request at a time against `main`. Do not push
 to the main repository, force-push, tag or release. Governed work follows the active statement of
 work in the associated organization corpus.
+
+To propose or contribute a change, read [CONTRIBUTING.md](CONTRIBUTING.md): how to propose, what
+is welcome, the owner-only areas, how to build and submit, and the maintainer's response times.

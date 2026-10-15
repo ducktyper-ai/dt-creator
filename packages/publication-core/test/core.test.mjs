@@ -178,3 +178,25 @@ test('meaningful joiners combining characters and supplementary text preserve or
     assert.equal(input.title,value);assert.equal(input.summary,value);
   }
 });
+
+test('control and blank-looking non-ignorable metadata stays consumer-owned and unchanged',()=>{
+  for(const value of ['\u0000','\u0085','\u2800','\uFFFC']){
+    const input=doc({title:value,summary:value});
+    const result=project([input]);
+    assert.equal(result.entries[0].title,value);
+    assert.equal(result.entries[0].summary,value);
+    assert.equal(input.title,value);assert.equal(input.summary,value);
+  }
+});
+test('rejected metadata errors name the field without disclosing its value',()=>{
+  const marker='PRIVATE_METADATA_SENTINEL';
+  for(const field of ['title','summary'])for(const value of [marker+'\uD800','\u200B']){
+    assert.throws(()=>project([doc({[field]:value})]),error=>{
+      assert.ok(error instanceof TypeError);
+      assert.ok(error.message.startsWith(field[0].toUpperCase()+field.slice(1)+' must'));
+      assert.ok(!error.message.includes(value));
+      assert.ok(!error.message.includes(marker));
+      return true;
+    });
+  }
+});

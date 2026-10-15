@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add `CONTRIBUTING.md`, a contributors charter written for agents first (how to propose, what is welcome, owner-only areas, how to build and submit, response times), linked from `AGENTS.md`.
 - Point repository, documentation, badge and package-metadata links at `zeroemployeeorg/zeocreator` and `zeroemployeeorg.github.io/zeocreator` after the repository move; the old GitHub Pages address no longer resolves. Version tags and commit pins are unchanged.
 - State the required PyPI trusted publisher and that its current configuration is unverified since the move.
 - **CLI output follows Zeocore's `cli_protocol` 1.** Every command except `runtime-provider` prints exactly one JSON line on stdout, the result, which carries `ok`. Lists are wrapped: `capabilities` answers `{"ok": true, "capabilities": [...]}` (or `"tools"` with `--projection openai`), `contracts list` answers `"contracts"`, `contract-schema` answers `"json_schema"`, and `--version` answers `{"ok": true, "zeocreator": ..., "cli_protocol": "1"}`. Every result also names its schema id. The tables are gone; `--json` is still accepted and changes nothing. A usage error prints its usage on stderr and an `invalid_request` result on stdout; running with no command is a usage error.

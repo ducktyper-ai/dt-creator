@@ -1,5 +1,7 @@
 # zeocreator 0.6.0
 
+Release date: set when the tag is cut (the CHANGELOG's 2026-10-13 is a preparation marker, not a release date).
+
 **The CLI now follows Zeocore's `cli_protocol` 1, and Creator requires Zeocore 0.18.0.**
 This is a breaking change for anyone who parses the CLI's output or exit codes: read the
 "CLI changes" section before upgrading. The library API, the 29 capability identities and the
@@ -62,6 +64,11 @@ host dependencies install automatically. The distribution remains `zeocreator`, 
   not, so a link cannot show one host and open another.
 - **Docs and tests:** the shared JCS test vectors and wire rule 7 (a digest covers the fully
   materialized contract), and ADR 0003 on bounded Zeocore compatibility.
+- **Repository move:** the repository is now `zeroemployeeorg/zeocreator` and the documentation is at
+  `zeroemployeeorg.github.io/zeocreator`; the old GitHub Pages address no longer resolves. Version tags and
+  commit pins are unchanged.
+- **PyPI trusted publisher:** the publisher must name owner `zeroemployeeorg`, repository `zeocreator`,
+  workflow `publish.yml` and environment `pypi`. Its configuration since the move is unverified.
 - **Release process:** publishing runs in the GitHub environments `pypi` and `testpypi`. The direct
   `rich` dependency is dropped (Typer still installs it).
 

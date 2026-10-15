@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## 0.6.0 — 2026-10-13
+## 0.6.0 — 2026-10-13 (preparation marker; the release date is set when tagged)
 
 - Add `CONTRIBUTING.md`, a contributors charter written for agents first (how to propose, what is welcome, owner-only areas, how to build and submit, response times), linked from `AGENTS.md`.
 - Point repository, documentation, badge and package-metadata links at `zeroemployeeorg/zeocreator` and `zeroemployeeorg.github.io/zeocreator` after the repository move; the old GitHub Pages address no longer resolves. Version tags and commit pins are unchanged.

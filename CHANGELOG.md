@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Import the five-commit publication-core history without squash, then separately neutralize the private zero-dependency ESM package at `packages/publication-core/`. Its Node 24 contract/export and failure-path tests run in `make verify`; actual Python wheel and sdist checks refuse inclusion of `packages/`. No Python contract/version, provider, npm dependency, release or consumer adoption changes.
+
 - Add `CONTRIBUTING.md`, a contributors charter written for agents first (how to propose, what is welcome, owner-only areas, how to build and submit, response times), linked from `AGENTS.md`.
 - Point repository, documentation, badge and package-metadata links at `zeroemployeeorg/zeocreator` and `zeroemployeeorg.github.io/zeocreator` after the repository move; the old GitHub Pages address no longer resolves. Version tags and commit pins are unchanged.
 - State the required PyPI trusted publisher and that its current configuration is unverified since the move.

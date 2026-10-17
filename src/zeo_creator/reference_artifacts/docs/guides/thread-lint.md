@@ -53,7 +53,7 @@ that the thread is good. A person or a runner-side reviewer decides the rest.
 ## Output and exit codes
 
 One JSON line, schema `zeocreator.thread-lint/v1`, with `ok`, `outcome`, `convention`,
-`limit`, `post_count`, `lengths`, `findings` and `needs_review`. Each finding names its
+`limit`, `linter` (name, package version and `thread-lint-rules/1`), `post_count`, `lengths`, `findings` and `needs_review`. Each finding names its
 `code`, `post`, `message` and `next`.
 
 | Exit | Meaning |

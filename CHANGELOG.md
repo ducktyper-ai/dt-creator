@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add the `thread-authoring` skill (`skills/thread-authoring/SKILL.md`) with `zeo-creator lint-thread` and `zeo_creator.thread_lint`, a deterministic structural linter for a numbered post thread (`thread-draft/1`): 280-character limit counted as NFC code points with URLs as 23, numbering, source outside the posts, link dependence, a repeating last post, and caller-supplied forbidden phrases. It reports what needs a reviewer under `needs_review`. Output schema `zeocreator.thread-lint/v1`; exits 0 clean, 20 findings, 2 invalid. It refuses control, default-ignorable, unassigned and ambiguous-space characters and a post hidden inside another, and rejects duplicate JSON keys. Not a registered capability; the runtime-provider inventory is unchanged.
+
 ## 0.6.0 — 2026-10-13 (preparation marker; the release date is set when tagged)
 
 - Import the five-commit publication-core history without squash, then separately neutralize the private zero-dependency ESM package at `packages/publication-core/`. Its Node 24 contract/export and failure-path tests run in `make verify`; actual Python wheel and sdist checks refuse inclusion of `packages/`. No Python contract/version, provider, npm dependency, release or consumer adoption changes.

@@ -16,6 +16,7 @@ from zeo_creator.contract_schemas import (
     read_contract_schema,
 )
 from zeo_creator.registry import capability_manifests, openai_tool_projections
+from zeo_creator.thread_lint import ThreadDraftError, lint_thread
 
 app = typer.Typer(
     name="zeo-creator",
@@ -155,6 +156,54 @@ def doctor(
         raise typer.Exit(EXIT_REFUSED)
 
 
+MAX_DRAFT_BYTES = 1_000_000
+
+
+def _no_duplicates(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    """A JSON object with a repeated key is refused: readers disagree on which one wins."""
+    keys = [key for key, _ in pairs]
+    if len(keys) != len(set(keys)):
+        raise ThreadDraftError("draft has a duplicate key")
+    return dict(pairs)
+
+
+@app.command("lint-thread")
+def lint_thread_command(
+    file: str = typer.Option(
+        ..., "--file", help="A thread-draft/1 JSON file, or - to read standard input."
+    ),
+    json_output: bool = typer.Option(False, "--json", help="Accepted; output is always JSON."),
+) -> None:
+    """Lint a post thread: length, numbering, source, links, repetition. Offline and pure."""
+    del json_output
+    try:
+        stream = sys.stdin.buffer if file == "-" else Path(file).open("rb")
+        with stream:
+            raw = stream.read(MAX_DRAFT_BYTES + 1)
+        if len(raw) > MAX_DRAFT_BYTES:
+            raise ThreadDraftError("draft is larger than 1 MB")
+        draft = json.loads(raw.decode("utf-8"), object_pairs_hook=_no_duplicates)
+    except OSError, UnicodeDecodeError:
+        _emit("error", _invalid("draft file could not be read", "check the --file path"))
+        raise typer.Exit(EXIT_INVALID) from None
+    except (ValueError, RecursionError) as exc:
+        # Reading only: a bad number or nesting is the caller's input, not a linter fault.
+        if isinstance(exc, ThreadDraftError):
+            reason, step = str(exc), "fix the draft to match thread-draft/1"
+        else:
+            reason, step = "draft is not valid JSON", "pass one thread-draft/1 JSON object"
+        _emit("error", _invalid(reason, step))
+        raise typer.Exit(EXIT_INVALID) from None
+    try:
+        result = lint_thread(draft)
+    except ThreadDraftError as exc:
+        _emit("error", _invalid(str(exc), "fix the draft to match thread-draft/1"))
+        raise typer.Exit(EXIT_INVALID) from None
+    _emit("thread-lint", result)
+    if not result["ok"]:
+        raise typer.Exit(EXIT_REFUSED)
+
+
 @app.command("runtime-provider")
 def runtime_provider() -> None:
     """Emit canonical installed-provider JSON for trusted Runtime provisioning.
@@ -183,6 +232,7 @@ OUTPUT_SCHEMAS = {
     "contracts export": ("zeocreator.export/v1",),
     "contract-schema": ("zeocreator.contract-schema/v1",),
     "doctor": ("zeocreator.doctor/v1",),
+    "lint-thread": ("zeocreator.thread-lint/v1",),
     # The named exception to cli_protocol 1: one line of canonical inventory bytes.
     "runtime-provider": ("zeocreator.runtime-provider/canonical",),
 }

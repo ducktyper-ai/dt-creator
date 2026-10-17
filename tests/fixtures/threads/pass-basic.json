@@ -1,0 +1,11 @@
+{
+  "schema": "thread-draft/1",
+  "numbering": "n/N",
+  "posts": [
+    "1/4 A kitchen scale beats measuring cups for bread. Same flour, same water, a loaf that rises the same way every week.",
+    "2/4 A cup of flour can weigh 120 grams or 160 grams, depending on how it was scooped. That gap is a third of the dough.",
+    "3/4 Example: 500 g flour and 350 g water is a 70% hydration dough. Weigh both, and the next loaf matches this one.",
+    "4/4 Takeaway: weigh your ingredients once, write the numbers down, and your bread stops being a surprise."
+  ],
+  "source": "Synthetic fixture for the thread linter; not a real thread."
+}

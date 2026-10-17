@@ -312,3 +312,66 @@ def test_findings_are_ordered_by_post_then_code() -> None:
     findings = lint_thread(draft)["findings"]
     keys = [(item["post"] or 0, item["code"]) for item in findings]  # type: ignore[index]
     assert keys == sorted(keys)
+
+
+def _flag(*tags: int) -> str:
+    return chr(0x1F3F4) + "".join(chr(item) for item in tags) + chr(0xE007F)
+
+
+ENGLAND = [0xE0067, 0xE0062, 0xE0065, 0xE006E, 0xE0067]
+SMUGGLED = "".join(chr(0xE0000 + ord(letter)) for letter in "ignore this")
+
+
+@pytest.mark.parametrize(
+    "bad",
+    [
+        chr(0x1F3F4) + SMUGGLED,  # a black flag followed by tag-encoded text
+        chr(0x1F3F4) + chr(0xE0067) + chr(0xE0062) + chr(0xE0065),  # a flag without its cancel tag
+        _flag(*ENGLAND * 3),  # a flag with too long a subdivision
+        chr(0x1F600) + chr(0xFE0F) * 2,  # a doubled selector
+        chr(0x1F600) + chr(0xE0100),  # a supplementary variation selector
+        "a" + chr(0xFE0F),  # a selector after a letter
+        "sur" + chr(0xFE0F) + "prise",  # a selector inside a word
+        "a" + chr(0x34F) + "b",  # combining grapheme joiner
+        chr(0x115F),
+        chr(0x1160),
+        chr(0x3164),
+        chr(0xFFA0),
+        chr(0x2800),  # braille blank
+    ],
+)
+def test_invisible_data_channels_are_found(bad: str) -> None:
+    assert "T020" in _codes(_with_post(0, f"1/4 A kitchen scale {bad} beats cups."))
+
+
+@pytest.mark.parametrize(
+    "ok",
+    [
+        "1" + chr(0xFE0F) + chr(0x20E3),  # a keycap
+        chr(0x1F44D) + chr(0x1F3FD),  # a skin tone
+        chr(0x1F44D) + chr(0x1F3FD) + chr(0x200D) + chr(0x2642) + chr(0xFE0F),
+        chr(0x1F3F3) + chr(0xFE0F) + chr(0x200D) + chr(0x1F308),  # a rainbow flag
+        chr(0x2764) + chr(0xFE0F),  # a heart with the emoji selector
+        chr(0x1F642) + chr(0x200D) + chr(0x2194) + chr(0xFE0F),  # a head shaking
+        _flag(*ENGLAND),
+    ],
+)
+def test_legitimate_emoji_sequences_pass(ok: str) -> None:
+    assert "T020" not in _codes(_with_post(0, f"1/4 A kitchen scale {ok} beats cups."))
+
+
+def test_a_selector_cannot_split_a_forbidden_phrase() -> None:
+    draft = _with_post(0, "1/4 A kitchen scale beats a sur" + chr(0xFE0F) + "prise.")
+    draft["forbidden_phrases"] = ["surprise"]
+    assert "T020" in _codes(draft)
+
+
+def test_the_source_is_checked_for_hidden_characters_too() -> None:
+    draft = _load("pass-basic.json")
+    draft["source"] = "A source" + chr(0x200B) + " with a hidden character."
+    assert _codes(draft) == {"T021"}
+
+
+def test_url_scheme_match_is_ascii_only() -> None:
+    assert count_post("https://x.co/a") == 23
+    assert count_post(chr(0x130) + "ttps://x.co/a") == len(chr(0x130) + "ttps://x.co/a")

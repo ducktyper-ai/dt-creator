@@ -39,7 +39,8 @@ Length is counted as Unicode code points after NFC normalization, with each URL 
 | `T011` | A post carries the wrong number |
 | `T013` | A later line of a post starts like a numbered post, so a post hides inside another |
 | `T012` | The total in `n/N` is not the number of posts |
-| `T020` | A post has a control, invisible or ambiguous-space character (NUL, ESC, tab, no-break space, line or paragraph separator, zero-width, bidi, byte-order-mark or soft-hyphen characters). A newline and a plain space are allowed; so are an emoji joiner inside an emoji sequence and a subdivision flag's tag characters |
+| `T020` | A post has a control, invisible or ambiguous-space character (NUL, ESC, tab, no-break space, line or paragraph separator, zero-width, bidi, byte-order-mark or soft-hyphen characters). Variation selectors, combining grapheme joiners, Hangul and braille fillers and tag characters are refused too. A newline and a plain space are allowed; so are an emoji joiner inside an emoji sequence, one U+FE0E or U+FE0F right after a character that has an emoji form, and the tag characters of a subdivision flag (England, Scotland, Wales). The rule fails closed: a legitimate Persian ZWNJ, an Indic or Sinhala ZWJ or an Arabic or Hebrew direction mark is flagged too |
+| `T021` | The source has the same kind of character as T020 |
 | `T031` | A post is little more than a link, so it depends on the link |
 | `T040` | The last post repeats an earlier post |
 | `T050` | No source outside the posts |

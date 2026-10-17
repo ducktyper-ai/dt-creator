@@ -182,16 +182,22 @@ def lint_thread_command(
             raw = stream.read(MAX_DRAFT_BYTES + 1)
         if len(raw) > MAX_DRAFT_BYTES:
             raise ThreadDraftError("draft is larger than 1 MB")
-        result = lint_thread(json.loads(raw.decode("utf-8"), object_pairs_hook=_no_duplicates))
+        draft = json.loads(raw.decode("utf-8"), object_pairs_hook=_no_duplicates)
     except OSError, UnicodeDecodeError:
         _emit("error", _invalid("draft file could not be read", "check the --file path"))
         raise typer.Exit(EXIT_INVALID) from None
-    except (json.JSONDecodeError, ValueError, RecursionError) as exc:
+    except (ValueError, RecursionError) as exc:
+        # Reading only: a bad number or nesting is the caller's input, not a linter fault.
         if isinstance(exc, ThreadDraftError):
             reason, step = str(exc), "fix the draft to match thread-draft/1"
         else:
             reason, step = "draft is not valid JSON", "pass one thread-draft/1 JSON object"
         _emit("error", _invalid(reason, step))
+        raise typer.Exit(EXIT_INVALID) from None
+    try:
+        result = lint_thread(draft)
+    except ThreadDraftError as exc:
+        _emit("error", _invalid(str(exc), "fix the draft to match thread-draft/1"))
         raise typer.Exit(EXIT_INVALID) from None
     _emit("thread-lint", result)
     if not result["ok"]:

@@ -34,7 +34,7 @@ NEEDS_REVIEW = (
     "avoid_ai_writing_beyond_supplied_phrases",
 )
 
-_URL = re.compile(r"https?://[A-Za-z0-9._~:/?#\[\]@!$&'()*+,;=%-]+", re.IGNORECASE)
+_URL = re.compile(r"https?://[A-Za-z0-9._~:/?#\[\]@!$&'()*+,;=%-]+", re.IGNORECASE | re.ASCII)
 _WORD = re.compile(r"[^\W_]+", re.UNICODE)
 _NUMBERING = {
     "n/N": re.compile(r"^([1-9][0-9]{0,2})/([1-9][0-9]{0,2})(?: |$)"),
@@ -43,7 +43,6 @@ _NUMBERING = {
 # A later line of a post that starts like a numbered post: a post hiding another post.
 _HIDDEN_POST = re.compile(r"^[ \t]*[0-9]{1,3}/(?:[0-9]{1,3})?(?: |$)", re.MULTILINE)
 _ZWJ = "\u200d"
-_TAG_FIRST, _TAG_LAST, _BLACK_FLAG = 0xE0020, 0xE007F, "\U0001f3f4"
 _REPEAT_THRESHOLD = 0.8
 _MIN_WORDS_BESIDE_LINK = 3
 
@@ -149,30 +148,56 @@ def _is_emojiish(char: str) -> bool:
     return unicodedata.category(char) in {"So", "Sk"} or char == "\ufe0f"
 
 
+# A subdivision flag (England, Scotland, Wales): a black flag, region and subdivision tags,
+# then the cancel tag. Any other tag character carries invisible text and is refused.
+_FLAG_SEQUENCE = re.compile(
+    "\U0001f3f4[\U000e0061-\U000e007a]{2}[\U000e0030-\U000e0039\U000e0061-\U000e007a]{1,4}\U000e007f"
+)
+# Characters that draw nothing yet are not control or format characters.
+_INVISIBLE_FILLERS = frozenset("\u034f\u115f\u1160\u2800\u3164\uffa0")
+_JOINABLE_AFTER_ZWJ = frozenset("\u2194\u2195")
+
+
+def _is_variation_selector(char: str) -> bool:
+    return "\ufe00" <= char <= "\ufe0f" or "\U000e0100" <= char <= "\U000e01ef"
+
+
 def _hidden_characters(text: str) -> bool:
-    """True if the post has a control, invisible or ambiguous-space character.
+    """True if the text has a control, invisible or ambiguous-space character.
 
     Allowed: a newline, a plain space, a joiner between emoji (a sequence the platform draws
-    as one picture) and the tag characters of a subdivision flag after a black flag.
+    as one picture), one text/emoji selector (U+FE0E or U+FE0F) right after a character that
+    has an emoji form, and a subdivision flag's tag characters. Everything else that is
+    invisible is refused, including selectors that can carry hidden data.
     """
+    text = _FLAG_SEQUENCE.sub("\U0001f3f4", text)
     for index, char in enumerate(text):
         if char in {" ", "\n"}:
             continue
-        category = unicodedata.category(char)
+        before = text[index - 1] if index else ""
+        after = text[index + 1] if index + 1 < len(text) else ""
         if char == _ZWJ:
-            before = text[index - 1] if index else ""
-            after = text[index + 1] if index + 1 < len(text) else ""
-            if before and after and _is_emojiish(before) and unicodedata.category(after) == "So":
+            if (
+                before
+                and after
+                and _is_emojiish(before)
+                and (unicodedata.category(after) == "So" or after in _JOINABLE_AFTER_ZWJ)
+            ):
                 continue
             return True
-        if _TAG_FIRST <= ord(char) <= _TAG_LAST:
-            run = index
-            while run and _TAG_FIRST <= ord(text[run - 1]) <= _TAG_LAST:
-                run -= 1
-            if run and text[run - 1] == _BLACK_FLAG:
+        if char in {"\ufe0e", "\ufe0f"}:
+            if before and (
+                unicodedata.category(before) in {"So", "Nd"}
+                or before in {"#", "*"}
+                or before in _JOINABLE_AFTER_ZWJ
+            ):
                 continue
             return True
-        if category in {"Cc", "Cf", "Zl", "Zp"} or char.isspace():
+        if _is_variation_selector(char) or char in _INVISIBLE_FILLERS:
+            return True
+        if 0xE0000 <= ord(char) <= 0xE007F:
+            return True
+        if unicodedata.category(char) in {"Cc", "Cf", "Zl", "Zp"} or char.isspace():
             return True
     return False
 
@@ -237,6 +262,15 @@ def lint_thread(draft: Any) -> dict[str, object]:
                     "state the point in words; keep any link as extra",
                 )
             )
+    if _hidden_characters(unicodedata.normalize("NFC", source)):
+        findings.append(
+            Finding(
+                "T021",
+                None,
+                "the source has a control, invisible or ambiguous-space character",
+                "remove it; use plain spaces and newlines only",
+            )
+        )
     if not source.strip():
         findings.append(
             Finding(

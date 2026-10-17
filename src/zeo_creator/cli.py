@@ -16,6 +16,7 @@ from zeo_creator.contract_schemas import (
     read_contract_schema,
 )
 from zeo_creator.registry import capability_manifests, openai_tool_projections
+from zeo_creator.thread_lint import ThreadDraftError, lint_thread
 
 app = typer.Typer(
     name="zeo-creator",
@@ -155,6 +156,32 @@ def doctor(
         raise typer.Exit(EXIT_REFUSED)
 
 
+@app.command("lint-thread")
+def lint_thread_command(
+    file: str = typer.Option(
+        ..., "--file", help="A thread-draft/1 JSON file, or - to read standard input."
+    ),
+    json_output: bool = typer.Option(False, "--json", help="Accepted; output is always JSON."),
+) -> None:
+    """Lint a post thread: length, numbering, source, links, repetition. Offline and pure."""
+    del json_output
+    try:
+        raw = sys.stdin.read() if file == "-" else Path(file).read_text(encoding="utf-8")
+        result = lint_thread(json.loads(raw))
+    except OSError, UnicodeDecodeError:
+        _emit("error", _invalid("draft file could not be read", "check the --file path"))
+        raise typer.Exit(EXIT_INVALID) from None
+    except json.JSONDecodeError:
+        _emit("error", _invalid("draft is not valid JSON", "pass one thread-draft/1 JSON object"))
+        raise typer.Exit(EXIT_INVALID) from None
+    except ThreadDraftError as exc:
+        _emit("error", _invalid(str(exc), "fix the draft to match thread-draft/1"))
+        raise typer.Exit(EXIT_INVALID) from None
+    _emit("thread-lint", result)
+    if not result["ok"]:
+        raise typer.Exit(EXIT_REFUSED)
+
+
 @app.command("runtime-provider")
 def runtime_provider() -> None:
     """Emit canonical installed-provider JSON for trusted Runtime provisioning.
@@ -183,6 +210,7 @@ OUTPUT_SCHEMAS = {
     "contracts export": ("zeocreator.export/v1",),
     "contract-schema": ("zeocreator.contract-schema/v1",),
     "doctor": ("zeocreator.doctor/v1",),
+    "lint-thread": ("zeocreator.thread-lint/v1",),
     # The named exception to cli_protocol 1: one line of canonical inventory bytes.
     "runtime-provider": ("zeocreator.runtime-provider/canonical",),
 }

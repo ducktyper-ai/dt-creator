@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `zeo-creator lint-thread` and `zeo_creator.thread_lint`, a deterministic structural linter for a numbered post thread (`thread-draft/1`): 280-character limit counted as NFC code points with URLs as 23, numbering, source outside the posts, link dependence, a repeating last post, and caller-supplied forbidden phrases. It reports what needs a reviewer under `needs_review`. Output schema `zeocreator.thread-lint/v1`; exits 0 clean, 20 findings, 2 invalid. Not a registered capability; the runtime-provider inventory is unchanged.
+
 - Add `CONTRIBUTING.md`, a contributors charter written for agents first (how to propose, what is welcome, owner-only areas, how to build and submit, response times), linked from `AGENTS.md`.
 - Point repository, documentation, badge and package-metadata links at `zeroemployeeorg/zeocreator` and `zeroemployeeorg.github.io/zeocreator` after the repository move; the old GitHub Pages address no longer resolves. Version tags and commit pins are unchanged.
 - State the required PyPI trusted publisher and that its current configuration is unverified since the move.

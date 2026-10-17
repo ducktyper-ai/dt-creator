@@ -170,7 +170,7 @@ Python-generated canonical vector bytes and SHA-256 values.
 
 ## Public Zeocore integration dependency
 
-Creator pins Zeocore 0.11.0 with its shared Runtime host. The host can invoke
+Creator pins Zeocore 0.18.0 with its shared Runtime host. The host can invoke
 Creator's supplied-input email capabilities; it does not turn Creator proposals
 into authenticated provider execution. Creator references caller-selected public
 operation identities and does not define executable provider operations or copy
@@ -220,7 +220,7 @@ and verify the real mapping/render/snapshot coverage before authorizing effects.
 
 ## Email contract migration and release policy
 
-The PyPI package is `zeocreator==0.5.4`; its nine email capabilities and durable email artifacts use
+The PyPI package is `zeocreator==0.6.0`; its nine email capabilities and durable email artifacts use
 major version 4. Published email v1, v2 and v3 schemas remain byte-for-byte available for
 audit. Their preparation APIs are retired from discovery; the twenty original non-email
 capabilities remain unchanged. This explicitly affirms the earlier email v1 retirement:
@@ -257,7 +257,7 @@ No old schema is silently reinterpreted.
 
 Historical provider integration work includes Zeocore HubSpot PR 53, Kit PR 54
 and follow-up PR 55 at `e2b55aa6b1751afb95614e7b5cbab9f339f5f9e6`.
-Creator now installs released Zeocore 0.11.0. Those provider changes and the
+Creator now installs released Zeocore 0.18.0. Those provider changes and the
 shared host do not by themselves establish completed Creator/Runtime email
 wiring or authenticated live interoperability.
 

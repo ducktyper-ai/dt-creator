@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.6.0 — 2026-10-13 (preparation marker; the release date is set when tagged)
+
 - Add `CONTRIBUTING.md`, a contributors charter written for agents first (how to propose, what is welcome, owner-only areas, how to build and submit, response times), linked from `AGENTS.md`.
 - Point repository, documentation, badge and package-metadata links at `zeroemployeeorg/zeocreator` and `zeroemployeeorg.github.io/zeocreator` after the repository move; the old GitHub Pages address no longer resolves. Version tags and commit pins are unchanged.
 - State the required PyPI trusted publisher and that its current configuration is unverified since the move.
@@ -11,11 +13,14 @@
 - Add `make install VERSION=X.Y.Z`, which installs a published release as a tool and runs `doctor` (catch-up: merged in #20 without an entry).
 - Publishing runs in the GitHub environments `pypi` and `testpypi`, so an upload waits for approval once the environment requires a reviewer.
 - Drop the direct `rich` dependency, which the CLI no longer uses; Typer still installs it.
-- **Agentic experience (standard v1):** `zeo-creator help --json` is a machine catalogue of every command, option, exit code and output schema id. Every result carries `"schema": "zeocreator.<thing>/v1"`. `contract-schema` now answers the schema under `json_schema` (unreleased rename; `schema` is the id). Shell-completion options are gone.
-- **Next steps (standard v1, rules 6 and 7):** `doctor` lists each failing check with the command that fixes it, under `next`. An invalid request carries a fixed `reason` and a `next` command, never the input. The unknown-contract `message` (unreleased) becomes `reason`.
+- **Agentic experience (standard v1):** `zeo-creator help --json` is a machine catalogue of every command, option, exit code and output schema id. Every result carries `"schema": "zeocreator.<thing>/v1"`. `contract-schema` now answers the schema under `json_schema` (`schema` is now the id). Shell-completion options are gone.
+- **Next steps (standard v1, rules 6 and 7):** `doctor` lists each failing check with the command that fixes it, under `next`. An invalid request carries a fixed `reason` and a `next` command, never the input. The unknown-contract `message` is now `reason`.
 - Email links refuse a backslash, which browsers read as a path separator but URL parsers don't, so a link can't show one host and open another. This applies to `EmailLink` and the body renderer alike.
 - Add `zeo_creator.rendering.render_email_body`, a pure renderer from structured blocks to an accessible, escaped HTML fragment for a template slot, with its plain-text twin and digests that match `EmailDeliveryMaterial`.
 - **Require `zeocore[runtime-host]==0.18.0`** (was 0.11.0; qualified at 0.15.0 and again at 0.18.0, whose runtime-host-v1 protocol files are byte-identical). Zeocore 0.15.0 made every runtime-host name Creator uses public. `doctor` reports the check as `zeocore_0_18_0`.
+- **Fix:** the reference story-revision strategy chains same-topic signals in one batch into successive revisions (1, 2, ...) with `previous_revision_ref` set, instead of several unrelated revision 1s of one story. Reference artifacts and contract digests are unchanged.
+- **Fix:** `extract_editorial_signals`, `update_story_revisions` and `build_story_dossier` refuse an injected strategy's output that cites a signal, source, revision, story or lineage reference that is not an input of the same call.
+- Add the shared JCS test vectors v1 and wire rule 7 (a digest covers the fully materialized contract), and ADR 0003 on bounded Zeocore compatibility.
 
 ## 0.5.4 — 2026-09-10
 

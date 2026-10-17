@@ -156,6 +156,17 @@ def doctor(
         raise typer.Exit(EXIT_REFUSED)
 
 
+MAX_DRAFT_BYTES = 1_000_000
+
+
+def _no_duplicates(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    """A JSON object with a repeated key is refused: readers disagree on which one wins."""
+    keys = [key for key, _ in pairs]
+    if len(keys) != len(set(keys)):
+        raise ThreadDraftError("draft has a duplicate key")
+    return dict(pairs)
+
+
 @app.command("lint-thread")
 def lint_thread_command(
     file: str = typer.Option(
@@ -166,16 +177,21 @@ def lint_thread_command(
     """Lint a post thread: length, numbering, source, links, repetition. Offline and pure."""
     del json_output
     try:
-        raw = sys.stdin.read() if file == "-" else Path(file).read_text(encoding="utf-8")
-        result = lint_thread(json.loads(raw))
+        stream = sys.stdin.buffer if file == "-" else Path(file).open("rb")
+        with stream:
+            raw = stream.read(MAX_DRAFT_BYTES + 1)
+        if len(raw) > MAX_DRAFT_BYTES:
+            raise ThreadDraftError("draft is larger than 1 MB")
+        result = lint_thread(json.loads(raw.decode("utf-8"), object_pairs_hook=_no_duplicates))
     except OSError, UnicodeDecodeError:
         _emit("error", _invalid("draft file could not be read", "check the --file path"))
         raise typer.Exit(EXIT_INVALID) from None
-    except json.JSONDecodeError:
-        _emit("error", _invalid("draft is not valid JSON", "pass one thread-draft/1 JSON object"))
-        raise typer.Exit(EXIT_INVALID) from None
-    except ThreadDraftError as exc:
-        _emit("error", _invalid(str(exc), "fix the draft to match thread-draft/1"))
+    except (json.JSONDecodeError, ValueError, RecursionError) as exc:
+        if isinstance(exc, ThreadDraftError):
+            reason, step = str(exc), "fix the draft to match thread-draft/1"
+        else:
+            reason, step = "draft is not valid JSON", "pass one thread-draft/1 JSON object"
+        _emit("error", _invalid(reason, step))
         raise typer.Exit(EXIT_INVALID) from None
     _emit("thread-lint", result)
     if not result["ok"]:

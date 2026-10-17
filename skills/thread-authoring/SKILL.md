@@ -18,7 +18,7 @@ is the format. `zeo-creator lint-thread` checks the structure; you check the mea
    do not say "this" or "as above" for something in another post.
 4. **At most 280 characters per post, numbering included.** Count the number. A URL counts
    as 23. The linter uses Unicode code points after NFC normalization; that is one fixed
-   convention, not any platform's own weighting, so leave a margin of a few characters.
+   convention, not any platform's own weighting, so leave a margin of a few characters, and a wider one for CJK text, which some platforms count as 2 per character.
 5. **Consistent numbering.** Start each post with `1/N`, `2/N` and so on, with the same `N`
    in every post, or `1/`, `2/` if you do not state a total.
 6. **A worked example where one fits.** A concrete case with numbers beats a rule. Skip it
@@ -48,7 +48,7 @@ could not be read. Fix the findings and run it again.
 A clean result is not approval. Read the result's `needs_review` list and judge these
 yourself or send the thread to a reviewer: whether the hook earns attention, whether it is
 really one idea, whether each post stands alone, whether the last post is the takeaway, and
-whether the writing is plain beyond the phrases you supplied.
+whether the source supports the claims, and whether the writing is plain beyond the phrases you supplied.
 
 ## A worked example
 

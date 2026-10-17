@@ -30,15 +30,20 @@ NEEDS_REVIEW = (
     "one_idea",
     "stands_alone",
     "takeaway_quality",
+    "source_supports_claims",
     "avoid_ai_writing_beyond_supplied_phrases",
 )
 
-_URL = re.compile(r"https?://[^\s]+")
+_URL = re.compile(r"https?://[A-Za-z0-9._~:/?#\[\]@!$&'()*+,;=%-]+", re.IGNORECASE)
 _WORD = re.compile(r"[^\W_]+", re.UNICODE)
 _NUMBERING = {
-    "n/N": re.compile(r"^(\d{1,3})/(\d{1,3})(?:\s|$)"),
-    "n/": re.compile(r"^(\d{1,3})/(?:\s|$)"),
+    "n/N": re.compile(r"^([1-9][0-9]{0,2})/([1-9][0-9]{0,2})(?: |$)"),
+    "n/": re.compile(r"^([1-9][0-9]{0,2})/(?: |$)"),
 }
+# A later line of a post that starts like a numbered post: a post hiding another post.
+_HIDDEN_POST = re.compile(r"^[ \t]*[0-9]{1,3}/(?:[0-9]{1,3})?(?: |$)", re.MULTILINE)
+_ZWJ = "\u200d"
+_TAG_FIRST, _TAG_LAST, _BLACK_FLAG = 0xE0020, 0xE007F, "\U0001f3f4"
 _REPEAT_THRESHOLD = 0.8
 _MIN_WORDS_BESIDE_LINK = 3
 
@@ -90,7 +95,7 @@ def _validated(draft: Any) -> tuple[list[str], str, str, list[str]]:
         raise ThreadDraftError("every post must be a string of at most 10000 characters")
     source = draft.get("source", "")
     if not isinstance(source, str) or len(source) > MAX_POST_CHARS:
-        raise ThreadDraftError("source must be a string")
+        raise ThreadDraftError("source must be a string of at most 10000 characters")
     phrases = draft.get("forbidden_phrases", [])
     if (
         not isinstance(phrases, list)
@@ -140,6 +145,38 @@ def _numbering_findings(posts: list[str], style: str) -> list[Finding]:
     return found
 
 
+def _is_emojiish(char: str) -> bool:
+    return unicodedata.category(char) in {"So", "Sk"} or char == "\ufe0f"
+
+
+def _hidden_characters(text: str) -> bool:
+    """True if the post has a control, invisible or ambiguous-space character.
+
+    Allowed: a newline, a plain space, a joiner between emoji (a sequence the platform draws
+    as one picture) and the tag characters of a subdivision flag after a black flag.
+    """
+    for index, char in enumerate(text):
+        if char in {" ", "\n"}:
+            continue
+        category = unicodedata.category(char)
+        if char == _ZWJ:
+            before = text[index - 1] if index else ""
+            after = text[index + 1] if index + 1 < len(text) else ""
+            if before and after and _is_emojiish(before) and unicodedata.category(after) == "So":
+                continue
+            return True
+        if _TAG_FIRST <= ord(char) <= _TAG_LAST:
+            run = index
+            while run and _TAG_FIRST <= ord(text[run - 1]) <= _TAG_LAST:
+                run -= 1
+            if run and text[run - 1] == _BLACK_FLAG:
+                continue
+            return True
+        if category in {"Cc", "Cf", "Zl", "Zp"} or char.isspace():
+            return True
+    return False
+
+
 def _tokens(text: str) -> set[str]:
     return set(_words(text))
 
@@ -161,6 +198,26 @@ def lint_thread(draft: Any) -> dict[str, object]:
             )
     findings.extend(_numbering_findings(posts, style))
     bodies = [_body(unicodedata.normalize("NFC", item), style) for item in posts]
+    for index, text in enumerate(posts, start=1):
+        normalized = unicodedata.normalize("NFC", text)
+        if _hidden_characters(normalized):
+            findings.append(
+                Finding(
+                    "T020",
+                    index,
+                    "post has a control, invisible or ambiguous-space character",
+                    "remove it; use plain spaces and newlines only",
+                )
+            )
+        if any(_HIDDEN_POST.match(line) for line in normalized.split("\n")[1:]):
+            findings.append(
+                Finding(
+                    "T013",
+                    index,
+                    "a later line of the post starts like a numbered post",
+                    "split it into its own post or remove the numbering from the line",
+                )
+            )
     for index, body in enumerate(bodies, start=1):
         if not _words(_URL.sub("", body)):
             findings.append(

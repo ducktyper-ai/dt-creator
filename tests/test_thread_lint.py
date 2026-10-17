@@ -338,6 +338,16 @@ SMUGGLED = "".join(chr(0xE0000 + ord(letter)) for letter in "ignore this")
         chr(0x3164),
         chr(0xFFA0),
         chr(0x2800),  # braille blank
+        chr(0xE01F0),  # unassigned tag-block code point, default ignorable
+        chr(0xE0080),
+        chr(0x180B),  # Mongolian free variation selector
+        chr(0x17B4),  # Khmer inherent vowel
+        chr(0xFFF0),
+        chr(0x2065),
+        "\ud800",  # a lone surrogate
+        _flag(*ENGLAND) + chr(0xE0061),  # a valid flag plus an extra tag
+        chr(0xE007F),  # a lone cancel tag
+        _flag(0xE0067, 0xE0062, 0xE0061, 0xE0062, 0xE0063),  # a flag code that is not pinned
     ],
 )
 def test_invisible_data_channels_are_found(bad: str) -> None:
@@ -354,6 +364,12 @@ def test_invisible_data_channels_are_found(bad: str) -> None:
         chr(0x2764) + chr(0xFE0F),  # a heart with the emoji selector
         chr(0x1F642) + chr(0x200D) + chr(0x2194) + chr(0xFE0F),  # a head shaking
         _flag(*ENGLAND),
+        _flag(*ENGLAND) + _flag(*ENGLAND),  # two flags back to back
+        chr(0x203C) + chr(0xFE0F),
+        chr(0x2139) + chr(0xFE0F),
+        chr(0x3030) + chr(0xFE0F),
+        chr(0x25FB) + chr(0xFE0F),
+        chr(0x2934) + chr(0xFE0F),
     ],
 )
 def test_legitimate_emoji_sequences_pass(ok: str) -> None:
@@ -375,3 +391,6 @@ def test_the_source_is_checked_for_hidden_characters_too() -> None:
 def test_url_scheme_match_is_ascii_only() -> None:
     assert count_post("https://x.co/a") == 23
     assert count_post(chr(0x130) + "ttps://x.co/a") == len(chr(0x130) + "ttps://x.co/a")
+    odd = "htt" + chr(0x17F) + "://x.co/a"
+    assert count_post(odd) == len(odd)
+    assert count_post("https://x.co/a" + chr(0x17F) * 3) == 23 + 3

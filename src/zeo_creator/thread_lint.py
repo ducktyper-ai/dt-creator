@@ -151,15 +151,45 @@ def _is_emojiish(char: str) -> bool:
 # A subdivision flag (England, Scotland, Wales): a black flag, region and subdivision tags,
 # then the cancel tag. Any other tag character carries invisible text and is refused.
 _FLAG_SEQUENCE = re.compile(
-    "\U0001f3f4[\U000e0061-\U000e007a]{2}[\U000e0030-\U000e0039\U000e0061-\U000e007a]{1,4}\U000e007f"
+    "\U0001f3f4(?:"
+    "\U000e0067\U000e0062\U000e0065\U000e006e\U000e0067|"  # gbeng
+    "\U000e0067\U000e0062\U000e0073\U000e0063\U000e0074|"  # gbsct
+    "\U000e0067\U000e0062\U000e0077\U000e006c\U000e0073"  # gbwls
+    ")\U000e007f"
 )
-# Characters that draw nothing yet are not control or format characters.
-_INVISIBLE_FILLERS = frozenset("\u034f\u115f\u1160\u2800\u3164\uffa0")
+# Unicode's Default_Ignorable_Code_Point set (DerivedCoreProperties): drawn as nothing.
+_DEFAULT_IGNORABLE = (
+    (0x00AD, 0x00AD),
+    (0x034F, 0x034F),
+    (0x061C, 0x061C),
+    (0x115F, 0x1160),
+    (0x17B4, 0x17B5),
+    (0x180B, 0x180F),
+    (0x200B, 0x200F),
+    (0x202A, 0x202E),
+    (0x2060, 0x206F),
+    (0x3164, 0x3164),
+    (0xFE00, 0xFE0F),
+    (0xFEFF, 0xFEFF),
+    (0xFFA0, 0xFFA0),
+    (0xFFF0, 0xFFF8),
+    (0x1BCA0, 0x1BCA3),
+    (0x1D173, 0x1D17A),
+    (0xE0000, 0xE0FFF),
+)
+# Drawn as nothing but not in that set.
+_INVISIBLE_FILLERS = frozenset("\u2800")
+# Characters with an emoji presentation form that are not symbols (So) or digits, from
+# Unicode's emoji-variation-sequences.
+_EMOJI_FORM_BASES = frozenset(
+    "\u203c\u2049\u2139\u3030\u303d\u25fb\u25fc\u25fd\u25fe\u2934\u2935#*"
+)
 _JOINABLE_AFTER_ZWJ = frozenset("\u2194\u2195")
 
 
-def _is_variation_selector(char: str) -> bool:
-    return "\ufe00" <= char <= "\ufe0f" or "\U000e0100" <= char <= "\U000e01ef"
+def _is_default_ignorable(char: str) -> bool:
+    code = ord(char)
+    return any(low <= code <= high for low, high in _DEFAULT_IGNORABLE)
 
 
 def _hidden_characters(text: str) -> bool:
@@ -188,16 +218,14 @@ def _hidden_characters(text: str) -> bool:
         if char in {"\ufe0e", "\ufe0f"}:
             if before and (
                 unicodedata.category(before) in {"So", "Nd"}
-                or before in {"#", "*"}
+                or before in _EMOJI_FORM_BASES
                 or before in _JOINABLE_AFTER_ZWJ
             ):
                 continue
             return True
-        if _is_variation_selector(char) or char in _INVISIBLE_FILLERS:
+        if _is_default_ignorable(char) or char in _INVISIBLE_FILLERS:
             return True
-        if 0xE0000 <= ord(char) <= 0xE007F:
-            return True
-        if unicodedata.category(char) in {"Cc", "Cf", "Zl", "Zp"} or char.isspace():
+        if unicodedata.category(char) in {"Cc", "Cf", "Zl", "Zp", "Cs", "Cn"} or char.isspace():
             return True
     return False
 

@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
+from zeo_creator import __version__
 from zeo_creator.cli import app
 from zeo_creator.thread_lint import (
     NEEDS_REVIEW,
@@ -40,6 +41,11 @@ def test_passing_fixture_is_clean_and_still_lists_what_needs_review() -> None:
     assert result["ok"] is True
     assert result["findings"] == []
     assert result["needs_review"] == list(NEEDS_REVIEW)
+    assert result["linter"] == {
+        "name": "zeocreator.lint-thread",
+        "version": __version__,
+        "rules": "thread-lint-rules/1",
+    }
 
 
 @pytest.mark.parametrize(("name", "codes"), sorted(EXPECTED.items()))

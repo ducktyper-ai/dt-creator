@@ -11,12 +11,15 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Any
 
+from zeo_creator import __version__
+
 POST_LIMIT = 280
 URL_WEIGHT = 23
 MAX_POSTS = 100
 MAX_POST_CHARS = 10_000
 MAX_PHRASES = 200
 MAX_PHRASE_CHARS = 200
+RULES_VERSION = "thread-lint-rules/1"
 COUNT_CONVENTION = "unicode-nfc-code-points;url=23"
 THREAD_DRAFT_VERSION = "thread-draft/1"
 NUMBERING_STYLES = ("n/N", "n/")
@@ -217,6 +220,11 @@ def lint_thread(draft: Any) -> dict[str, object]:
     findings.sort(key=lambda f: (f.post if f.post is not None else 0, f.code))
     return {
         "ok": not findings,
+        "linter": {
+            "name": "zeocreator.lint-thread",
+            "version": __version__,
+            "rules": RULES_VERSION,
+        },
         "outcome": "clean" if not findings else "findings",
         "convention": COUNT_CONVENTION,
         "limit": POST_LIMIT,

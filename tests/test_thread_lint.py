@@ -125,3 +125,13 @@ def test_help_catalogue_lists_the_command_with_its_schema() -> None:
     result = runner.invoke(app, ["help", "--json"])
     commands = {item["command"]: item for item in json.loads(result.stdout)["commands"]}
     assert commands["lint-thread"]["output_schemas"] == ["zeocreator.thread-lint/v1"]
+
+
+def test_skill_example_is_the_passing_fixture_and_lints_clean() -> None:
+    skill = (Path(__file__).parent.parent / "skills" / "thread-authoring" / "SKILL.md").read_text(
+        encoding="utf-8"
+    )
+    draft = _load("pass-basic.json")
+    for post in draft["posts"]:  # type: ignore[attr-defined]
+        assert post in skill
+    assert skill.startswith("---\nname: thread-authoring\n")

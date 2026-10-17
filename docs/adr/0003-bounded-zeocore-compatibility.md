@@ -1,7 +1,7 @@
 # ADR 0003: Bounded, qualified Zeocore compatibility
 
 - Status: the bounded range is Proposed and not in force; the exact pin it would replace is now `==0.18.0`
-- Date: 2026-10-09; updated 2026-10-12
+- Date: 2026-10-09; updated 2026-10-13
 - Decision owner: Creator seat, under the council's K4 direction of 2026-10-09
 - Supersedes, once accepted: ADR 0002's exact dependency pin only
 - Pin successor: the retained `==0.11.0` pin moved to `==0.15.0` in PR #24, approved by the council on 2026-10-12, and then to `==0.18.0` in PR #31 (both sensitive, dependency changes)

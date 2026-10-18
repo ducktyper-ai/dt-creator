@@ -1,8 +1,9 @@
 .PHONY: help setup sync test lint typecheck format check verify clean lock update \
 	cli version doctor capabilities reference reference-check docs docs-serve examples \
-	digest-vectors dist-check release-check install
+	digest-vectors dist-check release-check install verify-publication-core
 
 UV ?= uv
+NODE ?= node
 ZEO_CREATOR := $(UV) run zeo-creator
 ARGS ?=
 VERSION ?=
@@ -101,11 +102,18 @@ dist-check:
 	rm -rf dist
 	$(UV) build
 	$(UV) run python -m scripts.check_distribution_v10
+	$(UV) run python -m scripts.check_publication_core_distribution
 
 release-check:
 	$(UV) run python -m scripts.check_release_v1
 
-verify: release-check check digest-vectors dist-check
+verify-publication-core:
+	$(NODE) packages/publication-core/tools/check-contract.mjs
+	$(NODE) --test packages/publication-core/test/*.test.mjs
+
+verify:
+	@printf 'head: %s\n' "$$(git rev-parse HEAD)"
+	$(MAKE) release-check verify-publication-core check digest-vectors dist-check
 
 clean:
 	rm -rf .pytest_cache .ruff_cache .mypy_cache .coverage coverage.xml htmlcov dist build site

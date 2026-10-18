@@ -88,9 +88,9 @@ The requester still writes the proposal and the tests; the maintainer decides wh
 - **Every dependency, new tool or pin goes through the Architect.** Never ask the operator. Name the
   dependency, the version and the source in a zmsg to the Architect, through the maintainer. A
   dependency change is a sensitive change and takes the sensitive review route.
-- **Publication core (JavaScript), arriving with the publication-core move PR.** Until that PR merges,
-  nothing exists at `packages/publication-core/`, and the only Node steps in `make verify` are the
-  `contracts/` vector checks. Once it lands, the package has its own tag namespace, and its tests run as
+- **Publication core (JavaScript).** `packages/publication-core/` contains pure publication metadata
+  fundamentals, separate from the Python package. Its own future tag namespace is owner-issued and
+  must never use the Python `v*.*.*` tags; no JS publishing runs here. Its tests run as
   `node --test` inside `make verify`. The Architect accepted Node.js as a gate tool on these conditions:
   Node 24 LTS, pinned by `engines` in `packages/publication-core/package.json` and a `.node-version`,
   and `make verify` refuses a different major. The package has zero npm packages; any package, even

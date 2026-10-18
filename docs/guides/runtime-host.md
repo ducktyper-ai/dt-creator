@@ -33,7 +33,7 @@ factory; execution uses Core's `zeo-capability` entry point.
 | Expected response | `PlanContentPortfolioResponse`, containing `plan` |
 
 `runtime-provider` emits a single compact canonical JSON inventory including
-installed version, interpreter, factory, all 29 manifests, and the ordered
+installed version, interpreter, factory, all 30 manifests, and the ordered
 manifest digest. It deliberately omits environment identity, generation and
 authority. It is provisioning metadata, not scoped agent discovery. Runtime
 must validate the inventory in its pinned build environment and cache its
@@ -112,7 +112,7 @@ not authorize a second invocation: query the durable operation first.
 
 ## Capability availability
 
-The catalogue retains all 29 public identities. Twenty-seven transformations
+The catalogue retains all 30 public identities. Twenty-eight transformations
 need no injected service; their `read` effect declaration is Core's conservative
 classification of supplied-input computation. They do not send or schedule.
 

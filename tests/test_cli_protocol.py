@@ -22,6 +22,7 @@ def test_every_command_has_help() -> None:
         ["contract-schema"],
         ["doctor"],
         ["runtime-provider"],
+        ["help"],
     ):
         result = runner.invoke(app, [*args, "--help"])
         assert result.exit_code == 0, args
@@ -91,11 +92,11 @@ def test_a_usage_error_answers_invalid_on_stdout(
             cli.main()
         assert exited.value.code == 2, argv
         out = capsys.readouterr().out
-        assert json.loads(out) == {
-            "ok": False,
-            "outcome": "invalid_request",
-            "schema": "zeocreator.error/v1",
-        }, argv
+        result = json.loads(out)
+        assert result["outcome"] == "invalid_request", argv
+        assert result["schema"] == "zeocreator.error/v1", argv
+        assert result["reason"] in {"missing command", "unknown command", "unknown option"}, argv
+        assert result["next"] == "zeo-creator help --json", argv
         assert "no-such" not in out
 
 
@@ -118,7 +119,12 @@ def test_an_internal_error_exits_one_without_detail(
         cli.main()
     assert exited.value.code == 1
     out = capsys.readouterr().out
-    assert json.loads(out) == {"ok": False, "outcome": "internal", "schema": "zeocreator.error/v1"}
+    assert json.loads(out) == {
+        "ok": False,
+        "outcome": "internal",
+        "schema": "zeocreator.error/v1",
+        "next": cli.INTERNAL_NEXT,
+    }
     assert "secret detail" not in out
 
 
@@ -164,3 +170,31 @@ def test_help_json_catalogues_every_command_exit_code_and_schema(tmp_path: Path)
     ):
         result = _one_result(runner.invoke(app, args).stdout)
         assert result["schema"] in listed[command]["output_schemas"], args
+
+
+def test_a_failed_doctor_check_names_its_next_step(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(cli, "capability_manifests", lambda: ())
+    result = _one_result(runner.invoke(app, ["doctor"]).stdout)
+    steps = {item["check"]: item["next"] for item in result["next"]}
+    assert "thirty_manifests" in steps
+    assert steps["thirty_manifests"].startswith("run: uv tool install --force")
+    assert set(steps) == {name for name, ok in result["checks"].items() if not ok}
+
+
+def test_a_healthy_doctor_has_no_next_steps() -> None:
+    assert _one_result(runner.invoke(app, ["doctor"]).stdout)["next"] == []
+
+
+def test_errors_give_a_reason_and_next_step_without_echoing_input() -> None:
+    cases = {
+        ("contract-schema", "--name", "no-such-contract", "--version", "1"): (
+            "unknown contract",
+            "zeo-creator contracts list",
+        ),
+    }
+    for args, (reason, next_step) in cases.items():
+        result = runner.invoke(app, list(args))
+        body = _one_result(result.stdout)
+        assert (body["reason"], body["next"]) == (reason, next_step)
+        assert "no-such-contract" not in result.stdout
+    assert set(cli.DOCTOR_NEXT) == set(_one_result(runner.invoke(app, ["doctor"]).stdout)["checks"])

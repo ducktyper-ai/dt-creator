@@ -16,6 +16,7 @@ from zeo_creator.contract_schemas import (
     read_contract_schema,
 )
 from zeo_creator.registry import capability_manifests, openai_tool_projections
+from zeo_creator.thread_lint import ThreadDraftError, lint_thread
 
 app = typer.Typer(
     name="zeo-creator",
@@ -123,7 +124,7 @@ def contract_schema(
         schema = read_contract_schema(name, version)
     except KeyError as exc:
         # The message names no input: an error never echoes what the caller sent.
-        _emit("error", {"ok": False, "outcome": "invalid_request", "message": "unknown contract"})
+        _emit("error", _invalid("unknown contract", "zeo-creator contracts list"))
         raise typer.Exit(EXIT_INVALID) from exc
     _emit("contract-schema", {"ok": True, "json_schema": schema})
 
@@ -136,7 +137,7 @@ def doctor(
     zeocore_version = importlib.metadata.version("zeocore")
     checks = {
         "python_3_14_or_newer": sys.version_info >= (3, 14),
-        "zeocore_0_15_0": zeocore_version == "0.15.0",
+        "zeocore_0_18_0": zeocore_version == "0.18.0",
         "thirty_manifests": len(capability_manifests()) == 30,
         "thirty_openai_projections": len(openai_tool_projections()) == 30,
     }
@@ -145,10 +146,61 @@ def doctor(
         "python": ".".join(str(item) for item in sys.version_info[:3]),
         "zeocore": zeocore_version,
         "checks": checks,
+        "next": [
+            {"check": name, "next": DOCTOR_NEXT[name]} for name, ok in checks.items() if not ok
+        ],
     }
     del json_output
     _emit("doctor", payload)
     if not payload["ok"]:
+        raise typer.Exit(EXIT_REFUSED)
+
+
+MAX_DRAFT_BYTES = 1_000_000
+
+
+def _no_duplicates(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    """A JSON object with a repeated key is refused: readers disagree on which one wins."""
+    keys = [key for key, _ in pairs]
+    if len(keys) != len(set(keys)):
+        raise ThreadDraftError("draft has a duplicate key")
+    return dict(pairs)
+
+
+@app.command("lint-thread")
+def lint_thread_command(
+    file: str = typer.Option(
+        ..., "--file", help="A thread-draft/1 JSON file, or - to read standard input."
+    ),
+    json_output: bool = typer.Option(False, "--json", help="Accepted; output is always JSON."),
+) -> None:
+    """Lint a post thread: length, numbering, source, links, repetition. Offline and pure."""
+    del json_output
+    try:
+        stream = sys.stdin.buffer if file == "-" else Path(file).open("rb")
+        with stream:
+            raw = stream.read(MAX_DRAFT_BYTES + 1)
+        if len(raw) > MAX_DRAFT_BYTES:
+            raise ThreadDraftError("draft is larger than 1 MB")
+        draft = json.loads(raw.decode("utf-8"), object_pairs_hook=_no_duplicates)
+    except OSError, UnicodeDecodeError:
+        _emit("error", _invalid("draft file could not be read", "check the --file path"))
+        raise typer.Exit(EXIT_INVALID) from None
+    except (ValueError, RecursionError) as exc:
+        # Reading only: a bad number or nesting is the caller's input, not a linter fault.
+        if isinstance(exc, ThreadDraftError):
+            reason, step = str(exc), "fix the draft to match thread-draft/1"
+        else:
+            reason, step = "draft is not valid JSON", "pass one thread-draft/1 JSON object"
+        _emit("error", _invalid(reason, step))
+        raise typer.Exit(EXIT_INVALID) from None
+    try:
+        result = lint_thread(draft)
+    except ThreadDraftError as exc:
+        _emit("error", _invalid(str(exc), "fix the draft to match thread-draft/1"))
+        raise typer.Exit(EXIT_INVALID) from None
+    _emit("thread-lint", result)
+    if not result["ok"]:
         raise typer.Exit(EXIT_REFUSED)
 
 
@@ -180,6 +232,7 @@ OUTPUT_SCHEMAS = {
     "contracts export": ("zeocreator.export/v1",),
     "contract-schema": ("zeocreator.contract-schema/v1",),
     "doctor": ("zeocreator.doctor/v1",),
+    "lint-thread": ("zeocreator.thread-lint/v1",),
     # The named exception to cli_protocol 1: one line of canonical inventory bytes.
     "runtime-provider": ("zeocreator.runtime-provider/canonical",),
 }
@@ -220,7 +273,7 @@ def _commands(group: Any, prefix: str = "") -> list[dict[str, object]]:
         found.append(
             {
                 "command": path,
-                "summary": (command.help or "").strip().splitlines()[0],
+                "summary": next(iter((command.help or "").strip().splitlines()), ""),
                 "options": _options(command),
                 "output_schemas": list(OUTPUT_SCHEMAS[path]),
             }
@@ -251,6 +304,42 @@ def help_catalogue(
     )
 
 
+# Each failing doctor check names the command that fixes it, or who must act.
+_REINSTALL = f'uv tool install --force "zeocreator=={__version__}"'
+DOCTOR_NEXT = {
+    "python_3_14_or_newer": f"install Python 3.14 or newer, then run: {_REINSTALL}",
+    "zeocore_0_18_0": 'run: uv pip install "zeocore[runtime-host]==0.18.0", or reinstall zeocreator',
+    "thirty_manifests": f"run: {_REINSTALL}; if it persists, report it to the zeocreator seat",
+    "thirty_openai_projections": (
+        f"run: {_REINSTALL}; if it persists, report it to the zeocreator seat"
+    ),
+}
+INTERNAL_NEXT = "rerun once; if it fails again, report the command to the zeocreator seat"
+
+
+def _invalid(reason: str, next_step: str) -> dict[str, object]:
+    """An invalid-request result: a fixed reason and next step, never the caller's input."""
+    return {"ok": False, "outcome": "invalid_request", "reason": reason, "next": next_step}
+
+
+def _usage_reason(exc: Exception) -> str:
+    # Typer's vendored Click names the problem by class; the reason is a fixed phrase,
+    # so nothing the caller typed reaches stdout.
+    kind = type(exc).__name__
+    if kind == "NoSuchOption":
+        return "unknown option"
+    if kind == "MissingParameter":
+        return "missing required option"
+    if kind in {"BadParameter", "BadOptionUsage", "BadArgumentUsage"}:
+        return "invalid option value"
+    message = str(getattr(exc, "message", "")) or str(exc)
+    if message.startswith("No such command"):
+        return "unknown command"
+    if message.startswith("Missing command"):
+        return "missing command"
+    return "invalid command line"
+
+
 def _is_usage_error(exc: Exception) -> bool:
     # Typer vendors Click and exports no UsageError, so recognise it by its shape.
     return getattr(exc, "exit_code", None) == EXIT_INVALID and callable(getattr(exc, "show", None))
@@ -263,10 +352,10 @@ def main() -> None:
         if _is_usage_error(exc):
             # Usage goes to stderr; stdout gets the result, which never echoes the input.
             exc.show()  # type: ignore[attr-defined]
-            _emit("error", {"ok": False, "outcome": "invalid_request"})
+            _emit("error", _invalid(_usage_reason(exc), "zeo-creator help --json"))
             sys.exit(EXIT_INVALID)
         # An internal error never echoes input or detail on stdout.
-        _emit("error", {"ok": False, "outcome": "internal"})
+        _emit("error", {"ok": False, "outcome": "internal", "next": INTERNAL_NEXT})
         sys.exit(EXIT_INTERNAL)
     sys.exit(code if isinstance(code, int) else 0)
 

@@ -50,8 +50,8 @@ EXPECTED_IDS = {
 def test_declared_zeocore_version_is_exact() -> None:
     project = tomllib.loads(Path("pyproject.toml").read_text())["project"]
     assert project["requires-python"] == ">=3.14"
-    assert "zeocore[runtime-host]==0.15.0" in project["dependencies"]
-    assert version("zeocore") == "0.15.0"
+    assert "zeocore[runtime-host]==0.18.0" in project["dependencies"]
+    assert version("zeocore") == "0.18.0"
 
 
 def test_registry_exposes_the_stable_capability_surface() -> None:

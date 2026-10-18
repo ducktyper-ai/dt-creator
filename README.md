@@ -10,10 +10,10 @@ editions, production briefs, reviewed artifacts, commentary, newsletters and cor
 [![CI](https://github.com/zeroemployeeorg/zeocreator/actions/workflows/ci.yml/badge.svg)](https://github.com/zeroemployeeorg/zeocreator/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/zeocreator)](https://pypi.org/project/zeocreator/)
 [![Python 3.14+](https://img.shields.io/badge/Python-3.14%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Zeocore 0.11](https://img.shields.io/badge/Zeocore-0.11.0-087f75)](https://pypi.org/project/zeocore/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/zeroemployeeorg/zeocreator/blob/v0.5.4/LICENSE)
+[![Zeocore 0.11](https://img.shields.io/badge/Zeocore-0.18.0-087f75)](https://pypi.org/project/zeocore/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/zeroemployeeorg/zeocreator/blob/v0.6.0/LICENSE)
 
-[Documentation](https://zeroemployeeorg.github.io/zeocreator/) · [Quickstart](https://zeroemployeeorg.github.io/zeocreator/getting-started/installation/) · [Examples](https://github.com/zeroemployeeorg/zeocreator/tree/v0.5.4/examples) · [API reference](https://zeroemployeeorg.github.io/zeocreator/reference/contracts/)
+[Documentation](https://zeroemployeeorg.github.io/zeocreator/) · [Quickstart](https://zeroemployeeorg.github.io/zeocreator/getting-started/installation/) · [Examples](https://github.com/zeroemployeeorg/zeocreator/tree/v0.6.0/examples) · [API reference](https://zeroemployeeorg.github.io/zeocreator/reference/contracts/)
 
 </div>
 
@@ -52,7 +52,7 @@ flowchart LR
 
 ## Runtime integration
 
-Version 0.5.4 installs Zeocore 0.11.0 with its shared Runtime host. Use the
+Version 0.6.0 installs Zeocore 0.18.0 with its shared Runtime host. Use the
 [Runtime integration guide](https://zeroemployeeorg.github.io/zeocreator/guides/runtime-host/)
 to export the provider inventory and prepare the real portfolio request.
 Creator/Core conformance is verified; Runtime's Go supervision, durable recovery
@@ -63,16 +63,16 @@ and managed-agent acceptance remain separate integration work.
 Install the public `zeocreator` distribution on Python 3.14 or newer:
 
 ```console
-uv add "zeocreator==0.5.4"
+uv add "zeocreator==0.6.0"
 ```
 
 or:
 
 ```console
-python -m pip install "zeocreator==0.5.4"
+python -m pip install "zeocreator==0.6.0"
 ```
 
-Zeocore 0.11.0 is installed automatically. The distribution is `zeocreator`, the
+Zeocore 0.18.0 is installed automatically. The distribution is `zeocreator`, the
 Python import is `zeo_creator`, and the CLI is `zeo-creator`. Earlier Git-only
 installations used the distribution name `zeo-creator`; remove that distribution
 before installing this release, or use a fresh virtual environment.
@@ -132,7 +132,7 @@ In a uv-managed project, prefix Python and CLI commands with `uv run`.
 | Journalism | `compose_news_article`, `review_news_article`, `prepare_correction` | Draft attributed reporting and represent corrections with risk gates |
 | Delivery and learning | `validate_delivery`, `prepare_distribution`, `assess_performance` | Validate bytes and claims, propose effects, and interpret outcomes |
 
-All 29 capability IDs are independently composable. There is intentionally no
+All 30 capability IDs are independently composable. There is intentionally no
 monolithic workflow capability. Scheduling, retries,
 approval state, persistence, provider execution, and reconciliation belong to
 the controlling runtime.
@@ -207,7 +207,7 @@ any private production taxonomy.
 python -m zeo_creator.examples.complete_content_portfolio
 ```
 
-Explore [`reference/examples`](https://github.com/zeroemployeeorg/zeocreator/tree/v0.5.4/reference/examples), follow the
+Explore [`reference/examples`](https://github.com/zeroemployeeorg/zeocreator/tree/v0.6.0/reference/examples), follow the
 [portfolio tutorial](https://zeroemployeeorg.github.io/zeocreator/tutorials/content-portfolio/), or read the
 [production adapter guide](https://zeroemployeeorg.github.io/zeocreator/guides/production-adapters/).
 
@@ -228,8 +228,8 @@ wheel behavior. See [architecture](https://zeroemployeeorg.github.io/zeocreator/
 
 ## Status
 
-Version 0.5.4 adds the shared Runtime host integration while preserving all 29
-capability IDs, independently reviewed email v4 contracts and 135 portable receipt cases. This remains an early 0.x API: pin the
+Version 0.6.0 moves to Zeocore 0.18.0 and gives the CLI Zeocore's `cli_protocol` 1 (one JSON line per
+command, fixed exit codes, `help --json`), while preserving all 29 capability IDs, independently reviewed email v4 contracts and 135 portable receipt cases. This remains an early 0.x API: pin the
 package and contract versions. Release publication does not establish live
 HubSpot/Kit interoperability; execution and account qualification belong to the host.
 

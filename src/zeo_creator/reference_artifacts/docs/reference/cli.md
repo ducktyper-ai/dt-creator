@@ -94,10 +94,15 @@ Other seats and tools operate the CLI through this fixed contract:
 - **stdout is JSON lines and nothing else.** No command emits events, so each
   prints exactly one line: the result, which carries `ok`. Diagnostics, such as
   usage text, go to stderr. `--json` is still accepted and changes nothing.
-- **Errors never echo input on stdout.** An unknown command or option answers
-  `{"ok": false, "outcome": "invalid_request"}`, and an unknown contract answers
-  `{"ok": false, "outcome": "invalid_request", "message": "unknown contract"}`.
-  Neither names what was sent. The usage text on stderr can name the unknown
+- **Errors say what to do, and never echo input on stdout.** An invalid request
+  answers `{"ok": false, "outcome": "invalid_request", "reason": ..., "next": ...}`.
+  The reason is a fixed phrase (`unknown command`, `missing command`, `unknown
+  option`, `missing required option`, `invalid option value`, `unknown contract`),
+  and `next` is the command to run: `zeo-creator help --json`, or
+  `zeo-creator contracts list` for an unknown contract. Neither names what was sent.
+  An internal error carries only a `next` step.
+- **`doctor` names the fix:** each failing check appears in `next` with the exact
+  command that fixes it, or who must act. A healthy install has `"next": []`. The usage text on stderr can name the unknown
   option, because stderr carries diagnostics for a person.
 - **The one exception is `runtime-provider`,** whose canonical bytes Runtime
   reads. It ends when Runtime confirms a reader for the JSON-lines form.
@@ -118,10 +123,10 @@ Codes 10 to 13 concern remote operations, which this CLI never performs.
 Install a published release as a tool, never a checkout, then check it:
 
 ```console
-make install VERSION=0.5.4
+make install VERSION=0.6.0
 ```
 
-This runs `uv tool install --force "zeocreator==0.5.4"` and then
+This runs `uv tool install --force "zeocreator==0.6.0"` and then
 `zeo-creator doctor --json`. To upgrade, or to roll back, run the same command
 with the version you want.
 

@@ -1,8 +1,9 @@
-name: Verify
+name: Smoke
+
+# The full gate (make verify) runs locally before a pull request and, once it exists,
+# on ENG-UK in pomar. This job is only the public-repo smoke check: no secrets, under 3 minutes.
 
 on:
-  push:
-    branches: [main]
   pull_request:
 
 permissions:
@@ -10,16 +11,12 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 jobs:
-  verify:
+  smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.14"]
+    timeout-minutes: 3
 
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
@@ -28,38 +25,16 @@ jobs:
         uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
         with:
           enable-cache: true
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.14"
 
       - name: Sync dependencies
         run: uv sync --frozen
 
-      - name: Set up admitted Node runtime
-        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
-        with:
-          node-version-file: .node-version
-          package-manager-cache: false
+      - name: Format
+        run: make format-check
 
-      - name: Verify
-        run: make verify
+      - name: Lint
+        run: make lint
 
-      - name: Agent check
-        run: make doctor
-
-      - name: CLI smoke test
-        run: make version && make capabilities && make help
-
-      - name: Install and smoke-test the built wheel outside the source tree
-        shell: bash
-        run: |
-          uv venv --python 3.14 .wheel-smoke
-          uv pip install --python .wheel-smoke/bin/python dist/*.whl
-          smoke_dir="$(mktemp -d)"
-          cd "$smoke_dir"
-          "$GITHUB_WORKSPACE/.wheel-smoke/bin/python" -c "from zeo_creator.registry import capability_manifests; assert len(capability_manifests()) == 29"
-          "$GITHUB_WORKSPACE/.wheel-smoke/bin/zeo-creator" doctor --json
-          "$GITHUB_WORKSPACE/.wheel-smoke/bin/zeo-creator" contracts list --json
-          "$GITHUB_WORKSPACE/.wheel-smoke/bin/zeo-creator" contract-schema --name=content-brief --version=1
-          "$GITHUB_WORKSPACE/.wheel-smoke/bin/zeo-creator" contracts export --output="$smoke_dir/schemas"
-          test -f "$smoke_dir/schemas/artifact-manifest.v1.schema.json"
-          version=$("$GITHUB_WORKSPACE/.wheel-smoke/bin/python" -c "import zeo_creator; print(zeo_creator.__version__)")
-          "$GITHUB_WORKSPACE/.wheel-smoke/bin/python" "$GITHUB_WORKSPACE/scripts/smoke_installed_v2.py" "$version"
+      - name: Build
+        run: uv build

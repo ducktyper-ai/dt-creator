@@ -41,7 +41,7 @@ returns a result with an error code, never a partial effect.
 ## Verify
 `make verify` is the whole gate (lint, types, tests, reference artifacts, docs, wheel). Run
 `make doctor` too. Both are slow (about 4 minutes), so run them once before a pull request, not in
-a loop. To keep builds out of the checkout, set `DIST_DIR` and `SITE_DIR` (and `TMPDIR`) to a
+a loop. `packages/publication-core/` is a private pure ESM package with zero npm dependencies; its Node 24 tests run in `make verify`, and it stays out of the Python distributions. To keep builds out of the checkout, set `DIST_DIR` and `SITE_DIR` (and `TMPDIR`) to a
 scratch directory first.
 
 ## Never

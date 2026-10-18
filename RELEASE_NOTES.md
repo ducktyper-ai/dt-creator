@@ -48,6 +48,9 @@ host dependencies install automatically. The distribution remains `zeocreator`, 
 
 ## What else changed
 
+- **Adds a thread linter.** `zeo-creator lint-thread` (output schema `zeocreator.thread-lint/v1`) and
+  the `thread-authoring` skill check a numbered post thread structurally. It is a pure command, not a
+  registered capability, so the 29 capability identities and the runtime-provider inventory are unchanged.
 - **Requires `zeocore[runtime-host]==0.18.0`** (was 0.11.0). Zeocore 0.15.0 made every runtime-host
   name Creator uses public, and the runtime-host-v1 protocol files are byte-identical from 0.11.0
   through 0.18.0. `doctor` reports the check as `zeocore_0_18_0`.

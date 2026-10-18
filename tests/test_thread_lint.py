@@ -391,6 +391,6 @@ def test_the_source_is_checked_for_hidden_characters_too() -> None:
 def test_url_scheme_match_is_ascii_only() -> None:
     assert count_post("https://x.co/a") == 23
     assert count_post(chr(0x130) + "ttps://x.co/a") == len(chr(0x130) + "ttps://x.co/a")
-    odd = "htt" + chr(0x17F) + "://x.co/a"
+    odd = "http" + chr(0x17F) + "://x.co/a"
     assert count_post(odd) == len(odd)
     assert count_post("https://x.co/a" + chr(0x17F) * 3) == 23 + 3

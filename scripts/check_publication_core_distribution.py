@@ -4,6 +4,8 @@ import tarfile
 import zipfile
 from pathlib import Path, PurePosixPath
 
+from scripts.build_paths import dist_dir
+
 
 def check_members(names: list[str]) -> None:
     for name in names:
@@ -28,7 +30,7 @@ def check_distributions(directory: Path) -> None:
 
 
 def main() -> None:
-    check_distributions(Path("dist"))
+    check_distributions(dist_dir())
     print("verified JavaScript packages absent from actual Python wheel and sdist")
 
 

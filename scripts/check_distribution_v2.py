@@ -2,15 +2,15 @@
 
 import json
 import zipfile
-from pathlib import Path
 
+from scripts.build_paths import dist_dir
 from scripts.check_distribution import main as original_check
 from scripts.export_reference_artifacts_v2 import MODELS
 
 
 def main() -> None:
     original_check()
-    with zipfile.ZipFile(next(Path("dist").glob("*.whl"))) as archive:
+    with zipfile.ZipFile(next(dist_dir().glob("*.whl"))) as archive:
         names = set(archive.namelist())
         for name, _ in MODELS:
             assert f"zeo_creator/schemas/{name}.v1.schema.json" in names

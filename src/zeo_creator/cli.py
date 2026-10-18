@@ -299,6 +299,7 @@ def help_catalogue(
             "commands": _commands(root_command),
             "exit_codes": [{"code": code, "meaning": meaning} for code, meaning in EXIT_CODES],
             "error_schema": "zeocreator.error/v1",
+            "usage_error_reasons": list(USAGE_REASONS),
             "version_schema": "zeocreator.version/v1",
         },
     )
@@ -315,6 +316,19 @@ DOCTOR_NEXT = {
     ),
 }
 INTERNAL_NEXT = "rerun once; if it fails again, report the command to the zeocreator seat"
+
+
+# The closed set of reasons a command-line USAGE error gives; help --json lists them.
+# A command that validates its own input (lint-thread) gives its own fixed reasons, not these.
+USAGE_REASONS = (
+    "unknown command",
+    "missing command",
+    "unknown option",
+    "missing required option",
+    "invalid option value",
+    "unknown contract",
+    "invalid command line",
+)
 
 
 def _invalid(reason: str, next_step: str) -> dict[str, object]:

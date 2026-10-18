@@ -8,6 +8,8 @@ import zipfile
 from email.parser import BytesParser
 from pathlib import Path
 
+from scripts.build_paths import dist_dir
+
 
 def metadata(root: Path, tag: str | None = None) -> tuple[str, str]:
     project = tomllib.loads((root / "pyproject.toml").read_text())["project"]
@@ -29,9 +31,9 @@ def metadata(root: Path, tag: str | None = None) -> tuple[str, str]:
 
 
 def distributions(root: Path, version: str, floor: str) -> None:
-    wheel = root / f"dist/zeocreator-{version}-py3-none-any.whl"
-    sdist = root / f"dist/zeocreator-{version}.tar.gz"
-    if {p for p in (root / "dist").iterdir() if p.name != ".gitignore"} != {wheel, sdist}:
+    wheel = dist_dir(root) / f"zeocreator-{version}-py3-none-any.whl"
+    sdist = dist_dir(root) / f"zeocreator-{version}.tar.gz"
+    if {p for p in dist_dir(root).iterdir() if p.name != ".gitignore"} != {wheel, sdist}:
         raise ValueError("dist must contain only the exact release wheel and sdist")
     with zipfile.ZipFile(wheel) as archive:
         raw_wheel = archive.read(f"zeocreator-{version}.dist-info/METADATA")

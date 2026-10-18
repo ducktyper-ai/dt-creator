@@ -158,3 +158,14 @@ def test_template_braces_and_language_edges() -> None:
     assert "Hello {{ contact.firstname }}" in body.plain_text
     with pytest.raises(ValueError, match="BCP 47"):
         render_email_body(language="en\n", blocks=BLOCKS)
+
+
+def test_email_link_contract_refuses_a_backslash() -> None:
+    from zeo_creator.contracts.email_marketing import EmailLink
+
+    for url in ("https://trusted.example\\.evil.example/", "https://example.org\\path"):
+        with pytest.raises(ValidationError, match="HTTPS"):
+            EmailLink(link_id="guide", url=url, purpose="content", tracking_required=False)
+    EmailLink(
+        link_id="guide", url="https://example.org/path", purpose="content", tracking_required=False
+    )

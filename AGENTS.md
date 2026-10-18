@@ -6,8 +6,8 @@ runtime. It holds no credentials, calls no provider and runs no model. A runner 
 inputs and does any effect. The CLI only inspects it.
 
 ## The five commands that matter
-Every command prints one JSON line on stdout (the last line is the result and carries `ok` and
-`schema`). Exit codes: 0 done, 1 internal, 2 invalid input, 20 refused. Nothing prompts.
+Every command except `runtime-provider` prints one JSON line on stdout (the last line is the result and carries `ok` and
+`schema`); `runtime-provider` prints canonical bytes without `ok`, and `--help` prints usage text. Exit codes: 0 done, 1 internal, 2 invalid input, 20 refused. Nothing prompts.
 
 ```console
 zeo-creator help --json          # the whole CLI: commands, options, exit codes, output schemas

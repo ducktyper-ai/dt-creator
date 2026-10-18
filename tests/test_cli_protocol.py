@@ -236,4 +236,18 @@ def test_each_usage_error_has_its_exact_reason_and_echoes_nothing(
 
 def test_help_lists_the_closed_set_of_reasons() -> None:
     catalogue = _one_result(runner.invoke(app, ["help", "--json"]).stdout)
-    assert catalogue["invalid_request_reasons"] == list(cli.USAGE_REASONS)
+    assert catalogue["usage_error_reasons"] == list(cli.USAGE_REASONS)
+    assert "invalid_request_reasons" not in catalogue
+
+
+def test_command_input_errors_are_not_usage_errors() -> None:
+    # lint-thread validates its own input: the result is the same invalid_request shape with
+    # a fixed reason that is deliberately not one of the usage-error reasons.
+    result = runner.invoke(app, ["lint-thread", "--file", "-"], input=b"{")
+    assert result.exit_code == 2
+    answer = _one_result(result.stdout)
+    assert answer["ok"] is False
+    assert answer["outcome"] == "invalid_request"
+    assert answer["reason"] == "draft is not valid JSON"
+    assert answer["reason"] not in cli.USAGE_REASONS
+    assert "{" not in answer["reason"]

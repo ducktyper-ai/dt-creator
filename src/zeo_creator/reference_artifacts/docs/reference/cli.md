@@ -96,10 +96,12 @@ Other seats and tools operate the CLI through this fixed contract:
   usage text, go to stderr. `--json` is still accepted and changes nothing.
 - **Errors say what to do, and never echo input on stdout.** An invalid request
   answers `{"ok": false, "outcome": "invalid_request", "reason": ..., "next": ...}`.
-  The reason is one of seven fixed phrases (`unknown command`, `missing command`,
-  `unknown option`, `missing required option`, `invalid option value`, `unknown
-  contract`, and `invalid command line` for anything else), also listed by
-  `help --json` as `invalid_request_reasons`. `next` is the command to run:
+  For a command-line usage error the reason is one of seven fixed phrases (`unknown
+  command`, `missing command`, `unknown option`, `missing required option`, `invalid
+  option value`, `unknown contract`, and `invalid command line` for anything else), also
+  listed by `help --json` as `usage_error_reasons`. A command that validates its own input
+  (`lint-thread`) answers the same shape with its own fixed reason, for example `draft is
+  not valid JSON`; those reasons are not in that list. `next` is the command to run:
   `zeo-creator help --json`, or `zeo-creator contracts list` for an unknown
   contract. Neither names what was sent. An internal error carries only a `next`
   step. The usage text on stderr can name the unknown option, because stderr carries

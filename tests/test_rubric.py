@@ -355,6 +355,54 @@ def test_refuses_a_missing_base_criterion() -> None:
         run_masthead(masthead((scored("hook"), must("no-fabrication"))))
 
 
+def producer_house() -> ReviewRubric:
+    return rubric(
+        (scored("unique", backing_check_id="producer.uniqueness"), scored("x"), must("m")),
+        aggregate_floor=AggregateFloor(numerator=6, denominator=10),
+    )
+
+
+def producer_masthead(unique: Criterion) -> ReviewRubric:
+    base = producer_house()
+    return rubric(
+        (unique, scored("x"), must("m")),
+        scope="masthead",
+        rubric_id="masthead.note",
+        base_rubric_ref=base.ref(),
+        aggregate_floor=AggregateFloor(numerator=6, denominator=10),
+    )
+
+
+def run_producer_masthead(rb: ReviewRubric, *cards: RubricScorecard) -> object:
+    return run(
+        rb, list(cards), base_rubric=producer_house(), supported_bases=[producer_house().ref()]
+    )
+
+
+@pytest.mark.parametrize("binding", [None, "producer.other"])
+def test_refuses_a_masthead_that_drops_or_rebinds_a_producer_check(binding: str | None) -> None:
+    rb = producer_masthead(scored("unique", backing_check_id=binding))
+    agent = card(rb, {"unique": 1, "x": 5, "m": True})
+    human = card(rb, {"unique": 5}, sid="sc2", role="human", overrides=agent.ref())
+    with pytest.raises(CreatorDomainError, match="producer check was removed or rebound"):
+        run_producer_masthead(rb, agent, human)
+
+
+def test_a_masthead_keeping_the_producer_check_still_forbids_human_rescoring() -> None:
+    rb = producer_masthead(scored("unique", backing_check_id="producer.uniqueness"))
+    agent = card(rb, {"unique": 1, "x": 5, "m": True})
+    human = card(rb, {"unique": 5}, sid="sc2", role="human", overrides=agent.ref())
+    with pytest.raises(CreatorDomainError, match="backed by a producer check"):
+        run_producer_masthead(rb, agent, human)
+
+
+def test_a_masthead_may_rescore_a_non_producer_criterion_by_a_person() -> None:
+    rb = producer_masthead(scored("unique", backing_check_id="producer.uniqueness"))
+    agent = card(rb, {"unique": 5, "x": 1, "m": True})
+    human = card(rb, {"x": 5}, sid="sc2", role="human", overrides=agent.ref())
+    assert run_producer_masthead(rb, agent, human).passed  # type: ignore[attr-defined]
+
+
 def test_refuses_a_lower_criterion_floor() -> None:
     with pytest.raises(CreatorDomainError, match="floor is lower"):
         run_masthead(masthead((scored("hook", floor=2), scored("clarity"), must("no-fabrication"))))

@@ -72,6 +72,10 @@ def check_masthead_raises_only(
             raise _refuse("a base criterion is missing")
         if item.kind != original.kind:
             raise _refuse("a base criterion changed kind")
+        if original.backing_check_id is not None and (
+            item.backing_check_id != original.backing_check_id
+        ):
+            raise _refuse("a base criterion's producer check was removed or rebound")
         if item.kind == CriterionKind.SCORED:
             assert item.max_points is not None and item.floor is not None
             if item.max_points != original.max_points:

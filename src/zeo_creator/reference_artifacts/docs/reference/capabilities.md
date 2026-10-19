@@ -1,7 +1,7 @@
 # Capability catalog
 
 The twenty original capabilities retain `1.0.0`; the nine email capabilities use
-`4.0.0`. Each manifest includes JSON request
+`4.0.0`; `creator.evaluate_rubric` is `1.0.0`. Each manifest includes JSON request
 and response schemas, effects, requirements, examples, projections, and typed
 error codes.
 

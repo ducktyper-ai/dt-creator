@@ -466,3 +466,50 @@ def test_a_changed_weight_must_be_declared() -> None:
     with pytest.raises(CreatorDomainError, match="weight is not declared"):
         run_masthead(masthead(reweighted))
     assert run_masthead(masthead(reweighted, declared_weight_changes=("hook",))).passed  # type: ignore[attr-defined]
+
+
+def test_an_added_scored_criterion_must_be_declared() -> None:
+    padded = (
+        scored("hook"),
+        scored("clarity"),
+        must("no-fabrication"),
+        scored("pad", floor=0, weight=98),
+    )
+    with pytest.raises(CreatorDomainError, match="added scored criterion is not declared"):
+        run_masthead(masthead(padded))
+
+
+def test_a_declared_added_scored_criterion_is_accepted() -> None:
+    added = (scored("hook"), scored("clarity"), must("no-fabrication"), scored("voice"))
+    rb = masthead(added, declared_weight_changes=("voice",))
+    result = evaluate_rubric(
+        rubric=rb,
+        scorecards=[card(rb, {**GOOD, "voice": 4})],
+        subject=SUBJECT,
+        subject_text=TEXT,
+        created_at=NOW,
+        base_rubric=house(),
+        supported_bases=[house().ref()],
+    )
+    assert result.passed
+
+
+def test_an_added_must_pass_criterion_needs_no_declaration() -> None:
+    added = (scored("hook"), scored("clarity"), must("no-fabrication"), must("no-spam"))
+    rb = masthead(added)
+    result = evaluate_rubric(
+        rubric=rb,
+        scorecards=[card(rb, {**GOOD, "no-spam": True})],
+        subject=SUBJECT,
+        subject_text=TEXT,
+        created_at=NOW,
+        base_rubric=house(),
+        supported_bases=[house().ref()],
+    )
+    assert result.passed
+
+
+def test_points_above_max_points_are_refused() -> None:
+    rb = rubric()
+    with pytest.raises(CreatorDomainError, match="exceed"):
+        run(rb, [card(rb, {**GOOD, "hook": 6})])

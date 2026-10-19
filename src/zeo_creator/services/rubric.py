@@ -87,6 +87,16 @@ def check_masthead_raises_only(
                 item.criterion_id not in rubric.declared_weight_changes
             ):
                 raise _refuse("a changed weight is not declared")
+    added = {item.criterion_id for item in rubric.criteria} - {
+        item.criterion_id for item in base.criteria
+    }
+    for item in rubric.criteria:
+        if (
+            item.criterion_id in added
+            and item.kind == CriterionKind.SCORED
+            and item.criterion_id not in rubric.declared_weight_changes
+        ):
+            raise _refuse("an added scored criterion is not declared")
     if base.aggregate_floor is not None:
         floor = rubric.aggregate_floor
         if floor is None or floor.rounding != base.aggregate_floor.rounding:

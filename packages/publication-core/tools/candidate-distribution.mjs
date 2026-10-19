@@ -87,7 +87,10 @@ function regular(path, limit = LIMIT) {
   } finally { closeSync(fd); }
 }
 
-const git = (repo, ...args) => execFileSync('/usr/bin/git', ['-C', repo, ...args], {maxBuffer: TAR_LIMIT, timeout: 10000});
+const git = (repo, ...args) => execFileSync('/usr/bin/git', ['--no-optional-locks', '-c', 'core.fsmonitor=false', '-c', 'core.hooksPath=/dev/null', '-C', repo, ...args], {
+  maxBuffer: TAR_LIMIT, timeout: 10000,
+  env: {PATH: '/usr/bin:/bin', GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_TERMINAL_PROMPT: '0', GIT_NO_REPLACE_OBJECTS: '1'},
+});
 function blob(repo, source, path) {
   refuse(commit(source) && safePath(path), 'source_provenance');
   const line = git(repo, 'ls-tree', source, '--', path).toString().trim();

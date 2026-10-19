@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-import {cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync} from 'node:fs';
+import {chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync} from 'node:fs';
 import {dirname, join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {fileURLToPath} from 'node:url';
@@ -114,6 +114,25 @@ test('CLI verification returns CANDIDATE JSON and refuses duplicate arguments wi
     const text = error.stdout.toString(); assert.ok(!text.includes('SYNTHETIC_PRIVATE_SENTINEL'));
     assert.deepEqual(JSON.parse(text), {ok: false, schema: 'zeocreator.publication-core-candidate/v1', candidate: true, label: 'CANDIDATE', reason: 'candidate_refused'});
   }
+});
+
+test('Git replacement refs cannot alter source provenance and configured fsmonitor does not run', t => {
+  const f = fixture(t);
+  const original = readFileSync(join(f.repo, 'packages/publication-core/README.md'));
+  const originalObject = command('/usr/bin/git', ['rev-parse', `${f.source}:packages/publication-core/README.md`], f.repo, f.work).toString().trim();
+  const replacement = join(f.work, 'replacement.txt'); writeFileSync(replacement, 'SYNTHETIC REPLACEMENT PAYLOAD\n');
+  const replacementObject = command('/usr/bin/git', ['hash-object', '-w', replacement], f.repo, f.work).toString().trim();
+  command('/usr/bin/git', ['replace', originalObject, replacementObject], f.repo, f.work);
+  assert.equal(command('/usr/bin/git', ['show', `${f.source}:packages/publication-core/README.md`], f.repo, f.work).toString(), 'SYNTHETIC REPLACEMENT PAYLOAD\n');
+  const marker = join(f.work, 'FSMONITOR_RAN'); const monitor = join(f.work, 'fsmonitor');
+  writeFileSync(monitor, `#!/bin/sh\n/usr/bin/touch '${marker}'\nprintf 'token\\000'\n`); chmodSync(monitor, 0o700);
+  command('/usr/bin/git', ['config', 'core.fsmonitor', monitor], f.repo, f.work);
+  command('/usr/bin/git', ['status', '--porcelain'], f.repo, f.work);
+  assert.equal(existsSync(marker), true, 'positive control: configured monitor is executable'); rmSync(marker);
+  buildCandidate(f);
+  assert.equal(existsSync(marker), false, 'candidate reader must disable configured fsmonitor');
+  const members = archiveMembers(readFileSync(join(f.out, 'candidate.tgz')));
+  assert.ok(members.get('README.md').equals(original), 'candidate uses actual committed blob, not a replacement ref');
 });
 
 test('index rejects duplicate keys including escaped aliases, truncation and trailing data', () => {

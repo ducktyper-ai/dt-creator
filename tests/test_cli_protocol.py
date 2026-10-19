@@ -175,8 +175,8 @@ def test_a_failed_doctor_check_names_its_next_step(monkeypatch: pytest.MonkeyPat
     monkeypatch.setattr(cli, "capability_manifests", lambda: ())
     result = _one_result(runner.invoke(app, ["doctor"]).stdout)
     steps = {item["check"]: item["next"] for item in result["next"]}
-    assert "twenty_nine_manifests" in steps
-    assert steps["twenty_nine_manifests"].startswith("run: uv tool install --force")
+    assert "thirty_manifests" in steps
+    assert steps["thirty_manifests"].startswith("run: uv tool install --force")
     assert set(steps) == {name for name, ok in result["checks"].items() if not ok}
 
 

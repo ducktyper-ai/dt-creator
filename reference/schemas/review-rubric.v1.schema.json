@@ -1,0 +1,290 @@
+{
+  "$defs": {
+    "AggregateFloor": {
+      "additionalProperties": false,
+      "description": "The weighted ratio must reach numerator/denominator, compared under one rounding.",
+      "properties": {
+        "denominator": {
+          "minimum": 1,
+          "title": "Denominator",
+          "type": "integer"
+        },
+        "numerator": {
+          "minimum": 0,
+          "title": "Numerator",
+          "type": "integer"
+        },
+        "rounding": {
+          "$ref": "#/$defs/Rounding",
+          "default": "exact"
+        }
+      },
+      "required": [
+        "numerator",
+        "denominator"
+      ],
+      "title": "AggregateFloor",
+      "type": "object"
+    },
+    "Criterion": {
+      "additionalProperties": false,
+      "properties": {
+        "backing_check_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Backing Check Id"
+        },
+        "criterion_id": {
+          "maxLength": 96,
+          "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$",
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "floor": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Floor"
+        },
+        "guidance": {
+          "minLength": 1,
+          "title": "Guidance",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/CriterionKind"
+        },
+        "max_points": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Points"
+        },
+        "rule_ref": {
+          "minLength": 1,
+          "title": "Rule Ref",
+          "type": "string"
+        },
+        "weight": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Weight"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "kind",
+        "rule_ref",
+        "guidance"
+      ],
+      "title": "Criterion",
+      "type": "object"
+    },
+    "CriterionKind": {
+      "enum": [
+        "scored",
+        "must_pass"
+      ],
+      "title": "CriterionKind",
+      "type": "string"
+    },
+    "Rounding": {
+      "enum": [
+        "exact",
+        "half_up_percent"
+      ],
+      "title": "Rounding",
+      "type": "string"
+    },
+    "RubricRef": {
+      "additionalProperties": false,
+      "properties": {
+        "digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Digest",
+          "type": "string"
+        },
+        "rubric_id": {
+          "maxLength": 96,
+          "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$",
+          "title": "Rubric Id",
+          "type": "string"
+        },
+        "rubric_version": {
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "title": "Rubric Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rubric_id",
+        "rubric_version",
+        "digest"
+      ],
+      "title": "RubricRef",
+      "type": "object"
+    },
+    "RubricScope": {
+      "enum": [
+        "house",
+        "masthead"
+      ],
+      "title": "RubricScope",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "aggregate_floor": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AggregateFloor"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "base_rubric_ref": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RubricRef"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "content_digest": {
+      "default": "",
+      "title": "Content Digest",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "criteria": {
+      "items": {
+        "$ref": "#/$defs/Criterion"
+      },
+      "minItems": 1,
+      "title": "Criteria",
+      "type": "array"
+    },
+    "declared_weight_changes": {
+      "default": [],
+      "items": {
+        "maxLength": 96,
+        "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$",
+        "type": "string"
+      },
+      "title": "Declared Weight Changes",
+      "type": "array"
+    },
+    "input_refs": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Input Refs",
+      "type": "array"
+    },
+    "languages": {
+      "items": {
+        "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Languages",
+      "type": "array"
+    },
+    "medium": {
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[.-][a-z0-9]+)*$",
+      "title": "Medium",
+      "type": "string"
+    },
+    "organization_id": {
+      "minLength": 1,
+      "title": "Organization Id",
+      "type": "string"
+    },
+    "publication_id": {
+      "minLength": 1,
+      "title": "Publication Id",
+      "type": "string"
+    },
+    "revision": {
+      "default": 1,
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "rubric_id": {
+      "maxLength": 96,
+      "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$",
+      "title": "Rubric Id",
+      "type": "string"
+    },
+    "rubric_version": {
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "title": "Rubric Version",
+      "type": "string"
+    },
+    "schema_version": {
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "$ref": "#/$defs/RubricScope"
+    }
+  },
+  "required": [
+    "created_at",
+    "organization_id",
+    "publication_id",
+    "rubric_id",
+    "rubric_version",
+    "medium",
+    "scope",
+    "languages",
+    "criteria"
+  ],
+  "title": "ReviewRubric",
+  "type": "object"
+}

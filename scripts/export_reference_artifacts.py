@@ -62,6 +62,7 @@ from zeo_creator.contracts.newsroom import (
 from zeo_creator.contracts.performance import MetricObservation, PerformanceAssessment
 from zeo_creator.contracts.production import ContentBrief
 from zeo_creator.contracts.publications import PublicationProfile
+from zeo_creator.contracts.rubric import ReviewRubric, RubricEvaluation, RubricScorecard
 from zeo_creator.registry import CAPABILITIES
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -88,6 +89,9 @@ def export_schemas() -> None:
         ("content-brief", "1", ContentBrief),
         ("artifact-manifest", "1", ArtifactManifest),
         ("delivery-review-bundle", "1", DeliveryReviewBundle),
+        ("review-rubric", "1", ReviewRubric),
+        ("rubric-scorecard", "1", RubricScorecard),
+        ("rubric-evaluation", "1", RubricEvaluation),
         ("distribution-variant", "1", DistributionVariant),
         ("channel-plan", "1", ChannelPlan),
         ("proposed-publication-operation", "1", ProposedPublicationOperation),

@@ -7,13 +7,13 @@
 Turn source observations into evolving stories, frozen dossiers, editorial agendas,
 editions, production briefs, reviewed artifacts, commentary, newsletters and corrections.
 
-[![CI](https://github.com/zeroemployeeorg/zeocreator/actions/workflows/ci.yml/badge.svg)](https://github.com/zeroemployeeorg/zeocreator/actions/workflows/ci.yml)
+[![CI](https://github.com/zeroemployeeorg/dt-creator/actions/workflows/ci.yml/badge.svg)](https://github.com/zeroemployeeorg/dt-creator/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/zeocreator)](https://pypi.org/project/zeocreator/)
 [![Python 3.14+](https://img.shields.io/badge/Python-3.14%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Zeocore 0.11](https://img.shields.io/badge/Zeocore-0.18.0-087f75)](https://pypi.org/project/zeocore/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/zeroemployeeorg/zeocreator/blob/v0.6.0/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/zeroemployeeorg/dt-creator/blob/v0.6.0/LICENSE)
 
-[Documentation](https://zeroemployeeorg.github.io/zeocreator/) · [Quickstart](https://zeroemployeeorg.github.io/zeocreator/getting-started/installation/) · [Examples](https://github.com/zeroemployeeorg/zeocreator/tree/v0.6.0/examples) · [API reference](https://zeroemployeeorg.github.io/zeocreator/reference/contracts/)
+[Documentation](https://zeroemployeeorg.github.io/dt-creator/) · [Quickstart](https://zeroemployeeorg.github.io/dt-creator/getting-started/installation/) · [Examples](https://github.com/zeroemployeeorg/dt-creator/tree/v0.6.0/examples) · [API reference](https://zeroemployeeorg.github.io/dt-creator/reference/contracts/)
 
 </div>
 
@@ -53,7 +53,7 @@ flowchart LR
 ## Runtime integration
 
 Version 0.6.0 installs Zeocore 0.18.0 with its shared Runtime host. Use the
-[Runtime integration guide](https://zeroemployeeorg.github.io/zeocreator/guides/runtime-host/)
+[Runtime integration guide](https://zeroemployeeorg.github.io/dt-creator/guides/runtime-host/)
 to export the provider inventory and prepare the real portfolio request.
 Creator/Core conformance is verified; Runtime's Go supervision, durable recovery
 and managed-agent acceptance remain separate integration work.
@@ -160,7 +160,7 @@ turn dossiers into coherent publication decisions.
 One dossier can support a breaking update, a daily briefing, a video brief, a
 social reply and a later newsletter section without silently sharing voice,
 policy or approval across publications. See the
-[continuous editorial model](https://zeroemployeeorg.github.io/zeocreator/concepts/continuous-editorial-operations/).
+[continuous editorial model](https://zeroemployeeorg.github.io/dt-creator/concepts/continuous-editorial-operations/).
 
 ```mermaid
 flowchart LR
@@ -183,7 +183,7 @@ zeo-creator contracts export --output=./schemas
 
 Each catalog entry includes the schema's RFC 8785 canonical SHA-256 digest.
 Package, capability, and contract versions evolve independently; the
-[compatibility policy](https://zeroemployeeorg.github.io/zeocreator/reference/contracts/#compatibility-and-version-axes)
+[compatibility policy](https://zeroemployeeorg.github.io/dt-creator/reference/contracts/#compatibility-and-version-axes)
 defines when each one changes.
 
 ## The authority boundary
@@ -207,9 +207,9 @@ any private production taxonomy.
 python -m zeo_creator.examples.complete_content_portfolio
 ```
 
-Explore [`reference/examples`](https://github.com/zeroemployeeorg/zeocreator/tree/v0.6.0/reference/examples), follow the
-[portfolio tutorial](https://zeroemployeeorg.github.io/zeocreator/tutorials/content-portfolio/), or read the
-[production adapter guide](https://zeroemployeeorg.github.io/zeocreator/guides/production-adapters/).
+Explore [`reference/examples`](https://github.com/zeroemployeeorg/dt-creator/tree/v0.6.0/reference/examples), follow the
+[portfolio tutorial](https://zeroemployeeorg.github.io/dt-creator/tutorials/content-portfolio/), or read the
+[production adapter guide](https://zeroemployeeorg.github.io/dt-creator/guides/production-adapters/).
 
 ## Development
 
@@ -222,9 +222,9 @@ make doctor      # verify Python, Zeocore, manifests, and projections
 ```
 
 The repository enforces architectural import boundaries and tests installed
-wheel behavior. See [architecture](https://zeroemployeeorg.github.io/zeocreator/concepts/architecture/),
-[canonical digests](https://zeroemployeeorg.github.io/zeocreator/concepts/canonical-digests/), and
-[contributing](https://zeroemployeeorg.github.io/zeocreator/contributing/).
+wheel behavior. See [architecture](https://zeroemployeeorg.github.io/dt-creator/concepts/architecture/),
+[canonical digests](https://zeroemployeeorg.github.io/dt-creator/concepts/canonical-digests/), and
+[contributing](https://zeroemployeeorg.github.io/dt-creator/contributing/).
 
 ## Status
 
@@ -237,7 +237,7 @@ MIT licensed.
 
 ## Email campaigns and sequences
 
-[Email marketing](https://zeroemployeeorg.github.io/zeocreator/guides/email-marketing/) adds immutable campaigns, linear
+[Email marketing](https://zeroemployeeorg.github.io/dt-creator/guides/email-marketing/) adds immutable campaigns, linear
 sequence revisions, dual-format messages, audience summaries and exact delivery
 packages. Runtime and Newsroom collect observations before Creator invocation;
 Zeocore and ZEOconnect own provider lowering and execution. Existing newsletter

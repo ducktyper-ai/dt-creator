@@ -16,7 +16,7 @@ def test_readme_has_primary_adoption_paths() -> None:
         "## Development",
     ):
         assert heading in readme
-    assert "https://github.com/zeroemployeeorg/zeocreator" in readme
+    assert "https://github.com/zeroemployeeorg/dt-creator" in readme
 
 
 def test_mkdocs_navigation_targets_exist() -> None:

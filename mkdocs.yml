@@ -1,8 +1,8 @@
 site_name: ZEO Creator
 site_description: Provider-neutral creator operations, governed by design.
-site_url: https://zeroemployeeorg.github.io/zeocreator/
-repo_url: https://github.com/zeroemployeeorg/zeocreator
-repo_name: zeroemployeeorg/zeocreator
+site_url: https://zeroemployeeorg.github.io/dt-creator/
+repo_url: https://github.com/zeroemployeeorg/dt-creator
+repo_name: zeroemployeeorg/dt-creator
 edit_uri: edit/main/docs/
 copyright: Copyright &copy; 2026 Prof Rod · MIT licensed
 

@@ -6,7 +6,7 @@ code can become an authority or credential leak in production.
 ## Set up
 
 ```console
-git clone https://github.com/zeroemployeeorg/zeocreator.git
+git clone https://github.com/zeroemployeeorg/dt-creator.git
 cd zeocreator
 uv sync --frozen
 make verify

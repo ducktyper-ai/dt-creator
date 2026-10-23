@@ -2,7 +2,7 @@ name: Publish
 
 # Aligns with Zeocore: verify, retain distributions, OIDC publish, exact-version
 # index smoke tests, then GitHub Release from RELEASE_NOTES.md.
-# Required PyPI publisher: zeocreator / zeroemployeeorg/zeocreator / publish.yml / environment pypi
+# Required PyPI publisher: zeocreator / zeroemployeeorg/dt-creator / publish.yml / environment pypi
 # (TestPyPI: environment testpypi). An upload waits for approval once the environment requires a reviewer.
 # Current index configuration is unverified since the repository move; see docs/release-readiness.md.
 on:

@@ -8,7 +8,7 @@ this score. Scorers are supplied by the caller; nothing here calls a model.
 
 import re
 from collections.abc import Mapping, Sequence
-from datetime import UTC, datetime
+from datetime import datetime
 
 from zeo_creator.contracts.rubric import (
     AggregateFloor,
@@ -107,19 +107,3 @@ def check_length_budgets(
     if total > OVERALL_MAX_WORDS:
         broken.append(f"overall: {total} words, at most {OVERALL_MAX_WORDS}")
     return tuple(broken)
-
-
-def main() -> None:
-    rubric = newsletter_rubric(
-        organization_id="org_example",
-        publication_id="pub_example",
-        created_at=datetime(2026, 10, 24, tzinfo=UTC),
-    )
-    print(rubric.rubric_id, rubric.rubric_version, len(rubric.criteria), "criteria")
-    print(
-        check_length_budgets(subject="A clear subject", preheader="Short", sections={"lead": "x"})
-    )
-
-
-if __name__ == "__main__":
-    main()

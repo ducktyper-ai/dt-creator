@@ -10,7 +10,6 @@ Every example is credential-free, deterministic, and exercised by CI.
 | [`validate_and_prepare.py`](validate_and_prepare.py) | Artifact validation and write-free distribution preparation |
 | [`assess_performance.py`](assess_performance.py) | Legacy v1 injection of already-collected metrics |
 | [`email_marketing.py`](email_marketing.py) | Three isolated publications, campaigns, sequences, fake lowering and input-only assessment |
-| [`newsletter_rubric.py`](newsletter_rubric.py) | The shared newsletter quality bar as rubric data (90 of 100, no criterion under 80%) and its deterministic length-budget check |
 | [`complete_content_portfolio.py`](complete_content_portfolio.py) | Validation of the neutral two-publication reference portfolio |
 
 Install `zeocreator==0.5.3` on Python 3.14+, then run any example from any directory:

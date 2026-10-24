@@ -1,8 +1,6 @@
 """The shared newsletter rubric is valid data, applies the 90/80 bar and checks budgets."""
 
-import sys
 from datetime import UTC, datetime
-from pathlib import Path
 
 from zeo_creator.contracts.rubric import (
     CriterionScore,
@@ -10,16 +8,13 @@ from zeo_creator.contracts.rubric import (
     RubricScorecard,
     TextQuote,
 )
-from zeo_creator.services.rubric import evaluate_rubric
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
-from examples.newsletter_rubric import (
+from zeo_creator.reference.newsletter_rubric import (
     BUDGETS,
     check_length_budgets,
     newsletter_rubric,
     words,
 )
+from zeo_creator.services.rubric import evaluate_rubric
 
 NOW = datetime(2026, 10, 24, tzinfo=UTC)
 SUBJECT = ManifestSubject(brief_id="b1", manifest_id="m1", content_digest="sha256:" + "a" * 64)

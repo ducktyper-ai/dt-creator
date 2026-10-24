@@ -78,7 +78,8 @@ function regular(path, limit = LIMIT) {
     refuse(!lstatSync(parent).isSymbolicLink(), 'symlink_ancestor');
     const next = dirname(parent); if (parent === next) break; parent = next;
   }
-  const fd = openSync(absolute, constants.O_RDONLY | constants.O_NOFOLLOW);
+  // A FIFO must reach the descriptor type check without waiting for a writer.
+  const fd = openSync(absolute, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
   try {
     const before = fstatSync(fd, {bigint: true});
     refuse(before.isFile() && before.size <= BigInt(limit), 'regular_file_size');

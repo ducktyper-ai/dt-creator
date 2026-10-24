@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
-import {execFileSync} from 'node:child_process';
+import {execFileSync, spawnSync} from 'node:child_process';
 import {chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, utimesSync, writeFileSync} from 'node:fs';
 import {dirname, join} from 'node:path';
 import {tmpdir} from 'node:os';
@@ -114,6 +114,67 @@ test('CLI verification returns CANDIDATE JSON and refuses duplicate arguments wi
     assert.equal(error.status, 20);
     const text = error.stdout.toString(); assert.ok(!text.includes('SYNTHETIC_PRIVATE_SENTINEL'));
     assert.deepEqual(JSON.parse(text), {ok: false, schema: 'zeocreator.publication-core-candidate/v1', candidate: true, label: 'CANDIDATE', reason: 'candidate_refused'});
+  }
+});
+
+test('FIFO inputs refuse before reads and preserve the regular-file CLI positive', t => {
+  const f = built(t);
+  const tool = join(root, 'tools/candidate-distribution.mjs');
+  const fifo = join(f.work, 'PRIVATE_FIFO_INPUT');
+  command('/usr/bin/mkfifo', [fifo], f.work, f.work);
+  assert.equal(lstatSync(fifo).isFIFO(), true);
+  const run = args => spawnSync(process.execPath, ['--max-old-space-size=128', '--v8-pool-size=1', ...args], {
+    cwd: f.work, timeout: 5000, killSignal: 'SIGKILL', maxBuffer: 2 * 1024 * 1024, encoding: 'utf8',
+    env: {PATH: '/usr/bin:/bin', HOME: f.work, TMPDIR: f.work, XDG_CONFIG_HOME: f.work,
+      XDG_CACHE_HOME: f.work, UV_THREADPOOL_SIZE: '1'},
+  });
+  // Instrument only the isolated child: a removed type guard fails a named
+  // assertion before a FIFO read, rather than earning a timeout as a mutant kill.
+  const guard = run(['--input-type=module', '-e', `
+    import assert from 'node:assert/strict';
+    import fs from 'node:fs';
+    import {syncBuiltinESMExports} from 'node:module';
+    const read = fs.readFileSync, close = fs.closeSync;
+    let fifoReads = 0, fifoCloses = 0;
+    fs.readFileSync = function(fd, ...args) {
+      if (typeof fd === 'number' && fs.fstatSync(fd).isFIFO()) {
+        fifoReads++; throw new Error('CREATOR42_FIFO_READ_REACHED');
+      }
+      return read.call(this, fd, ...args);
+    };
+    fs.closeSync = function(fd) {
+      if (fs.fstatSync(fd).isFIFO()) fifoCloses++;
+      return close.call(this, fd);
+    };
+    syncBuiltinESMExports();
+    const {buildCandidate} = await import(${JSON.stringify(tool)});
+    assert.throws(() => buildCandidate(${JSON.stringify({repo: f.repo, source: f.source, out: join(f.work, 'guard-out'), npmCli: fifo})}),
+      error => error.message === 'regular_file_size', 'CREATOR42_FIFO_TYPE_GUARD');
+    assert.equal(fifoReads, 0, 'CREATOR42_FIFO_NO_READ');
+    assert.equal(fifoCloses, 1, 'CREATOR42_FIFO_DESCRIPTOR_CLOSED');
+  `]);
+  assert.equal(guard.error, undefined, 'CREATOR42_FIFO_NONBLOCK: child must finish before its deadline');
+  assert.equal(guard.status, 0, `CREATOR42_FIFO_TYPE_GUARD: ${guard.stderr}`);
+  const verify = [tool, 'verify', '--repo', f.repo, '--source', f.source,
+    '--archive', join(f.out, 'candidate.tgz'), '--index', join(f.out, 'candidate-index.json')];
+  const positive = run(verify);
+  assert.equal(positive.error, undefined);
+  assert.equal(positive.status, 0, positive.stderr);
+  assert.equal(JSON.parse(positive.stdout).candidate, true);
+  const cases = [
+    verify.map(value => value === join(f.out, 'candidate.tgz') ? fifo : value),
+    verify.map(value => value === join(f.out, 'candidate-index.json') ? fifo : value),
+    [tool, 'build', '--repo', f.repo, '--source', f.source, '--out', join(f.work, 'npm-out'), '--npm-cli', fifo],
+    [tool, 'build', '--repo', f.repo, '--source', f.source, '--out', join(f.work, 'license-out'),
+      '--npm-cli', npmCli, '--root-license-provenance', fifo],
+  ];
+  for (const args of cases) {
+    const result = run(args);
+    assert.equal(result.error, undefined, 'CREATOR42_FIFO_NONBLOCK: CLI must finish before its deadline');
+    assert.equal(result.status, 20, result.stderr);
+    assert.deepEqual(JSON.parse(result.stdout), {ok: false, schema: 'zeocreator.publication-core-candidate/v1',
+      candidate: true, label: 'CANDIDATE', reason: 'candidate_refused'});
+    assert.equal(result.stdout.includes(fifo), false);
   }
 });
 

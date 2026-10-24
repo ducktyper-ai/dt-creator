@@ -19,6 +19,7 @@ from zeo_creator.capabilities.email_marketing import (
     propose_email_operation,
     review_email_message,
 )
+from zeo_creator.capabilities.evaluate_rubric import evaluate_rubric
 from zeo_creator.capabilities.extract_editorial_signals import extract_editorial_signals
 from zeo_creator.capabilities.journalism_workflows import (
     compose_news_article,
@@ -47,6 +48,7 @@ __all__ = [
     "compose_news_article",
     "compose_newsletter_issue",
     "create_content_brief",
+    "evaluate_rubric",
     "extract_editorial_signals",
     "finalize_email_campaign",
     "identify_engagement_opportunities",

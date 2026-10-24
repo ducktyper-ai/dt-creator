@@ -32,7 +32,11 @@ compared with a separately parsed tgz, and every member is checked against sourc
 The closed versioned index binds source commit, package identity/private flag, sorted member
 paths/sizes/SHA256 values and archive size/SHA256/SHA512 integrity. Verification requires an
 independently supplied expected source commit and locally available Git objects; a
-self-consistent index cannot authorize different source bytes. The index is not a signature.
+self-consistent index cannot authorize different source bytes. The index is not a signature or a canonical JSON serialization. Field order and whitespace may differ; verification checks the closed structure and exact member/source/archive bindings, not a canonical index-byte digest.
+
+Source identities must name actual commit objects; a tree or annotated-tag object ID is refused. Source cleanliness compares the real index with that commit and inspects worktree bytes using disposable private Git metadata, without importing repository clean filters, fsmonitor or submodule configuration. Submodule trees are refused; assume-unchanged/skip-worktree index flags cannot hide changed files. Existing-directory and parent realpaths enforce physical source/output separation, including case aliases on case-insensitive filesystems.
+
+The tool deliberately uses `/usr/bin/git` on supported POSIX hosts. That exact executable and its runtime must be part of the receiver-adopted closure; there is no PATH search or download fallback. Public CLI refusals retain the fixed body-free `candidate_refused`/exit20 contract; internal guards have named errors for focused assertions.
 
 Archive parsing is bounded and supports regular USTAR members only. It refuses duplicate,
 absolute, traversing, noncanonical, link, executable, extended-header, malformed, truncated
@@ -61,3 +65,5 @@ and `make doctor` once on the frozen source before review. Preserve exact source
 exits and logs. One draft PR may queue behind the maintainer's existing ready PR; readiness
 requires actual queue clearance. Compatibility receiving, independent review and canonical
 receiving remain distinct from producing a candidate.
+
+The focused test joins `make verify` through the publication-core test glob. The existing publication workflow also runs `make verify` and `make doctor`, so these child-process/offline-consumer tests participate in release validation. No workflow or release trigger is changed. A canonical private TMPDIR is used for fixtures, with an explicit aliased-temp positive/refusal control. Full gates and green CI must bind the actual final merged candidate; earlier frozen or synthetic-merge receipts do not qualify later bytes.

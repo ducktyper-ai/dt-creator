@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-import {chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync} from 'node:fs';
+import {chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync} from 'node:fs';
 import {dirname, join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {fileURLToPath} from 'node:url';
@@ -21,9 +21,10 @@ function command(program, args, cwd, home) {
       npm_config_userconfig: join(home, 'absent-npmrc'), npm_config_globalconfig: join(home, 'absent-global-npmrc'),
       npm_config_audit: 'false', npm_config_fund: 'false', UV_THREADPOOL_SIZE: '1'}});
 }
-function fixture(t, {lifecycle = false} = {}) {
-  const work = mkdtempSync(join(tmpdir(), 'core-candidate-test-'));
-  t.after(() => rmSync(work, {recursive: true, force: true}));
+function fixture(t, {lifecycle = false, tempRoot = tmpdir()} = {}) {
+  const created = mkdtempSync(join(tempRoot, 'core-candidate-test-'));
+  t.after(() => rmSync(created, {recursive: true, force: true}));
+  const work = realpathSync(created);
   const repo = join(work, 'source'); mkdirSync(repo);
   const pkg = join(repo, 'packages/publication-core'); mkdirSync(pkg, {recursive: true});
   const manifest = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
@@ -212,7 +213,92 @@ test('dirty source, existing output, output in source, symlink input and invalid
   assert.throws(() => buildCandidate({...f, out: join(f.repo, 'candidate')}), /output_inside_source/);
   mkdirSync(f.out); assert.throws(() => buildCandidate(f), /EEXIST/);
   const link = join(f.work, 'npm-link.js'); symlinkSync(npmCli, link);
-  assert.throws(() => buildCandidate({...f, out: join(f.work, 'other'), npmCli: link}));
+  assert.throws(() => buildCandidate({...f, out: join(f.work, 'other'), npmCli: link}), error => error.code === 'ELOOP');
   writeFileSync(join(f.repo, 'untracked'), 'untracked');
   assert.throws(() => buildCandidate({...f, out: join(f.work, 'dirty')}), /source_dirty/);
+});
+
+
+test('aliased temp roots become canonical fixtures without weakening output refusal', t => {
+  const created = mkdtempSync(join(tmpdir(), 'core-candidate-alias-'));
+  t.after(() => rmSync(created, {recursive: true, force: true}));
+  const physical = realpathSync(created);
+  const target = join(physical, 'physical-tmp'); mkdirSync(target);
+  const alias = join(physical, 'aliased-tmp'); symlinkSync(target, alias);
+  const f = fixture(t, {tempRoot: alias});
+  assert.equal(f.work, realpathSync(f.work), 'fixture path must be canonical');
+  assert.equal(buildCandidate(f).ok, true);
+  assert.throws(() => buildCandidate({...f, out: join(alias, 'refused-output')}), /output_symlink_ancestor/);
+});
+
+
+test('tree and annotated tag object identities cannot stand in for a commit', t => {
+  const f = built(t);
+  command('/usr/bin/git', ['-c', 'user.name=Synthetic Fixture', '-c', 'user.email=fixture@example.invalid', '-c', 'tag.gpgSign=false', 'tag', '-a', 'fixture-tag', '-m', 'Synthetic tag'], f.repo, f.work);
+  const identities = [
+    command('/usr/bin/git', ['rev-parse', `${f.source}^{tree}`], f.repo, f.work).toString().trim(),
+    command('/usr/bin/git', ['rev-parse', 'refs/tags/fixture-tag'], f.repo, f.work).toString().trim(),
+  ];
+  for (const source of identities) {
+    const document = JSON.parse(f.index); document.source.commit = source;
+    assert.throws(() => verifyCandidate({...f, source, index: encoded(document)}), /source_commit/);
+  }
+});
+
+test('source inspection never executes a configured clean filter', t => {
+  const f = fixture(t);
+  const file = join(f.repo, 'FILTERED.txt'); writeFileSync(file, 'original\n');
+  writeFileSync(join(f.repo, '.gitattributes'), 'FILTERED.txt filter=candidate-fixture\n');
+  command('/usr/bin/git', ['add', '.'], f.repo, f.work);
+  command('/usr/bin/git', ['-c', 'user.name=Synthetic Fixture', '-c', 'user.email=fixture@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '-qm', 'Synthetic filter input\n\nsow: zeroemployee-SOW-180'], f.repo, f.work);
+  f.source = command('/usr/bin/git', ['rev-parse', 'HEAD'], f.repo, f.work).toString().trim();
+  const marker = join(f.work, 'CLEAN_FILTER_RAN'); const driver = join(f.work, 'filter.cjs');
+  writeFileSync(driver, `const fs = require('node:fs'); fs.writeFileSync(${JSON.stringify(marker)}, 'ran'); process.stdout.write(fs.readFileSync(0));\n`);
+  const quote = value => "'" + value.replaceAll("'", "'\\''") + "'";
+  command('/usr/bin/git', ['config', 'filter.candidate-fixture.clean', `${quote(process.execPath)} ${quote(driver)}`], f.repo, f.work);
+  writeFileSync(file, 'changed positive control\n');
+  command('/usr/bin/git', ['status', '--porcelain'], f.repo, f.work);
+  assert.equal(existsSync(marker), true, 'positive control: ordinary Git status ran the clean filter');
+  writeFileSync(file, 'original\n'); rmSync(marker);
+  assert.equal(buildCandidate(f).ok, true);
+  assert.equal(existsSync(marker), false, 'candidate source inspection must not execute clean filters');
+});
+
+test('submodule trees refuse before any submodule worktree inspection', t => {
+  const f = fixture(t);
+  command('/usr/bin/git', ['update-index', '--add', '--cacheinfo', '160000', f.source, 'nested'], f.repo, f.work);
+  command('/usr/bin/git', ['-c', 'user.name=Synthetic Fixture', '-c', 'user.email=fixture@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '-qm', 'Synthetic gitlink\n\nsow: zeroemployee-SOW-180'], f.repo, f.work);
+  f.source = command('/usr/bin/git', ['rev-parse', 'HEAD'], f.repo, f.work).toString().trim();
+  assert.throws(() => buildCandidate(f), /source_submodule/);
+});
+
+test('source index changes and assume-unchanged flags cannot hide dirty bytes', t => {
+  const hidden = fixture(t); const hiddenPath = join(hidden.repo, 'packages/publication-core/README.md');
+  command('/usr/bin/git', ['update-index', '--assume-unchanged', 'packages/publication-core/README.md'], hidden.repo, hidden.work);
+  writeFileSync(hiddenPath, 'hidden worktree change\n');
+  assert.equal(command('/usr/bin/git', ['status', '--porcelain'], hidden.repo, hidden.work).length, 0, 'positive control: original index hides the change');
+  assert.throws(() => buildCandidate(hidden), /source_dirty/);
+  const staged = fixture(t); const path = join(staged.repo, 'packages/publication-core/README.md');
+  const original = readFileSync(path); writeFileSync(path, 'staged change\n');
+  command('/usr/bin/git', ['add', 'packages/publication-core/README.md'], staged.repo, staged.work);
+  writeFileSync(path, original);
+  assert.throws(() => buildCandidate(staged), /source_dirty/);
+});
+
+test('physical containment covers source aliases and actual filesystem case behavior', t => {
+  const f = fixture(t); const alias = join(f.work, 'source-alias'); symlinkSync(f.repo, alias);
+  assert.throws(() => buildCandidate({...f, out: join(alias, 'candidate')}), /output_inside_source/);
+  const casePath = join(f.work, 'SOURCE');
+  if (existsSync(casePath)) {
+    assert.equal(realpathSync(casePath), f.repo);
+    assert.throws(() => buildCandidate({...f, out: join(casePath, 'candidate')}), /output_inside_source/);
+    assert.throws(() => buildCandidate({...f, out: casePath}), /output_inside_source/);
+  } else {
+    assert.equal(buildCandidate({...f, out: casePath}).ok, true, 'a distinct case-sensitive sibling is outside the source');
+  }
+});
+
+test('index field order and whitespace are not a canonical serialization requirement', t => {
+  const f = built(t); const reordered = Object.fromEntries(Object.entries(JSON.parse(f.index)).reverse());
+  assert.equal(verifyCandidate({...f, index: Buffer.from(JSON.stringify(reordered))}).ok, true);
 });

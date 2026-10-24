@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {constants, closeSync, fstatSync, lstatSync, mkdirSync, mkdtempSync, openSync, readFileSync, realpathSync, rmSync, writeFileSync} from 'node:fs';
-import {dirname, isAbsolute, join, relative, resolve} from 'node:path';
+import {basename, dirname, isAbsolute, join, relative, resolve} from 'node:path';
+import {tmpdir} from 'node:os';
 import {fileURLToPath} from 'node:url';
 import {gunzipSync} from 'node:zlib';
 
@@ -98,8 +99,48 @@ function blob(repo, source, path) {
   const bytes = git(repo, 'show', `${source}:${path}`); refuse(bytes.length <= LIMIT, 'source_size'); return bytes;
 }
 
-function packageInputs(repo, source) {
+function requireCommit(repo, source) {
   refuse(commit(source), 'source_commit');
+  let peeled;
+  try { peeled = git(repo, 'rev-parse', '--verify', `${source}^{commit}`).toString().trim(); }
+  catch { throw new Error('source_commit'); }
+  refuse(peeled === source, 'source_commit');
+}
+
+// Compare the real index, then inspect worktree bytes with private metadata.
+// No source repository configuration, filters or submodule process is imported
+// into the status operation. Its index is freshly built from the pinned tree,
+// so source assume-unchanged/skip-worktree bits cannot conceal modified files.
+function cleanSource(repo, source) {
+  requireCommit(repo, source);
+  refuse(realpathSync(git(repo, 'rev-parse', '--show-toplevel').toString().trim()) === repo, 'source_root');
+  const entries = utf8.decode(git(repo, 'ls-tree', '-r', '-z', '--full-tree', source)).split('\0').filter(Boolean);
+  const expectedIndex = entries.map(entry => {
+    const tab = entry.indexOf('\t');
+    const header = /^([0-7]{6}) (blob|commit) ([0-9a-f]{40})$/.exec(entry.slice(0, tab));
+    refuse(header && tab > 0, 'source_inventory');
+    refuse(header[1] !== '160000' && header[2] === 'blob', 'source_submodule');
+    return `${header[1]} ${header[3]} 0\t${entry.slice(tab + 1)}\0`;
+  }).join('');
+  refuse(git(repo, 'ls-files', '--stage', '-z').equals(Buffer.from(expectedIndex)), 'source_dirty');
+  const objects = git(repo, 'rev-parse', '--path-format=absolute', '--git-path', 'objects').toString().trim();
+  const metadata = mkdtempSync(join(realpathSync(tmpdir()), 'core-candidate-git-'));
+  try {
+    mkdirSync(join(metadata, 'objects')); mkdirSync(join(metadata, 'refs'));
+    writeFileSync(join(metadata, 'HEAD'), `${source}\n`, {flag: 'wx'});
+    writeFileSync(join(metadata, 'config'), '[core]\nrepositoryformatversion = 0\nbare = false\n', {flag: 'wx'});
+    const inspect = (...args) => execFileSync('/usr/bin/git', ['--no-optional-locks', '-c', 'core.fsmonitor=false', '-c', 'core.hooksPath=/dev/null', '-c', 'core.attributesFile=/dev/null', ...args], {
+      maxBuffer: TAR_LIMIT, timeout: 10000,
+      env: {PATH: '/usr/bin:/bin', GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_TERMINAL_PROMPT: '0', GIT_NO_REPLACE_OBJECTS: '1',
+        GIT_DIR: metadata, GIT_WORK_TREE: repo, GIT_OBJECT_DIRECTORY: objects},
+    });
+    inspect('read-tree', source);
+    refuse(inspect('status', '--porcelain', '--untracked-files=normal', '--ignore-submodules=all').length === 0, 'source_dirty');
+  } finally { rmSync(metadata, {recursive: true, force: true}); }
+}
+
+function packageInputs(repo, source) {
+  requireCommit(repo, source);
   const metadata = blob(repo, source, `${PACKAGE}/package.json`);
   const manifest = parseIndex(metadata);
   refuse(typeof manifest.name === 'string' && /^@[a-z0-9-]+\/[a-z0-9-]+$/.test(manifest.name), 'package_name');
@@ -215,10 +256,14 @@ export function verifyCandidate({repo, source, archive, index}) {
 export function buildCandidate({repo, source, out, npmCli, rootLicense = null}) {
   repo = realpathSync(repo); out = resolve(out); npmCli = resolve(npmCli);
   refuse(commit(source) && git(repo, 'rev-parse', 'HEAD').toString().trim() === source, 'source_head');
-  refuse(git(repo, 'status', '--porcelain', '--untracked-files=normal').length === 0, 'source_dirty');
-  refuse(realpathSync(dirname(out)) === dirname(out), 'output_symlink_ancestor');
-  const outputRelative = relative(repo, out);
+  cleanSource(repo, source);
+  const parent = realpathSync(dirname(out));
+  let physicalOutput = join(parent, basename(out));
+  try { physicalOutput = realpathSync(out); }
+  catch (error) { if (error.code !== 'ENOENT') throw error; }
+  const outputRelative = relative(repo, physicalOutput);
   refuse(isAbsolute(outputRelative) || outputRelative === '..' || outputRelative.startsWith('../'), 'output_inside_source');
+  refuse(parent === dirname(out), 'output_symlink_ancestor');
   regular(npmCli);
   const expected = expectedInputs(repo, source, rootLicense);
   mkdirSync(out); // Refuse existing output, rather than overwrite someone else's candidate.

@@ -27,10 +27,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/zeroemployeeorg/dt-creator"
-Repository = "https://github.com/zeroemployeeorg/dt-creator"
-Documentation = "https://zeroemployeeorg.github.io/dt-creator/"
-Issues = "https://github.com/zeroemployeeorg/dt-creator/issues"
+Homepage = "https://github.com/ducktyper-ai/dt-creator"
+Repository = "https://github.com/ducktyper-ai/dt-creator"
+Documentation = "https://ducktyper-ai.github.io/dt-creator/"
+Issues = "https://github.com/ducktyper-ai/dt-creator/issues"
 
 [project.scripts]
 zeo-creator = "zeo_creator.cli:main"

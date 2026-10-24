@@ -1,8 +1,8 @@
 site_name: ZEO Creator
 site_description: Provider-neutral creator operations, governed by design.
-site_url: https://zeroemployeeorg.github.io/dt-creator/
-repo_url: https://github.com/zeroemployeeorg/dt-creator
-repo_name: zeroemployeeorg/dt-creator
+site_url: https://ducktyper-ai.github.io/dt-creator/
+repo_url: https://github.com/ducktyper-ai/dt-creator
+repo_name: ducktyper-ai/dt-creator
 edit_uri: edit/main/docs/
 copyright: Copyright &copy; 2026 Prof Rod · MIT licensed
 

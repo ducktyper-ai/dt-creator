@@ -150,6 +150,7 @@ function packageInputs(repo, source) {
   refuse(Array.isArray(manifest.files) && manifest.files.length > 0 && manifest.files.length <= 32, 'package_files');
   const names = ['package.json', ...manifest.files];
   refuse(new Set(names).size === names.length && names.every(safePath), 'package_files');
+  refuse(names.every(name => name.split('/').every(part => part.toLowerCase() !== '.npmrc')), 'package_npmrc');
   // v1 deliberately supports literal regular-file selections only, not glob/directory expansion.
   const inputs = new Map(names.map(name => [name, blob(repo, source, `${PACKAGE}/${name}`)]));
   // npm forcibly includes root readme/copying/license files even when omitted from files.
@@ -294,7 +295,7 @@ export function buildCandidate({repo, source, out, npmCli, rootLicense = null}) 
       npm_config_cache: cache, npm_config_userconfig: join(home, 'absent-npmrc'), npm_config_globalconfig: join(home, 'absent-global-npmrc'),
       npm_config_offline: 'true', npm_config_ignore_scripts: 'true', npm_config_audit: 'false', npm_config_fund: 'false',
       UV_THREADPOOL_SIZE: '1'};
-    const raw = execFileSync(process.execPath, ['--max-old-space-size=128', '--v8-pool-size=1', npmCli, 'pack', '--offline', '--ignore-scripts', '--json', '--pack-destination', scratch], {cwd: stage, env, timeout: 30000, maxBuffer: LIMIT});
+    const raw = execFileSync(process.execPath, ['--max-old-space-size=128', '--v8-pool-size=1', npmCli, 'pack', '--offline', '--ignore-scripts', '--workspaces=false', '--json', '--pack-destination', scratch], {cwd: stage, env, timeout: 30000, maxBuffer: LIMIT, stdio: ['ignore', 'pipe', 'pipe']});
     const report = parseIndex(raw); refuse(Array.isArray(report) && report.length === 1, 'pack_report');
     const packed = report[0]; refuse(safePath(packed.filename) && !packed.filename.includes('/'), 'pack_filename');
     const archive = regular(join(scratch, packed.filename)); const members = archiveMembers(archive);

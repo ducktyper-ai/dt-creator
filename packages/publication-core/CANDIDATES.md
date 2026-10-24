@@ -8,6 +8,8 @@ Use the admitted Node 24 installation and its bundled npm CLI. Run inside the ap
 offline execution controls; `--offline` and `--ignore-scripts` are application settings,
 not an OS network sandbox. Heavy qualification runs use the supported ENG route.
 
+The tool does not verify the Node or npm CLI it runs: --npm-cli is only required to be a non-symlinked regular file, and is executed with the caller's privileges; the caller must supply the admitted bundled npm.
+
 ```sh
 node packages/publication-core/tools/candidate-distribution.mjs build \
   --repo /absolute/clean/checkout --source FULL_40_CHARACTER_HEAD \
@@ -37,6 +39,7 @@ self-consistent index cannot authorize different source bytes. The index is not 
 Source identities must name actual commit objects; a tree or annotated-tag object ID is refused. Source cleanliness compares the real index with that commit and inspects worktree bytes using disposable private Git metadata, without importing repository clean filters, fsmonitor or submodule configuration. Submodule trees are refused; assume-unchanged/skip-worktree index flags cannot hide changed files. Existing-directory and parent realpaths enforce physical source/output separation, including case aliases on case-insensitive filesystems.
 
 The tool deliberately uses `/usr/bin/git` on supported POSIX hosts. That exact executable and its runtime must be part of the receiver-adopted closure; there is no PATH search or download fallback. Public CLI refusals retain the fixed body-free `candidate_refused`/exit20 contract; internal guards have named errors for focused assertions.
+On macOS, this includes the active developer directory reported by `/usr/bin/xcode-select -p` and the Git executable resolved inside it, alongside `/usr/bin/git`.
 
 Archive parsing is bounded and supports regular USTAR members only. It refuses duplicate,
 absolute, traversing, noncanonical, link, executable, extended-header, malformed, truncated

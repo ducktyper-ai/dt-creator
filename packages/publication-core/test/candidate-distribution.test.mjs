@@ -19,7 +19,7 @@ function command(program, args, cwd, home) {
     env: {PATH: '/usr/bin:/bin', HOME: home, TMPDIR: home, XDG_CONFIG_HOME: home, XDG_CACHE_HOME: home,
       npm_config_cache: join(home, 'cache'), npm_config_offline: 'true', npm_config_ignore_scripts: 'true',
       npm_config_userconfig: join(home, 'absent-npmrc'), npm_config_globalconfig: join(home, 'absent-global-npmrc'),
-      npm_config_audit: 'false', npm_config_fund: 'false', UV_THREADPOOL_SIZE: '1'}});
+      npm_config_audit: 'false', npm_config_fund: 'false', GIT_CONFIG_NOSYSTEM: '1', UV_THREADPOOL_SIZE: '1'}});
 }
 function fixture(t, {lifecycle = false, tempRoot = tmpdir()} = {}) {
   const created = mkdtempSync(join(tempRoot, 'core-candidate-test-'));
@@ -103,6 +103,44 @@ test('pack and offline consumer installation never execute package lifecycle hoo
   assert.equal(existsSync(join(f.work, 'LIFECYCLE_RAN')), false, 'lifecycle hooks must remain disabled');
 });
 
+test('package npmrc inputs refuse before npm execution', t => {
+  for (const name of ['.npmrc', 'config/.npmrc', '.NPMRC']) {
+    const f = fixture(t);
+    const pkg = join(f.repo, 'packages/publication-core');
+    const manifest = JSON.parse(readFileSync(join(pkg, 'package.json'), 'utf8'));
+    manifest.files.push(name);
+    writeFileSync(join(pkg, 'package.json'), JSON.stringify(manifest));
+    mkdirSync(dirname(join(pkg, name)), {recursive: true});
+    writeFileSync(join(pkg, name), 'workspaces=true\n');
+    command('/usr/bin/git', ['add', '.'], f.repo, f.work);
+    command('/usr/bin/git', ['-c', 'user.name=Synthetic Fixture', '-c', 'user.email=fixture@example.invalid',
+      '-c', 'commit.gpgsign=false', 'commit', '-qm', 'Synthetic npmrc input\n\nsow: zeroemployee-SOW-180'], f.repo, f.work);
+    f.source = command('/usr/bin/git', ['rev-parse', 'HEAD'], f.repo, f.work).toString().trim();
+    const marker = join(f.work, 'NPM_INVOKED');
+    const recorder = join(f.work, 'recorder.mjs');
+    writeFileSync(recorder, `import {writeFileSync} from 'node:fs'; writeFileSync(${JSON.stringify(marker)}, 'invoked');`);
+    assert.throws(() => buildCandidate({...f, npmCli: recorder}), /package_npmrc/, 'NPMRC_INPUT_GUARD');
+    assert.equal(existsSync(marker), false, 'NPMRC_REFUSED_BEFORE_EXECUTION');
+  }
+});
+
+test('npm failures keep child diagnostics out of public CLI output', t => {
+  const f = fixture(t);
+  const recorder = join(f.work, 'failing-npm.mjs');
+  writeFileSync(recorder, "process.stdout.write('PRIVATE_NPM_STDOUT'); process.stderr.write('PRIVATE_NPM_STDERR'); process.exit(23);\n");
+  const result = spawnSync(process.execPath, ['--max-old-space-size=128', '--v8-pool-size=1',
+    join(root, 'tools/candidate-distribution.mjs'), 'build', '--repo', f.repo, '--source', f.source,
+    '--out', f.out, '--npm-cli', recorder], {
+    cwd: f.work, timeout: 10000, killSignal: 'SIGKILL', maxBuffer: 2 * 1024 * 1024, encoding: 'utf8',
+    env: {PATH: '/usr/bin:/bin', HOME: f.work, TMPDIR: f.work, GIT_CONFIG_NOSYSTEM: '1', UV_THREADPOOL_SIZE: '1'},
+  });
+  assert.equal(result.error, undefined);
+  assert.equal(result.status, 20);
+  assert.deepEqual(JSON.parse(result.stdout), {ok: false, schema: 'zeocreator.publication-core-candidate/v1',
+    candidate: true, label: 'CANDIDATE', reason: 'candidate_refused'});
+  assert.equal(result.stderr, '', 'NPM_DIAGNOSTICS_NOT_PUBLIC');
+});
+
 test('CLI verification returns CANDIDATE JSON and refuses duplicate arguments without echoing input', t => {
   const f = built(t); const tool = join(root, 'tools/candidate-distribution.mjs');
   const raw = command(process.execPath, [tool, 'verify', '--repo', f.repo, '--source', f.source, '--archive', join(f.out, 'candidate.tgz'), '--index', join(f.out, 'candidate-index.json')], f.work, f.work);
@@ -126,7 +164,7 @@ test('FIFO inputs refuse before reads and preserve the regular-file CLI positive
   const run = args => spawnSync(process.execPath, ['--max-old-space-size=128', '--v8-pool-size=1', ...args], {
     cwd: f.work, timeout: 5000, killSignal: 'SIGKILL', maxBuffer: 2 * 1024 * 1024, encoding: 'utf8',
     env: {PATH: '/usr/bin:/bin', HOME: f.work, TMPDIR: f.work, XDG_CONFIG_HOME: f.work,
-      XDG_CACHE_HOME: f.work, UV_THREADPOOL_SIZE: '1'},
+      XDG_CACHE_HOME: f.work, GIT_CONFIG_NOSYSTEM: '1', UV_THREADPOOL_SIZE: '1'},
   });
   // Instrument only the isolated child: a removed type guard fails a named
   // assertion before a FIFO read, rather than earning a timeout as a mutant kill.

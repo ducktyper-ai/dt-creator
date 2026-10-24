@@ -82,4 +82,4 @@ In a source checkout, `make reference` rebuilds the fixtures from the determinis
 strategies. The installed example validates the bundled artifacts without regenerating them.
 
 Inspect the generated JSON in
-[`reference/examples`](https://github.com/zeroemployeeorg/dt-creator/tree/main/reference/examples).
+[`reference/examples`](https://github.com/ducktyper-ai/dt-creator/tree/main/reference/examples).

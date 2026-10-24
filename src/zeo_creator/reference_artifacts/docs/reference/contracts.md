@@ -1,7 +1,7 @@
 # Contract API
 
 ZEO Creator ships its versioned JSON Schemas inside the wheel and commits copies
-under [`reference/schemas`](https://github.com/zeroemployeeorg/dt-creator/tree/main/reference/schemas).
+under [`reference/schemas`](https://github.com/ducktyper-ai/dt-creator/tree/main/reference/schemas).
 
 ```console
 zeo-creator contracts list --json

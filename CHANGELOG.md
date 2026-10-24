@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Add the generic review rubric: the `ReviewRubric` and `RubricScorecard` contracts and the pure, fail-closed capability `creator.evaluate_rubric@1.0.0` (the 30th capability; the runtime-provider inventory changes). Creator ships the shape and the engine only: no rubric instance, scorer, lexicon, persona or profile.
-- Add `zeo_creator.reference.newsletter_rubric`: the shared newsletter quality bar as neutral reference rubric data (relevance, interest, concision, voice, visual quality; 90 of 100 overall, no criterion under 80%) and a deterministic length-budget check. Caller-owned data, not a capability or scorer; no model is called and no registry or manifest changes.
+- Add `zeo_creator.services.length_budgets.check_length_budgets`, a generic deterministic word-budget check: the caller supplies every budget, it names each breach and never trims. Add `zeo_creator.reference.newsletter_rubric`, an **illustrative** newsletter rubric (`example.newsletter`: five scored criteria, a 90 of 100 bar, no criterion under 80%) with example budgets. It is caller-owned data, not a capability or scorer, and not the production policy: the consuming newsroom owns its production criteria, weights, threshold and budgets. No model is called and no registry or manifest changes.
 
 ## 0.6.0 — 2026-10-13 (preparation marker; the release date is set when tagged)
 

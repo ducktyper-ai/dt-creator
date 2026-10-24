@@ -1,4 +1,4 @@
-"""The shared newsletter rubric is valid data, applies the 90/80 bar and checks budgets."""
+"""The illustrative newsletter rubric is valid data and applies its example 90/80 bar."""
 
 from datetime import UTC, datetime
 
@@ -8,12 +8,7 @@ from zeo_creator.contracts.rubric import (
     RubricScorecard,
     TextQuote,
 )
-from zeo_creator.reference.newsletter_rubric import (
-    BUDGETS,
-    check_length_budgets,
-    newsletter_rubric,
-    words,
-)
+from zeo_creator.reference.newsletter_rubric import EXAMPLE_BUDGETS, newsletter_rubric
 from zeo_creator.services.rubric import evaluate_rubric
 
 NOW = datetime(2026, 10, 24, tzinfo=UTC)
@@ -84,29 +79,13 @@ def test_four_fours_and_a_five_miss_the_ninety_bar() -> None:
     assert not run({**dict.fromkeys(ALL, 4), "relevance": 5}).passed  # 21/25 = 84%
 
 
-def test_budgets_pass_inside_and_name_every_breach_outside() -> None:
-    lead = " ".join(["word"] * 380)
-    reading = " ".join(["word"] * 65)
-    assert (
-        check_length_budgets(
-            subject="Short subject",
-            preheader="Short",
-            sections={"lead": lead, "reading": [reading] * 3},
-        )
-        == ()
-    )
-    broken = check_length_budgets(
-        subject="s" * 56,
-        preheader="p" * 91,
-        sections={"lead": "too short", "reading": [reading, "x " * 90], "mystery": "x"},
-    )
-    assert any(item.startswith("subject:") for item in broken)
-    assert any(item.startswith("preheader:") for item in broken)
-    assert any(item.startswith("lead 1:") for item in broken)
-    assert any(item.startswith("reading 2:") for item in broken)
-    assert any(item.startswith("mystery:") for item in broken)
+def test_the_evaluation_records_which_rubric_it_applied() -> None:
+    rb = rubric()
+    result = run(dict.fromkeys(ALL, 5))
+    assert result.rubric_ref == rb.ref()
+    assert result.rubric_ref.rubric_id == "example.newsletter"
 
 
-def test_words_exclude_urls_and_every_budget_has_an_ordered_range() -> None:
-    assert words("see https://example.org/a/b now") == 2
-    assert all(low <= high for low, high in BUDGETS.values())
+def test_the_rubric_is_labelled_an_example_and_its_example_budgets_are_ordered() -> None:
+    assert rubric().rubric_id.startswith("example.")
+    assert all(low <= high for low, high in EXAMPLE_BUDGETS.values())

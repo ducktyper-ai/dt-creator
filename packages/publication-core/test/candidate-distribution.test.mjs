@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-import {chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync} from 'node:fs';
+import {chmodSync, cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, symlinkSync, utimesSync, writeFileSync} from 'node:fs';
 import {dirname, join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {fileURLToPath} from 'node:url';
@@ -256,10 +256,11 @@ test('source inspection never executes a configured clean filter', t => {
   writeFileSync(driver, `const fs = require('node:fs'); fs.writeFileSync(${JSON.stringify(marker)}, 'ran'); process.stdout.write(fs.readFileSync(0));\n`);
   const quote = value => "'" + value.replaceAll("'", "'\\''") + "'";
   command('/usr/bin/git', ['config', 'filter.candidate-fixture.clean', `${quote(process.execPath)} ${quote(driver)}`], f.repo, f.work);
-  writeFileSync(file, 'changed positive control\n');
+  writeFileSync(file, 'changed!\n');
+  utimesSync(file, new Date(1), new Date(1));
   command('/usr/bin/git', ['status', '--porcelain'], f.repo, f.work);
   assert.equal(existsSync(marker), true, 'positive control: ordinary Git status ran the clean filter');
-  writeFileSync(file, 'original\n'); rmSync(marker);
+  writeFileSync(file, 'original\n'); utimesSync(file, new Date(2), new Date(2)); rmSync(marker);
   assert.equal(buildCandidate(f).ok, true);
   assert.equal(existsSync(marker), false, 'candidate source inspection must not execute clean filters');
 });
@@ -290,7 +291,8 @@ test('physical containment covers source aliases and actual filesystem case beha
   assert.throws(() => buildCandidate({...f, out: join(alias, 'candidate')}), /output_inside_source/);
   const casePath = join(f.work, 'SOURCE');
   if (existsSync(casePath)) {
-    assert.equal(realpathSync(casePath), f.repo);
+    const original = lstatSync(f.repo, {bigint: true}); const alias = lstatSync(casePath, {bigint: true});
+    assert.equal(alias.dev, original.dev); assert.equal(alias.ino, original.ino);
     assert.throws(() => buildCandidate({...f, out: join(casePath, 'candidate')}), /output_inside_source/);
     assert.throws(() => buildCandidate({...f, out: casePath}), /output_inside_source/);
   } else {

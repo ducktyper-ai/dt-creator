@@ -89,7 +89,7 @@ function regular(path, limit = LIMIT) {
 }
 
 const git = (repo, ...args) => execFileSync('/usr/bin/git', ['--no-optional-locks', '-c', 'core.fsmonitor=false', '-c', 'core.hooksPath=/dev/null', '-C', repo, ...args], {
-  maxBuffer: TAR_LIMIT, timeout: 10000,
+  maxBuffer: TAR_LIMIT, timeout: 10000, stdio: ['pipe', 'pipe', 'pipe'],
   env: {PATH: '/usr/bin:/bin', GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_TERMINAL_PROMPT: '0', GIT_NO_REPLACE_OBJECTS: '1'},
 });
 function blob(repo, source, path) {
@@ -130,7 +130,7 @@ function cleanSource(repo, source) {
     writeFileSync(join(metadata, 'HEAD'), `${source}\n`, {flag: 'wx'});
     writeFileSync(join(metadata, 'config'), '[core]\nrepositoryformatversion = 0\nbare = false\n', {flag: 'wx'});
     const inspect = (...args) => execFileSync('/usr/bin/git', ['--no-optional-locks', '-c', 'core.fsmonitor=false', '-c', 'core.hooksPath=/dev/null', '-c', 'core.attributesFile=/dev/null', ...args], {
-      maxBuffer: TAR_LIMIT, timeout: 10000,
+      maxBuffer: TAR_LIMIT, timeout: 10000, stdio: ['pipe', 'pipe', 'pipe'],
       env: {PATH: '/usr/bin:/bin', GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null', GIT_TERMINAL_PROMPT: '0', GIT_NO_REPLACE_OBJECTS: '1',
         GIT_DIR: metadata, GIT_WORK_TREE: repo, GIT_OBJECT_DIRECTORY: objects},
     });
@@ -253,6 +253,20 @@ export function verifyCandidate({repo, source, archive, index}) {
   return {ok: true, schema: SCHEMA, candidate: true, label: 'CANDIDATE', sourceCommit: source, members: members.size, archiveSha256: digest(archive)};
 }
 
+// realpath may preserve supplied casing on a case-insensitive filesystem.
+// Compare actual directory identity along the output's ancestor chain too.
+function refusePhysicalSourceOutput(repo, output) {
+  const source = lstatSync(repo, {bigint: true});
+  let path = output;
+  while (true) {
+    let entry;
+    try { entry = lstatSync(path, {bigint: true}); }
+    catch (error) { if (error.code !== 'ENOENT') throw error; }
+    refuse(!entry || entry.dev !== source.dev || entry.ino !== source.ino, 'output_inside_source');
+    const parent = dirname(path); if (parent === path) break; path = parent;
+  }
+}
+
 export function buildCandidate({repo, source, out, npmCli, rootLicense = null}) {
   repo = realpathSync(repo); out = resolve(out); npmCli = resolve(npmCli);
   refuse(commit(source) && git(repo, 'rev-parse', 'HEAD').toString().trim() === source, 'source_head');
@@ -261,6 +275,7 @@ export function buildCandidate({repo, source, out, npmCli, rootLicense = null}) 
   let physicalOutput = join(parent, basename(out));
   try { physicalOutput = realpathSync(out); }
   catch (error) { if (error.code !== 'ENOENT') throw error; }
+  refusePhysicalSourceOutput(repo, physicalOutput);
   const outputRelative = relative(repo, physicalOutput);
   refuse(isAbsolute(outputRelative) || outputRelative === '..' || outputRelative.startsWith('../'), 'output_inside_source');
   refuse(parent === dirname(out), 'output_symlink_ancestor');

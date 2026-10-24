@@ -4,10 +4,12 @@ import tarfile
 import zipfile
 from pathlib import Path
 
+from scripts.build_paths import dist_dir
+
 
 def main() -> None:
-    wheels = tuple(Path("dist").glob("*.whl"))
-    sdists = tuple(Path("dist").glob("*.tar.gz"))
+    wheels = tuple(dist_dir().glob("*.whl"))
+    sdists = tuple(dist_dir().glob("*.tar.gz"))
     assert len(wheels) == len(sdists) == 1, "dist must contain one wheel and one sdist"
     wheel = wheels[0]
     sdist = sdists[0]

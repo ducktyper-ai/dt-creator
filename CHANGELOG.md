@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Add the generic review rubric: the `ReviewRubric` and `RubricScorecard` contracts and the pure, fail-closed capability `creator.evaluate_rubric@1.0.0` (the 30th capability; the runtime-provider inventory changes). Creator ships the shape and the engine only: no rubric instance, scorer, lexicon, persona or profile.
+
 ## 0.6.0 — 2026-10-13 (preparation marker; the release date is set when tagged)
 
 - Add the `thread-authoring` skill (`skills/thread-authoring/SKILL.md`) with `zeo-creator lint-thread` and `zeo_creator.thread_lint`, a deterministic structural linter for a numbered post thread (`thread-draft/1`): 280-character limit counted as NFC code points with URLs as 23, numbering, source outside the posts, link dependence, a repeating last post, and caller-supplied forbidden phrases. It reports what needs a reviewer under `needs_review`. Output schema `zeocreator.thread-lint/v1`; exits 0 clean, 20 findings, 2 invalid. It refuses control, default-ignorable, unassigned and ambiguous-space characters and a post hidden inside another, and rejects duplicate JSON keys. Not a registered capability; the runtime-provider inventory is unchanged.
@@ -13,8 +17,9 @@
 - Add `make install VERSION=X.Y.Z`, which installs a published release as a tool and runs `doctor` (catch-up: merged in #20 without an entry).
 - Publishing runs in the GitHub environments `pypi` and `testpypi`, so an upload waits for approval once the environment requires a reviewer.
 - Drop the direct `rich` dependency, which the CLI no longer uses; Typer still installs it.
-- **Agentic experience (standard v1):** `zeo-creator help --json` is a machine catalogue of every command, option, exit code and output schema id. Every result carries `"schema": "zeocreator.<thing>/v1"`. `contract-schema` now answers the schema under `json_schema` (`schema` is now the id). Shell-completion options are gone.
-- **Next steps (standard v1, rules 6 and 7):** `doctor` lists each failing check with the command that fixes it, under `next`. An invalid request carries a fixed `reason` and a `next` command, never the input. The unknown-contract `message` is now `reason`.
+- **Agentic experience (standard v1):** `zeo-creator help --json` is a machine catalogue of every command, option, exit code and output schema id. Every result carries `"schema": "zeocreator.<thing>/v1"`. `contract-schema` now answers the schema under `json_schema` (unreleased rename; `schema` is the id). Shell-completion options are gone.
+- `make verify` can write its builds outside the checkout: `DIST_DIR` and `SITE_DIR` (defaults `dist` and `site`) set where `uv build` and `mkdocs` write, and the distribution checks read `ZEOCREATOR_DIST_DIR`.
+- **Next steps (standard v1, rules 6 and 7):** `doctor` lists each failing check with the command that fixes it, under `next`. An invalid request carries a fixed `reason` and a `next` command, never the input. The unknown-contract `message` (unreleased) becomes `reason`.
 - Email links refuse a backslash, which browsers read as a path separator but URL parsers don't, so a link can't show one host and open another. This applies to `EmailLink` and the body renderer alike.
 - Add `zeo_creator.rendering.render_email_body`, a pure renderer from structured blocks to an accessible, escaped HTML fragment for a template slot, with its plain-text twin and digests that match `EmailDeliveryMaterial`.
 - **Require `zeocore[runtime-host]==0.18.0`** (was 0.11.0; qualified at 0.15.0 and again at 0.18.0, whose runtime-host-v1 protocol files are byte-identical). Zeocore 0.15.0 made every runtime-host name Creator uses public. `doctor` reports the check as `zeocore_0_18_0`.

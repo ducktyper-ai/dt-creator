@@ -138,8 +138,8 @@ def doctor(
     checks = {
         "python_3_14_or_newer": sys.version_info >= (3, 14),
         "zeocore_0_18_0": zeocore_version == "0.18.0",
-        "twenty_nine_manifests": len(capability_manifests()) == 29,
-        "twenty_nine_openai_projections": len(openai_tool_projections()) == 29,
+        "thirty_manifests": len(capability_manifests()) == 30,
+        "thirty_openai_projections": len(openai_tool_projections()) == 30,
     }
     payload = {
         "ok": all(checks.values()),
@@ -299,6 +299,7 @@ def help_catalogue(
             "commands": _commands(root_command),
             "exit_codes": [{"code": code, "meaning": meaning} for code, meaning in EXIT_CODES],
             "error_schema": "zeocreator.error/v1",
+            "usage_error_reasons": list(USAGE_REASONS),
             "version_schema": "zeocreator.version/v1",
         },
     )
@@ -309,12 +310,25 @@ _REINSTALL = f'uv tool install --force "zeocreator=={__version__}"'
 DOCTOR_NEXT = {
     "python_3_14_or_newer": f"install Python 3.14 or newer, then run: {_REINSTALL}",
     "zeocore_0_18_0": 'run: uv pip install "zeocore[runtime-host]==0.18.0", or reinstall zeocreator',
-    "twenty_nine_manifests": f"run: {_REINSTALL}; if it persists, report it to the zeocreator seat",
-    "twenty_nine_openai_projections": (
+    "thirty_manifests": f"run: {_REINSTALL}; if it persists, report it to the zeocreator seat",
+    "thirty_openai_projections": (
         f"run: {_REINSTALL}; if it persists, report it to the zeocreator seat"
     ),
 }
 INTERNAL_NEXT = "rerun once; if it fails again, report the command to the zeocreator seat"
+
+
+# The closed set of reasons a command-line USAGE error gives; help --json lists them.
+# A command that validates its own input (lint-thread) gives its own fixed reasons, not these.
+USAGE_REASONS = (
+    "unknown command",
+    "missing command",
+    "unknown option",
+    "missing required option",
+    "invalid option value",
+    "unknown contract",
+    "invalid command line",
+)
 
 
 def _invalid(reason: str, next_step: str) -> dict[str, object]:

@@ -96,14 +96,18 @@ Other seats and tools operate the CLI through this fixed contract:
   usage text, go to stderr. `--json` is still accepted and changes nothing.
 - **Errors say what to do, and never echo input on stdout.** An invalid request
   answers `{"ok": false, "outcome": "invalid_request", "reason": ..., "next": ...}`.
-  The reason is a fixed phrase (`unknown command`, `missing command`, `unknown
-  option`, `missing required option`, `invalid option value`, `unknown contract`),
-  and `next` is the command to run: `zeo-creator help --json`, or
-  `zeo-creator contracts list` for an unknown contract. Neither names what was sent.
-  An internal error carries only a `next` step.
+  For a command-line usage error the reason is one of seven fixed phrases (`unknown
+  command`, `missing command`, `unknown option`, `missing required option`, `invalid
+  option value`, `unknown contract`, and `invalid command line` for anything else), also
+  listed by `help --json` as `usage_error_reasons`. A command that validates its own input
+  (`lint-thread`) answers the same shape with its own fixed reason, for example `draft is
+  not valid JSON`; those reasons are not in that list. `next` is the command to run:
+  `zeo-creator help --json`, or `zeo-creator contracts list` for an unknown
+  contract. Neither names what was sent. An internal error carries only a `next`
+  step. The usage text on stderr can name the unknown option, because stderr carries
+  diagnostics for a person.
 - **`doctor` names the fix:** each failing check appears in `next` with the exact
-  command that fixes it, or who must act. A healthy install has `"next": []`. The usage text on stderr can name the unknown
-  option, because stderr carries diagnostics for a person.
+  command that fixes it, or who must act. A healthy install has `"next": []`.
 - **The one exception is `runtime-provider`,** whose canonical bytes Runtime
   reads. It ends when Runtime confirms a reader for the JSON-lines form.
 - Exit codes follow Zeocore's `cli_protocol` 1, so they mean the same in every

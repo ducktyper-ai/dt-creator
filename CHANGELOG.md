@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add the generic review rubric: the `ReviewRubric` and `RubricScorecard` contracts and the pure, fail-closed capability `creator.evaluate_rubric@1.0.0` (the 30th capability; the runtime-provider inventory changes). Creator ships the shape and the engine only: no rubric instance, scorer, lexicon, persona or profile.
+- Add `examples/newsletter_rubric.py`: the shared newsletter quality bar as rubric data (relevance, interest, concision, voice, visual quality; 90 of 100 overall, no criterion under 80%) and a deterministic length-budget check. It is example data the caller owns, not a shipped rubric instance, scorer or capability; no model is called.
 
 ## 0.6.0 — 2026-10-13 (preparation marker; the release date is set when tagged)
 

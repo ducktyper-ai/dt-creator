@@ -86,6 +86,7 @@ examples:
 	$(UV) run python examples/inspect_capabilities.py
 	$(UV) run python examples/create_content_brief.py
 	$(UV) run python examples/research_connector.py
+	$(UV) run python examples/newsletter_rubric.py
 	$(UV) run python examples/validate_and_prepare.py
 	$(UV) run python examples/assess_performance.py
 	$(UV) run python examples/complete_content_portfolio.py

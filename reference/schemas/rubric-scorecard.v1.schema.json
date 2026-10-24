@@ -1,0 +1,452 @@
+{
+  "$defs": {
+    "ArtifactRegion": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_ref": {
+          "minLength": 1,
+          "title": "Artifact Ref",
+          "type": "string"
+        },
+        "kind": {
+          "const": "artifact_region",
+          "default": "artifact_region",
+          "title": "Kind",
+          "type": "string"
+        },
+        "region": {
+          "minLength": 1,
+          "title": "Region",
+          "type": "string"
+        }
+      },
+      "required": [
+        "artifact_ref",
+        "region"
+      ],
+      "title": "ArtifactRegion",
+      "type": "object"
+    },
+    "CorpusMatch": {
+      "additionalProperties": false,
+      "properties": {
+        "corpus_snapshot_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Corpus Snapshot Digest",
+          "type": "string"
+        },
+        "kind": {
+          "const": "corpus_match",
+          "default": "corpus_match",
+          "title": "Kind",
+          "type": "string"
+        },
+        "matched_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Matched Digest",
+          "type": "string"
+        },
+        "matched_manifest_id": {
+          "minLength": 1,
+          "title": "Matched Manifest Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "matched_manifest_id",
+        "matched_digest",
+        "corpus_snapshot_digest"
+      ],
+      "title": "CorpusMatch",
+      "type": "object"
+    },
+    "CriterionScore": {
+      "additionalProperties": false,
+      "properties": {
+        "criterion_id": {
+          "maxLength": 96,
+          "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$",
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "evidence": {
+          "default": [],
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "artifact_region": "#/$defs/ArtifactRegion",
+                "corpus_match": "#/$defs/CorpusMatch",
+                "missing_element": "#/$defs/MissingElement",
+                "text_quote": "#/$defs/TextQuote"
+              },
+              "propertyName": "kind"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/TextQuote"
+              },
+              {
+                "$ref": "#/$defs/ArtifactRegion"
+              },
+              {
+                "$ref": "#/$defs/MissingElement"
+              },
+              {
+                "$ref": "#/$defs/CorpusMatch"
+              }
+            ]
+          },
+          "title": "Evidence",
+          "type": "array"
+        },
+        "passed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Passed"
+        },
+        "points": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Points"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "scored",
+            "unknown"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "state",
+        "reason"
+      ],
+      "title": "CriterionScore",
+      "type": "object"
+    },
+    "DocumentSubject": {
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "minLength": 1,
+          "title": "Document Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "document",
+          "default": "document",
+          "title": "Kind",
+          "type": "string"
+        },
+        "source_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Source Digest",
+          "type": "string"
+        },
+        "source_revision": {
+          "minLength": 1,
+          "title": "Source Revision",
+          "type": "string"
+        }
+      },
+      "required": [
+        "document_id",
+        "source_revision",
+        "source_digest"
+      ],
+      "title": "DocumentSubject",
+      "type": "object"
+    },
+    "ManifestSubject": {
+      "additionalProperties": false,
+      "properties": {
+        "brief_id": {
+          "minLength": 1,
+          "title": "Brief Id",
+          "type": "string"
+        },
+        "content_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Content Digest",
+          "type": "string"
+        },
+        "kind": {
+          "const": "manifest",
+          "default": "manifest",
+          "title": "Kind",
+          "type": "string"
+        },
+        "manifest_id": {
+          "minLength": 1,
+          "title": "Manifest Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "brief_id",
+        "manifest_id",
+        "content_digest"
+      ],
+      "title": "ManifestSubject",
+      "type": "object"
+    },
+    "MissingElement": {
+      "additionalProperties": false,
+      "properties": {
+        "element_id": {
+          "minLength": 1,
+          "title": "Element Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "missing_element",
+          "default": "missing_element",
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "element_id"
+      ],
+      "title": "MissingElement",
+      "type": "object"
+    },
+    "RubricRef": {
+      "additionalProperties": false,
+      "properties": {
+        "digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Digest",
+          "type": "string"
+        },
+        "rubric_id": {
+          "maxLength": 96,
+          "pattern": "^[a-z0-9]+(?:[._-][a-z0-9]+)*$",
+          "title": "Rubric Id",
+          "type": "string"
+        },
+        "rubric_version": {
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "title": "Rubric Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rubric_id",
+        "rubric_version",
+        "digest"
+      ],
+      "title": "RubricRef",
+      "type": "object"
+    },
+    "ScorecardRef": {
+      "additionalProperties": false,
+      "properties": {
+        "digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Digest",
+          "type": "string"
+        },
+        "scorecard_id": {
+          "minLength": 1,
+          "title": "Scorecard Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scorecard_id",
+        "digest"
+      ],
+      "title": "ScorecardRef",
+      "type": "object"
+    },
+    "TextQuote": {
+      "additionalProperties": false,
+      "properties": {
+        "block_id": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Block Id"
+        },
+        "kind": {
+          "const": "text_quote",
+          "default": "text_quote",
+          "title": "Kind",
+          "type": "string"
+        },
+        "quote": {
+          "minLength": 1,
+          "title": "Quote",
+          "type": "string"
+        }
+      },
+      "required": [
+        "quote"
+      ],
+      "title": "TextQuote",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "content_digest": {
+      "default": "",
+      "title": "Content Digest",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "human_participation_ref": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Human Participation Ref"
+    },
+    "input_refs": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Input Refs",
+      "type": "array"
+    },
+    "language": {
+      "pattern": "^[A-Za-z]{2,3}(-[A-Za-z0-9]{2,8})*$",
+      "title": "Language",
+      "type": "string"
+    },
+    "organization_id": {
+      "minLength": 1,
+      "title": "Organization Id",
+      "type": "string"
+    },
+    "overrides_ref": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ScorecardRef"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "publication_id": {
+      "minLength": 1,
+      "title": "Publication Id",
+      "type": "string"
+    },
+    "reviewer_ref": {
+      "minLength": 1,
+      "title": "Reviewer Ref",
+      "type": "string"
+    },
+    "reviewer_role": {
+      "enum": [
+        "agent",
+        "human"
+      ],
+      "title": "Reviewer Role",
+      "type": "string"
+    },
+    "revision": {
+      "default": 1,
+      "minimum": 1,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "rubric_ref": {
+      "$ref": "#/$defs/RubricRef"
+    },
+    "schema_version": {
+      "default": "1.0.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scorecard_id": {
+      "minLength": 1,
+      "title": "Scorecard Id",
+      "type": "string"
+    },
+    "scores": {
+      "items": {
+        "$ref": "#/$defs/CriterionScore"
+      },
+      "minItems": 1,
+      "title": "Scores",
+      "type": "array"
+    },
+    "subject": {
+      "discriminator": {
+        "mapping": {
+          "document": "#/$defs/DocumentSubject",
+          "manifest": "#/$defs/ManifestSubject"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ManifestSubject"
+        },
+        {
+          "$ref": "#/$defs/DocumentSubject"
+        }
+      ],
+      "title": "Subject"
+    }
+  },
+  "required": [
+    "created_at",
+    "organization_id",
+    "publication_id",
+    "scorecard_id",
+    "rubric_ref",
+    "subject",
+    "language",
+    "reviewer_ref",
+    "reviewer_role",
+    "scores"
+  ],
+  "title": "RubricScorecard",
+  "type": "object"
+}

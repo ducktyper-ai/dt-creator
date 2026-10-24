@@ -132,7 +132,7 @@ In a uv-managed project, prefix Python and CLI commands with `uv run`.
 | Journalism | `compose_news_article`, `review_news_article`, `prepare_correction` | Draft attributed reporting and represent corrections with risk gates |
 | Delivery and learning | `validate_delivery`, `prepare_distribution`, `assess_performance` | Validate bytes and claims, propose effects, and interpret outcomes |
 
-All 29 capability IDs are independently composable. There is intentionally no
+All 30 capability IDs are independently composable. There is intentionally no
 monolithic workflow capability. Scheduling, retries,
 approval state, persistence, provider execution, and reconciliation belong to
 the controlling runtime.

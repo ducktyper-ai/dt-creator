@@ -20,7 +20,7 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "zeocore[runtime-host]==0.18.0",
+  "zeocore[runtime-host]==0.28.0",
   "pydantic>=2.6.0",
   "rfc8785==0.1.4",
   "typer>=0.27.1",

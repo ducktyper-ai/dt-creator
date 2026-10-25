@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add offline CANDIDATE-only publication-core archive/index verification, isolated consumer and refusal tests; package/runtime/declaration identities stay unchanged and declaration type soundness remains unqualified.
 - Move the exact Zeocore pin to `zeocore[runtime-host]==0.28.0` (approved by the Architect, ans_4b0508f0991cd9c5). The doctor check id is `zeocore_0_28_0`. The pin, lock, guards and mirrors are the only change.
 - Add the generic review rubric: the `ReviewRubric` and `RubricScorecard` contracts and the pure, fail-closed capability `creator.evaluate_rubric@1.0.0` (the 30th capability; the runtime-provider inventory changes). Creator ships the shape and the engine only: no rubric instance, scorer, lexicon, persona or profile.
 - Point repository, documentation, badge and package-metadata links at `ducktyper-ai/dt-creator` and `ducktyper-ai.github.io/dt-creator` after the repository moved to the `ducktyper-ai` organization and was renamed in place (same repository id). The PyPI name `zeocreator`, the `zeo_creator` import, the `zeo-creator` CLI and every schema id are unchanged. The PyPI trusted publisher must be bound to the new repository name before a release; the old Pages address stops resolving.

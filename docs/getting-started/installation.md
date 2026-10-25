@@ -1,6 +1,6 @@
 # Installation
 
-Install `zeocreator==0.6.0` from PyPI with Python 3.14 or newer. Zeocore 0.18.0 is
+Install `zeocreator==0.6.0` from PyPI with Python 3.14 or newer. Zeocore 0.28.0 is
 installed automatically with its `runtime-host` extra; no credentials or accounts
 are needed for the examples.
 
@@ -50,7 +50,7 @@ zeo-creator contracts export --output=./schemas
 ```
 
 Version reports the JSON line `{"ok": true, "zeocreator": "0.6.0", "cli_protocol": "1"}`. Doctor reports `ok: true`, Python 3.14+,
-Zeocore 0.18.0, 30 manifests and 30 projections. The receipt command verifies 135
+Zeocore 0.28.0, 30 manifests and 30 projections. The receipt command verifies 135
 portable cases; it does not authenticate provider receipts. The email example
 prints eight programs and 104 simulated proposals with partial assessments.
 All eight public examples are packaged under `zeo_creator.examples` and work
@@ -70,7 +70,7 @@ make verify
 The tag fixes the release source; `uv.lock` fixes its development environment.
 Installed applications should retain their own lockfile as well.
 
-!!! note "Why exactly Zeocore 0.18.0?"
+!!! note "Why exactly Zeocore 0.28.0?"
 
     Creator pins the released shared Runtime host contract and its dependencies.
     Read the [architecture decision](../adr/0002-zeocore-runtime-host.md) and

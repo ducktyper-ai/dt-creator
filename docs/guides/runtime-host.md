@@ -1,6 +1,6 @@
 # Call Creator through the shared Runtime host
 
-Creator **0.6.0** installs Zeocore **0.18.0** and its `runtime-host` extra from
+Creator **0.6.0** installs Zeocore **0.28.0** and its `runtime-host` extra from
 PyPI. Install the exact Creator release in a fresh environment. Upgrading from
 0.5.3 also upgrades Core; do not override the older package's dependency pin.
 
@@ -16,7 +16,7 @@ uv pip install --python /tmp/creator-host/bin/python "zeocreator==0.6.0"
 /tmp/creator-host/bin/python -m zeo_creator.examples.runtime_portfolio > /tmp/creator-request.json
 ```
 
-The wheel declares `zeocore[runtime-host]==0.18.0`. Runtime must retain its
+The wheel declares `zeocore[runtime-host]==0.28.0`. Runtime must retain its
 environment lock/image digest, verify wheel provenance, and pin the exact
 interpreter patch version. The Unix inherited-descriptor host supports macOS
 and Linux. Discovery preparation imports only the explicitly installed Creator
@@ -27,7 +27,7 @@ factory; execution uses Core's `zeo-capability` entry point.
 | Distribution | `zeocreator` |
 | Released version | `0.6.0` |
 | Factory | `zeo_creator.registry:capability_registry` |
-| Core dependency | `zeocore[runtime-host]==0.18.0` |
+| Core dependency | `zeocore[runtime-host]==0.28.0` |
 | Host protocol | `1` |
 | First operation | `creator.plan_content_portfolio@1.0.0` |
 | Expected response | `PlanContentPortfolioResponse`, containing `plan` |
@@ -83,7 +83,7 @@ verify Core's shared vectors and the prepared request bytes in Go.
 Runtime launches `zeo-capability invoke --request - --context-fd 3 --runtime-fd 4`.
 The prepared request goes on stdin. Runtime supplies `LaunchContext` on a private
 inherited descriptor and its connected Unix socket endpoint on another. Follow
-the exact [Core 0.18.0 protocol](https://github.com/zeroemployeeorg/zeocore/blob/v0.18.0/docs/how-to/runtime-host.md),
+the exact [Core 0.28.0 protocol](https://github.com/zeroemployeeorg/zeocore/blob/v0.28.0/docs/how-to/runtime-host.md),
 including four-byte big-endian framing, message/reply binding and total deadlines.
 
 1. `bootstrap`: Runtime verifies the actual supervised child, launch digest and

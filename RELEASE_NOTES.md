@@ -2,7 +2,7 @@
 
 Release date: set when the tag is cut (the CHANGELOG's 2026-10-13 is a preparation marker, not a release date).
 
-**The CLI now follows Zeocore's `cli_protocol` 1, and Creator requires Zeocore 0.18.0.**
+**The CLI now follows Zeocore's `cli_protocol` 1, and Creator requires Zeocore 0.28.0.**
 This is a breaking change for anyone who parses the CLI's output or exit codes: read the
 "CLI changes" section before upgrading. The library API, the 29 capability identities and the
 released contract schemas are unchanged.
@@ -18,7 +18,7 @@ uv pip install --python .venv/bin/python "zeocreator==0.6.0"
 .venv/bin/zeo-creator help --json
 ```
 
-With pip, install `zeocreator==0.6.0` in a Python 3.14+ virtual environment. Zeocore 0.18.0 and its
+With pip, install `zeocreator==0.6.0` in a Python 3.14+ virtual environment. Zeocore 0.28.0 and its
 host dependencies install automatically. The distribution remains `zeocreator`, the import
 `zeo_creator`, and the CLI `zeo-creator`. Retain a deployment lockfile and verify wheel provenance.
 `make install VERSION=0.6.0` installs this release as a tool and runs `doctor`.
@@ -51,9 +51,9 @@ host dependencies install automatically. The distribution remains `zeocreator`, 
 - **Adds a thread linter.** `zeo-creator lint-thread` (output schema `zeocreator.thread-lint/v1`) and
   the `thread-authoring` skill check a numbered post thread structurally. It is a pure command, not a
   registered capability, so the 29 capability identities and the runtime-provider inventory are unchanged.
-- **Requires `zeocore[runtime-host]==0.18.0`** (was 0.11.0). Zeocore 0.15.0 made every runtime-host
+- **Requires `zeocore[runtime-host]==0.28.0`** (was 0.11.0). Zeocore 0.15.0 made every runtime-host
   name Creator uses public, and the runtime-host-v1 protocol files are byte-identical from 0.11.0
-  through 0.18.0. `doctor` reports the check as `zeocore_0_18_0`.
+  through 0.18.0 and again at 0.28.0. `doctor` reports the check as `zeocore_0_28_0`.
 - **Fix:** the reference story-revision strategy now chains same-topic signals in one batch into
   successive revisions (1, 2, ...) with `previous_revision_ref` set, instead of several unrelated
   revision 1s of one story. Reference artifacts and contract digests are unchanged.

@@ -3,6 +3,7 @@
 ## Unreleased
 
 - The PR smoke job no longer persists the checkout token in the workspace (`persist-credentials: false` on `actions/checkout` in `.github/workflows/ci.yml`; Council P3 on the smoke cut).
+- Move the exact Zeocore pin to `zeocore[runtime-host]==0.28.0` (approved by the Architect, ans_4b0508f0991cd9c5). The doctor check id is `zeocore_0_28_0`. The pin, lock, guards and mirrors are the only change.
 - Add the generic review rubric: the `ReviewRubric` and `RubricScorecard` contracts and the pure, fail-closed capability `creator.evaluate_rubric@1.0.0` (the 30th capability; the runtime-provider inventory changes). Creator ships the shape and the engine only: no rubric instance, scorer, lexicon, persona or profile.
 - Point repository, documentation, badge and package-metadata links at `ducktyper-ai/dt-creator` and `ducktyper-ai.github.io/dt-creator` after the repository moved to the `ducktyper-ai` organization and was renamed in place (same repository id). The PyPI name `zeocreator`, the `zeo_creator` import, the `zeo-creator` CLI and every schema id are unchanged. The PyPI trusted publisher must be bound to the new repository name before a release; the old Pages address stops resolving.
 
@@ -24,7 +25,7 @@
 - **Next steps (standard v1, rules 6 and 7):** `doctor` lists each failing check with the command that fixes it, under `next`. An invalid request carries a fixed `reason` and a `next` command, never the input. The unknown-contract `message` (unreleased) becomes `reason`.
 - Email links refuse a backslash, which browsers read as a path separator but URL parsers don't, so a link can't show one host and open another. This applies to `EmailLink` and the body renderer alike.
 - Add `zeo_creator.rendering.render_email_body`, a pure renderer from structured blocks to an accessible, escaped HTML fragment for a template slot, with its plain-text twin and digests that match `EmailDeliveryMaterial`.
-- **Require `zeocore[runtime-host]==0.18.0`** (was 0.11.0; qualified at 0.15.0 and again at 0.18.0, whose runtime-host-v1 protocol files are byte-identical). Zeocore 0.15.0 made every runtime-host name Creator uses public. `doctor` reports the check as `zeocore_0_18_0`.
+- **Require `zeocore[runtime-host]==0.28.0`** (was 0.11.0; qualified at 0.15.0 and 0.18.0, then moved to 0.28.0 because the consuming newsroom's draft path needs it; the runtime-host-v1 protocol files are byte-identical at 0.15.0, 0.18.0 and 0.28.0). Zeocore 0.15.0 made every runtime-host name Creator uses public. `doctor` reports the check as `zeocore_0_18_0`.
 - **Fix:** the reference story-revision strategy chains same-topic signals in one batch into successive revisions (1, 2, ...) with `previous_revision_ref` set, instead of several unrelated revision 1s of one story. Reference artifacts and contract digests are unchanged.
 - **Fix:** `extract_editorial_signals`, `update_story_revisions` and `build_story_dossier` refuse an injected strategy's output that cites a signal, source, revision, story or lineage reference that is not an input of the same call.
 - Add the shared JCS test vectors v1 and wire rule 7 (a digest covers the fully materialized contract), and ADR 0003 on bounded Zeocore compatibility.

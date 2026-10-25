@@ -1,14 +1,14 @@
 # ADR 0003: Bounded, qualified Zeocore compatibility
 
-- Status: the bounded range is Proposed and not in force; the exact pin it would replace is now `==0.18.0`
+- Status: the bounded range is Proposed and not in force; the exact pin it would replace is now `==0.28.0`
 - Date: 2026-10-09; updated 2026-10-13
 - Decision owner: Creator seat, under the council's K4 direction of 2026-10-09
 - Supersedes, once accepted: ADR 0002's exact dependency pin only
-- Pin successor: the retained `==0.11.0` pin moved to `==0.15.0` in PR #24, approved by the council on 2026-10-12, and then to `==0.18.0` in PR #31 (both sensitive, dependency changes)
+- Pin successor: the retained `==0.11.0` pin moved to `==0.15.0` in PR #24, approved by the council on 2026-10-12, then to `==0.18.0` in PR #31, and then to `==0.28.0` (both sensitive, dependency changes)
 
 The council retained Creator's exact `zeocore[runtime-host]==0.11.0` pin until a
 successor decision is reviewed. That successor was PR #24 (`==0.15.0`, approved by the council on
-2026-10-12), and Creator now pins exactly `zeocore[runtime-host]==0.18.0` (PR #31). The pin is
+2026-10-12), and Creator now pins exactly `zeocore[runtime-host]==0.28.0` (earlier `==0.18.0` by PR #31). The pin is
 still exact; the bounded range below remains a proposal. The council also adopted bounded, qualified compatibility
 as the direction. Applications lock exact environments; a library should not
 demand one global Zeocore release. Creator has no hosted or Broker coupling, so
@@ -137,3 +137,14 @@ pass against 0.18.0, with the pin as the only change, and no reference artifact 
 moves. Creator now pins `==0.18.0`. The bounded range above remains a proposal: Zeocore now
 releases on every merge, so an exact pin needs a Creator PR per qualified release, and that cost is
 the case for deciding the range.
+
+## Qualified at Zeocore 0.28.0 (2026-10-24)
+
+The consuming newsroom's draft path needs Zeocore 0.28.0, and its current pins (`zeocore==0.11.0`,
+`zeocreator==0.5.4`) cannot install beside Creator 0.6.0. The Architect approved the move
+(ans_4b0508f0991cd9c5). The seven `contracts/runtime-host-v1/` files have the same git blob
+identity at the Zeocore tags v0.15.0, v0.18.0 and v0.28.0 (not checked at the releases in between).
+Creator's full `make verify` and `make doctor` pass against 0.28.0 with the pin, the lock, the
+two version guards and the regenerated documentation mirrors as the only changes; no reference
+artifact or contract digest moves. The bounded range stays a proposal. Zeocore has since released
+newer versions; this pin does not qualify them.

@@ -10,7 +10,7 @@ editions, production briefs, reviewed artifacts, commentary, newsletters and cor
 [![CI](https://github.com/ducktyper-ai/dt-creator/actions/workflows/ci.yml/badge.svg)](https://github.com/ducktyper-ai/dt-creator/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/zeocreator)](https://pypi.org/project/zeocreator/)
 [![Python 3.14+](https://img.shields.io/badge/Python-3.14%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Zeocore 0.11](https://img.shields.io/badge/Zeocore-0.18.0-087f75)](https://pypi.org/project/zeocore/)
+[![Zeocore 0.28](https://img.shields.io/badge/Zeocore-0.28.0-087f75)](https://pypi.org/project/zeocore/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/ducktyper-ai/dt-creator/blob/v0.6.0/LICENSE)
 
 [Documentation](https://ducktyper-ai.github.io/dt-creator/) · [Quickstart](https://ducktyper-ai.github.io/dt-creator/getting-started/installation/) · [Examples](https://github.com/ducktyper-ai/dt-creator/tree/v0.6.0/examples) · [API reference](https://ducktyper-ai.github.io/dt-creator/reference/contracts/)
@@ -52,7 +52,7 @@ flowchart LR
 
 ## Runtime integration
 
-Version 0.6.0 installs Zeocore 0.18.0 with its shared Runtime host. Use the
+Version 0.6.0 installs Zeocore 0.28.0 with its shared Runtime host. Use the
 [Runtime integration guide](https://ducktyper-ai.github.io/dt-creator/guides/runtime-host/)
 to export the provider inventory and prepare the real portfolio request.
 Creator/Core conformance is verified; Runtime's Go supervision, durable recovery
@@ -72,7 +72,7 @@ or:
 python -m pip install "zeocreator==0.6.0"
 ```
 
-Zeocore 0.18.0 is installed automatically. The distribution is `zeocreator`, the
+Zeocore 0.28.0 is installed automatically. The distribution is `zeocreator`, the
 Python import is `zeo_creator`, and the CLI is `zeo-creator`. Earlier Git-only
 installations used the distribution name `zeo-creator`; remove that distribution
 before installing this release, or use a fresh virtual environment.
@@ -228,7 +228,7 @@ wheel behavior. See [architecture](https://ducktyper-ai.github.io/dt-creator/con
 
 ## Status
 
-Version 0.6.0 moves to Zeocore 0.18.0 and gives the CLI Zeocore's `cli_protocol` 1 (one JSON line per
+Version 0.6.0 moves to Zeocore 0.28.0 and gives the CLI Zeocore's `cli_protocol` 1 (one JSON line per
 command, fixed exit codes, `help --json`), while preserving all 29 capability IDs, independently reviewed email v4 contracts and 135 portable receipt cases. This remains an early 0.x API: pin the
 package and contract versions. Release publication does not establish live
 HubSpot/Kit interoperability; execution and account qualification belong to the host.

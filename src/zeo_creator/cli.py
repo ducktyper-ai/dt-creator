@@ -137,7 +137,7 @@ def doctor(
     zeocore_version = importlib.metadata.version("zeocore")
     checks = {
         "python_3_14_or_newer": sys.version_info >= (3, 14),
-        "zeocore_0_18_0": zeocore_version == "0.18.0",
+        "zeocore_0_28_0": zeocore_version == "0.28.0",
         "thirty_manifests": len(capability_manifests()) == 30,
         "thirty_openai_projections": len(openai_tool_projections()) == 30,
     }
@@ -309,7 +309,7 @@ def help_catalogue(
 _REINSTALL = f'uv tool install --force "zeocreator=={__version__}"'
 DOCTOR_NEXT = {
     "python_3_14_or_newer": f"install Python 3.14 or newer, then run: {_REINSTALL}",
-    "zeocore_0_18_0": 'run: uv pip install "zeocore[runtime-host]==0.18.0", or reinstall zeocreator',
+    "zeocore_0_28_0": 'run: uv pip install "zeocore[runtime-host]==0.28.0", or reinstall zeocreator',
     "thirty_manifests": f"run: {_REINSTALL}; if it persists, report it to the zeocreator seat",
     "thirty_openai_projections": (
         f"run: {_REINSTALL}; if it persists, report it to the zeocreator seat"

@@ -2,7 +2,7 @@
 
 ## Version 0.6.0
 
-This release requires `zeocore[runtime-host]==0.18.0` and gives the CLI Zeocore's `cli_protocol` 1.
+This release requires `zeocore[runtime-host]==0.28.0` and gives the CLI Zeocore's `cli_protocol` 1.
 The distribution remains `zeocreator`, import `zeo_creator` and CLI `zeo-creator`, on Python 3.14+.
 The previous [0.5.4](releases/0.5.4.md) and [0.5.3](releases/0.5.3.md) release notes remain
 available as historical evidence.
@@ -76,7 +76,7 @@ dependencies from PyPI, avoiding mixed-index dependency resolution.
 Creator designs and evaluates email programs. Zeocore owns public provider
 contracts/lowering; ZEOconnect owns execution and credential custody; Runtime owns
 authority, schedules and durable reconciliation. Newsroom owns persisted observations.
-The released dependency is Zeocore 0.18.0. Creator exposes inventory and request
+The released dependency is Zeocore 0.28.0. Creator exposes inventory and request
 preparation for its shared host. Runtime still owns Go supervision, durable
 operation recovery, artifact retrieval and managed-agent acceptance. See the
 [Runtime host guide](guides/runtime-host.md) for the exact boundary.

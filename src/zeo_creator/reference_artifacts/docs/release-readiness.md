@@ -13,7 +13,7 @@ for a complete isolated setup and migration from the older Git-only distribution
 
 ## What the release verifies
 
-The package exposes 29 capabilities, including nine input-only email v4 capabilities.
+The package exposes 30 capabilities, including nine input-only email v4 capabilities.
 Verification covers formatting, Ruff, strict typing, tests, deterministic schema,
 corpus and example exports, strict documentation, JavaScript digests, wheel and
 sdist metadata, and installed-wheel behavior outside the checkout. All eight

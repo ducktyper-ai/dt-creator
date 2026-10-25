@@ -57,7 +57,7 @@ def test_full_inventory_and_all_examples_activate_without_registry_sharing():
     assert set(active.capabilities) == {
         c.definition.id.canonical() for c in capability_registry().list_all()
     }
-    assert len(active.capabilities) == 29
+    assert len(active.capabilities) == 30
     assert len(canonical_bytes(bound.model_dump(mode="json"))) < MAX_BYTES
     for cap in active.capabilities.values():
         for example in cap.definition.examples:

@@ -49,6 +49,24 @@
       "version": "1"
     },
     {
+      "filename": "review-rubric.v1.schema.json",
+      "name": "review-rubric",
+      "schema_digest": "sha256:03812c22f62f1df481390ccf2159ad0d8101c466781d3b502671fcdd20a54854",
+      "version": "1"
+    },
+    {
+      "filename": "rubric-scorecard.v1.schema.json",
+      "name": "rubric-scorecard",
+      "schema_digest": "sha256:a915fc1774eb27ad0121ed03b26cb29f65ea81205647f24ffcf4bbb2969c4f5d",
+      "version": "1"
+    },
+    {
+      "filename": "rubric-evaluation.v1.schema.json",
+      "name": "rubric-evaluation",
+      "schema_digest": "sha256:dab76240e60677a4ddc8606c68d499e9924764bf13bab4770962167ac52774d3",
+      "version": "1"
+    },
+    {
       "filename": "distribution-variant.v1.schema.json",
       "name": "distribution-variant",
       "schema_digest": "sha256:ae36a96231e0af7b56452d8d4ad13ed0cc8c79ccc31a39e85f14a8f50f9311a3",

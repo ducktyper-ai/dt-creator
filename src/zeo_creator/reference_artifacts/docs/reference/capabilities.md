@@ -1,7 +1,7 @@
 # Capability catalog
 
 The twenty original capabilities retain `1.0.0`; the nine email capabilities use
-`4.0.0`. Each manifest includes JSON request
+`4.0.0`; `creator.evaluate_rubric` is `1.0.0`. Each manifest includes JSON request
 and response schemas, effects, requirements, examples, projections, and typed
 error codes.
 
@@ -25,6 +25,7 @@ error codes.
 | `creator.review_news_article@1.0.0` | Plan, draft and qualified-human review ref | `EditorialReview` | Input-only read |
 | `creator.prepare_correction@1.0.0` | Reviewed article and corrected claims | `CorrectionNotice` | Input-only read |
 | `creator.validate_delivery@1.0.0` | Brief, artifact manifest, profile, synthesis, channel plan | `DeliveryReviewBundle` | Input-only read |
+| `creator.evaluate_rubric@1.0.0` | A review rubric, scorecards, the subject and its text (unreleased) | `RubricEvaluation` | Input-only read |
 | `creator.prepare_distribution@1.0.0` | Accepted review and exact channel plan | Publication proposals | Input-only read |
 | `creator.assess_performance@1.0.0` | Profile, metric queries, objective | Performance assessment | Read |
 | `creator.plan_email_campaign@4.0.0` | Supplied email artifacts | EmailCampaignPlan | Input-only read |
@@ -51,3 +52,29 @@ runtime concerns; the package deliberately exposes no monolithic workflow.
 The query-based research and performance v1 capabilities are retained for legacy
 compatibility. Canonical email assessment uses already-collected observations in
 `assess_email_program`; never inject a live connector into that capability.
+
+## Review rubrics (unreleased)
+
+`creator.evaluate_rubric@1.0.0` applies any `ReviewRubric` to `RubricScorecard`s. Creator ships the
+shape and the pure engine. It holds no rubric instance, scorer, lexicon, persona or profile: those
+belong to the runner that supplies the rubric.
+
+- **A rubric is data:** criteria are either *scored* (`max_points`, `floor`, `weight`, all integers)
+  or *must_pass*. Each carries a `rule_ref`. A rubric declares its languages (BCP 47) and refuses
+  a scorecard in another.
+- **Floors bind, and averages never excuse one.** Every floor and every must-pass is checked on
+  that criterion's raw points. Weights only move the weighted total, which is reported as an exact
+  ratio. An aggregate floor, if declared, is compared under one declared rounding.
+- **A failing or unknown score carries typed evidence:** `text_quote` (it must occur in the subject's
+  text or the named block), `artifact_region`, `missing_element` or `corpus_match`. A failure with no
+  evidence is refused, and no quote is ever invented for a non-text failure.
+- **Unknown fails closed:** a score may be `unknown` (with a reason and evidence), and an unknown or
+  missing score never meets a floor or a must-pass.
+- **A human re-scoring is a separate scorecard** that references the primary one by id and digest. It
+  must still meet the floor, a human failure always stands, and a criterion backed by a producer check
+  cannot be re-scored by a person.
+- **Raise, never lower.** A `masthead` rubric must name its house base (`base_rubric_ref`). The engine
+  refuses it if a base criterion is missing or changes kind or `max_points`, if a floor or the aggregate
+  floor is lower, if the aggregate rounding differs, if a weight changes without being declared, or if
+  the base is missing, its digest does not match, or it is not in the supported list the caller gives.
+  A `house` rubric may name a base too, with the same rules.

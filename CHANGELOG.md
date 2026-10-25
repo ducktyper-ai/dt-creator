@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Add offline CANDIDATE-only publication-core archive/index verification, isolated consumer and refusal tests; package/runtime/declaration identities stay unchanged and declaration type soundness remains unqualified.
+- Add the generic review rubric: the `ReviewRubric` and `RubricScorecard` contracts and the pure, fail-closed capability `creator.evaluate_rubric@1.0.0` (the 30th capability; the runtime-provider inventory changes). Creator ships the shape and the engine only: no rubric instance, scorer, lexicon, persona or profile.
 
 ## 0.6.0 — 2026-10-13 (preparation marker; the release date is set when tagged)
 

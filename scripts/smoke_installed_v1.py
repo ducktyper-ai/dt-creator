@@ -14,7 +14,7 @@ def main() -> None:
     expected = sys.argv[1]
     if zeo_creator.__version__ != expected or importlib.metadata.version("zeocreator") != expected:
         raise ValueError("installed distribution does not match the published version")
-    assert len(capability_manifests()) == 29
+    assert len(capability_manifests()) == 30
     names = sorted(row.name for row in pkgutil.iter_modules(zeo_creator.examples.__path__))
     assert names == [
         "assess_performance",

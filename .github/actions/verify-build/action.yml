@@ -1,0 +1,75 @@
+name: Verify and build the release distributions
+description: >
+  The verify-and-build steps of the publish workflow, shared so a pull request can run
+  the identical path without uploading. Needs a prior checkout with fetch-depth 0.
+inputs:
+  tag:
+    description: Version tag being published (for example v0.6.1); empty outside a tag run
+    required: false
+    default: ""
+  target:
+    description: Index target; production requires a matching version tag
+    required: false
+    default: testpypi
+outputs:
+  version:
+    description: Built release version
+    value: ${{ steps.metadata.outputs.version }}
+  python-floor:
+    description: Python floor of the built release
+    value: ${{ steps.metadata.outputs.python-floor }}
+
+runs:
+  using: composite
+  steps:
+    - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+      with:
+        python-version: "3.14"
+        enable-cache: true
+    - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: "24"
+    - run: make setup
+      shell: bash
+    - name: Check release identity and production tag
+      shell: bash
+      env:
+        TAG: ${{ inputs.tag }}
+        TARGET: ${{ inputs.target }}
+      run: |
+        if [[ -n "$TAG" ]]; then
+          uv run python -m scripts.check_release_v1 --tag "$TAG"
+          git merge-base --is-ancestor HEAD origin/main
+        elif [[ "$TARGET" != testpypi ]]; then
+          echo "::error::Production publication requires a matching version tag on main"
+          exit 1
+        else
+          uv run python -m scripts.check_release_v1
+        fi
+    - run: make verify
+      shell: bash
+    - run: make doctor
+      shell: bash
+    - name: Smoke-test the wheel outside the source tree
+      shell: bash
+      run: |
+        uv venv --python 3.14 "$RUNNER_TEMP/creator-wheel"
+        uv pip install --python "$RUNNER_TEMP/creator-wheel/bin/python" dist/*.whl
+        version=$(uv run python -c 'from scripts.check_release_v1 import metadata; from pathlib import Path; print(metadata(Path.cwd())[0])')
+        smoke_dir=$(mktemp -d)
+        cd "$smoke_dir"
+        "$RUNNER_TEMP/creator-wheel/bin/zeo-creator" doctor --json
+        "$RUNNER_TEMP/creator-wheel/bin/python" "$GITHUB_WORKSPACE/scripts/smoke_installed_v2.py" "$version"
+    - name: Read and verify built release metadata
+      id: metadata
+      shell: bash
+      run: |
+        uv run python -m scripts.check_release_v1 --dist
+        uv run python - <<'PY' >> "$GITHUB_OUTPUT"
+        from pathlib import Path
+        from scripts.check_release_v1 import metadata, distributions
+        version, floor = metadata(Path.cwd())
+        distributions(Path.cwd(), version, floor)
+        print(f"version={version}")
+        print(f"python-floor={floor}")
+        PY

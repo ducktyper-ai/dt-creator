@@ -39,6 +39,11 @@ exact uploaded version on the minimum Python version, and create the GitHub
 Release from `RELEASE_NOTES.md`. Creator also checks tag/metadata/notes agreement
 before upload and waits for index smoke tests before announcing the release.
 
+The verify-and-build steps live in `.github/actions/verify-build` (Node 24, `make setup`,
+`make verify`, `make doctor`, the wheel smoke test and the distribution checks). The publish
+workflow and the `Release path` pull-request workflow both call it, so a release-path failure
+shows on a pull request, with no upload, before a tag is cut.
+
 Publishing requires a trusted publisher for project `zeocreator` with owner
 `zeroemployeeorg`, repository `zeocreator`, workflow filename `publish.yml` and
 environment `pypi` (TestPyPI: environment `testpypi`). Each publishing job runs in

@@ -1,7 +1,7 @@
 # Changelog
 
 ## Unreleased
-- Set up Node 24 in the publish workflow's verify job (`actions/setup-node` v7.1.0, pinned by commit) because `make verify` asserts Node 24 and the runner image ships Node 22. The `v0.6.0` publish run stopped at that step and nothing reached PyPI; the version moves to 0.6.1, which is the first published release of the 0.6 content. The `v0.6.0` tag is left as it is.
+- Set up Node 24 in the publish workflow's verify job (`actions/setup-node` v7.1.0, pinned by commit) because `make verify` asserts Node 24 and the runner image ships Node 22. The `v0.6.0` publish run stopped at that step and nothing reached PyPI; the version moves to 0.6.1, which is the first published release of the 0.6 content. The `v0.6.0` tag is left as it is. The verify-and-build steps move into a shared composite action (`.github/actions/verify-build`) that the publish workflow and a new `Release path` pull-request workflow both call, so the release path runs, without any upload, on every pull request that touches it.
 
 - Add offline CANDIDATE-only publication-core archive/index verification, isolated consumer and refusal tests; package/runtime/declaration identities stay unchanged and declaration type soundness remains unqualified.
 - Move the exact Zeocore pin to `zeocore[runtime-host]==0.28.0` (approved by the Architect, ans_4b0508f0991cd9c5). The doctor check id is `zeocore_0_28_0`. The pin, lock, guards and mirrors are the only change.

@@ -34,56 +34,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     outputs:
-      version: ${{ steps.metadata.outputs.version }}
-      python-floor: ${{ steps.metadata.outputs.python-floor }}
+      version: ${{ steps.verify.outputs.version }}
+      python-floor: ${{ steps.verify.outputs.python-floor }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
         with:
           fetch-depth: 0
-      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+      - id: verify
+        uses: ./.github/actions/verify-build
         with:
-          python-version: "3.14"
-          enable-cache: true
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version: "24"
-      - run: make setup
-      - name: Check release identity and production tag
-        env:
-          TARGET: ${{ inputs.target || 'pypi' }}
-        run: |
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
-            uv run python -m scripts.check_release_v1 --tag "$GITHUB_REF_NAME"
-            git merge-base --is-ancestor HEAD origin/main
-          elif [[ "$TARGET" != testpypi ]]; then
-            echo "::error::Production publication requires a matching version tag on main"
-            exit 1
-          else
-            uv run python -m scripts.check_release_v1
-          fi
-      - run: make verify
-      - run: make doctor
-      - name: Smoke-test the wheel outside the source tree
-        run: |
-          uv venv --python 3.14 "$RUNNER_TEMP/creator-wheel"
-          uv pip install --python "$RUNNER_TEMP/creator-wheel/bin/python" dist/*.whl
-          version=$(uv run python -c 'from scripts.check_release_v1 import metadata; from pathlib import Path; print(metadata(Path.cwd())[0])')
-          smoke_dir=$(mktemp -d)
-          cd "$smoke_dir"
-          "$RUNNER_TEMP/creator-wheel/bin/zeo-creator" doctor --json
-          "$RUNNER_TEMP/creator-wheel/bin/python" "$GITHUB_WORKSPACE/scripts/smoke_installed_v2.py" "$version"
-      - name: Read and verify built release metadata
-        id: metadata
-        run: |
-          uv run python -m scripts.check_release_v1 --dist
-          uv run python - <<'PY' >> "$GITHUB_OUTPUT"
-          from pathlib import Path
-          from scripts.check_release_v1 import metadata, distributions
-          version, floor = metadata(Path.cwd())
-          distributions(Path.cwd(), version, floor)
-          print(f"version={version}")
-          print(f"python-floor={floor}")
-          PY
+          tag: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
+          target: ${{ inputs.target || 'pypi' }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: dist

@@ -1,13 +1,18 @@
 # Changelog
 
 ## Unreleased
+- Set up Node 24 in the publish workflow's verify job (`actions/setup-node` v7.1.0, pinned by commit) because `make verify` asserts Node 24 and the runner image ships Node 22. The `v0.6.0` publish run stopped at that step and nothing reached PyPI; the version moves to 0.6.1, which is the first published release of the 0.6 content. The `v0.6.0` tag is left as it is.
 
 - Add offline CANDIDATE-only publication-core archive/index verification, isolated consumer and refusal tests; package/runtime/declaration identities stay unchanged and declaration type soundness remains unqualified.
 - Move the exact Zeocore pin to `zeocore[runtime-host]==0.28.0` (approved by the Architect, ans_4b0508f0991cd9c5). The doctor check id is `zeocore_0_28_0`. The pin, lock, guards and mirrors are the only change.
 - Add the generic review rubric: the `ReviewRubric` and `RubricScorecard` contracts and the pure, fail-closed capability `creator.evaluate_rubric@1.0.0` (the 30th capability; the runtime-provider inventory changes). Creator ships the shape and the engine only: no rubric instance, scorer, lexicon, persona or profile.
 - Point repository, documentation, badge and package-metadata links at `ducktyper-ai/dt-creator` and `ducktyper-ai.github.io/dt-creator` after the repository moved to the `ducktyper-ai` organization and was renamed in place (same repository id). The PyPI name `zeocreator`, the `zeo_creator` import, the `zeo-creator` CLI and every schema id are unchanged. The PyPI trusted publisher must be bound to the new repository name before a release; the old Pages address stops resolving.
 
-## 0.6.0 — 2026-10-13 (preparation marker; the release date is set when tagged)
+## 0.6.1 — preparation marker; the release date is set when tagged
+
+Same content as 0.6.0 plus the publish-workflow Node 24 setup above; 0.6.0 was tagged but never published.
+
+## 0.6.0 — 2026-10-13 (tagged, never published)
 
 - Add the `thread-authoring` skill (`skills/thread-authoring/SKILL.md`) with `zeo-creator lint-thread` and `zeo_creator.thread_lint`, a deterministic structural linter for a numbered post thread (`thread-draft/1`): 280-character limit counted as NFC code points with URLs as 23, numbering, source outside the posts, link dependence, a repeating last post, and caller-supplied forbidden phrases. It reports what needs a reviewer under `needs_review`. Output schema `zeocreator.thread-lint/v1`; exits 0 clean, 20 findings, 2 invalid. It refuses control, default-ignorable, unassigned and ambiguous-space characters and a post hidden inside another, and rejects duplicate JSON keys. Not a registered capability; the runtime-provider inventory is unchanged.
 - Import the five-commit publication-core history without squash, then separately neutralize the private zero-dependency ESM package at `packages/publication-core/`. Its Node 24 contract/export and failure-path tests run in `make verify`; actual Python wheel and sdist checks refuse inclusion of `packages/`. No Python contract/version, provider, npm dependency, release or consumer adoption changes.

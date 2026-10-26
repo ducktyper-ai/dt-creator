@@ -1,13 +1,13 @@
 # Releases and readiness
 
-## Version 0.6.0
+## Version 0.6.1
 
 This release requires `zeocore[runtime-host]==0.28.0` and gives the CLI Zeocore's `cli_protocol` 1.
 The distribution remains `zeocreator`, import `zeo_creator` and CLI `zeo-creator`, on Python 3.14+.
 The previous [0.5.4](releases/0.5.4.md) and [0.5.3](releases/0.5.3.md) release notes remain
 available as historical evidence.
 
-Install with `python -m pip install "zeocreator==0.6.0"` in a Python 3.14+
+Install with `python -m pip install "zeocreator==0.6.1"` in a Python 3.14+
 environment. Follow the [installation guide](getting-started/installation.md)
 for a complete isolated setup and migration from the older Git-only distribution.
 

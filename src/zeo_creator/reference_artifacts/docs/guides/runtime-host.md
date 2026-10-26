@@ -1,6 +1,6 @@
 # Call Creator through the shared Runtime host
 
-Creator **0.6.0** installs Zeocore **0.28.0** and its `runtime-host` extra from
+Creator **0.6.1** installs Zeocore **0.28.0** and its `runtime-host` extra from
 PyPI. Install the exact Creator release in a fresh environment. Upgrading from
 0.5.3 also upgrades Core; do not override the older package's dependency pin.
 
@@ -10,7 +10,7 @@ Install from PyPI, then export the installed provider and sample request:
 
 ```console
 uv venv --python 3.14 /tmp/creator-host
-uv pip install --python /tmp/creator-host/bin/python "zeocreator==0.6.0"
+uv pip install --python /tmp/creator-host/bin/python "zeocreator==0.6.1"
 /tmp/creator-host/bin/zeo-creator doctor --json
 /tmp/creator-host/bin/zeo-creator runtime-provider > /tmp/creator-inventory.json
 /tmp/creator-host/bin/python -m zeo_creator.examples.runtime_portfolio > /tmp/creator-request.json
@@ -25,7 +25,7 @@ factory; execution uses Core's `zeo-capability` entry point.
 | Provider field | Value |
 | --- | --- |
 | Distribution | `zeocreator` |
-| Released version | `0.6.0` |
+| Released version | `0.6.1` |
 | Factory | `zeo_creator.registry:capability_registry` |
 | Core dependency | `zeocore[runtime-host]==0.28.0` |
 | Host protocol | `1` |

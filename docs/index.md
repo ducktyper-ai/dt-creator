@@ -5,7 +5,7 @@ ZEO Creator turns observations into evolving stories, frozen dossiers, agendas,
 editions, governed content and producer-neutral delivery contracts.
 </p>
 
-`zeocreator==0.6.0` installs from PyPI on Python 3.14+. Run
+`zeocreator==0.6.1` installs from PyPI on Python 3.14+. Run
 `python -m zeo_creator.examples.email_marketing` for campaigns, newsletters and
 sequences across three isolated publications, entirely offline.
 

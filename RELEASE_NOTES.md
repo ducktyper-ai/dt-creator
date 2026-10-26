@@ -1,4 +1,6 @@
-# zeocreator 0.6.0
+# zeocreator 0.6.1
+
+**0.6.1 is the first published release of this content.** The `v0.6.0` tag was pushed but its publish run stopped at the verify step (the workflow ran Node 22, the gate requires Node 24), so 0.6.0 never reached PyPI. 0.6.1 sets up Node 24 in the publish workflow and changes nothing else.
 
 Release date: set when the tag is cut (the CHANGELOG's 2026-10-13 is a preparation marker, not a release date).
 

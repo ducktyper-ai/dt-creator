@@ -1,6 +1,6 @@
 # Installation
 
-Install `zeocreator==0.6.0` from PyPI with Python 3.14 or newer. Zeocore 0.28.0 is
+Install `zeocreator==0.6.1` from PyPI with Python 3.14 or newer. Zeocore 0.28.0 is
 installed automatically with its `runtime-host` extra; no credentials or accounts
 are needed for the examples.
 
@@ -10,7 +10,7 @@ are needed for the examples.
 
     ```console
     uv venv --python 3.14 .venv
-    uv pip install --python .venv/bin/python "zeocreator==0.6.0"
+    uv pip install --python .venv/bin/python "zeocreator==0.6.1"
     .venv/bin/zeo-creator doctor --json
     .venv/bin/python -m zeo_creator.examples.create_content_brief
     .venv/bin/python -m zeo_creator.examples.email_marketing
@@ -20,7 +20,7 @@ are needed for the examples.
 
     ```console
     python3.14 -m venv .venv
-    .venv/bin/python -m pip install "zeocreator==0.6.0"
+    .venv/bin/python -m pip install "zeocreator==0.6.1"
     .venv/bin/zeo-creator doctor --json
     .venv/bin/python -m zeo_creator.examples.create_content_brief
     .venv/bin/python -m zeo_creator.examples.email_marketing
@@ -28,7 +28,7 @@ are needed for the examples.
 
 On Windows, use `.venv\Scripts\python.exe` and `.venv\Scripts\zeo-creator.exe`
 in place of `.venv/bin/python` and `.venv/bin/zeo-creator`. In an existing uv
-project, use `uv add "zeocreator==0.6.0"`, then prefix commands with `uv run`.
+project, use `uv add "zeocreator==0.6.1"`, then prefix commands with `uv run`.
 
 The PyPI distribution is **zeocreator**; the Python import is **zeo_creator**;
 the executable is **zeo-creator**. The earlier Git-only distribution was named
@@ -49,7 +49,7 @@ python -m zeo_creator.reference.email_receipt_conformance
 zeo-creator contracts export --output=./schemas
 ```
 
-Version reports the JSON line `{"ok": true, "zeocreator": "0.6.0", "cli_protocol": "1"}`. Doctor reports `ok: true`, Python 3.14+,
+Version reports the JSON line `{"ok": true, "zeocreator": "0.6.1", "cli_protocol": "1"}`. Doctor reports `ok: true`, Python 3.14+,
 Zeocore 0.28.0, 30 manifests and 30 projections. The receipt command verifies 135
 portable cases; it does not authenticate provider receipts. The email example
 prints eight programs and 104 simulated proposals with partial assessments.
@@ -59,7 +59,7 @@ outside the source checkout. Their in-memory hosts never send an email.
 ## Work from the release source
 
 ```console
-git clone --branch v0.6.0 https://github.com/ducktyper-ai/dt-creator.git
+git clone --branch v0.6.1 https://github.com/ducktyper-ai/dt-creator.git
 cd zeocreator
 uv sync --frozen
 make doctor

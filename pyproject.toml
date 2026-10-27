@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "zeocreator"
-version = "0.6.0"
+version = "0.6.1"
 description = "Provider-neutral continuous editorial and creator operations built on Zeocore"
 readme = "README.md"
 requires-python = ">=3.14"

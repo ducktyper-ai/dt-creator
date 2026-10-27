@@ -220,7 +220,7 @@ and verify the real mapping/render/snapshot coverage before authorizing effects.
 
 ## Email contract migration and release policy
 
-The PyPI package is `zeocreator==0.6.0`; its nine email capabilities and durable email artifacts use
+The PyPI package is `zeocreator==0.6.1`; its nine email capabilities and durable email artifacts use
 major version 4. Published email v1, v2 and v3 schemas remain byte-for-byte available for
 audit. Their preparation APIs are retired from discovery; the twenty original non-email
 capabilities remain unchanged. This explicitly affirms the earlier email v1 retirement:

@@ -1,7 +1,7 @@
 # Changelog
 
 ## Unreleased
-- Correct stale documentation after the 0.6.1 release: the CHANGELOG and release notes now date 0.6.1 as published; the release-readiness gate wording gives the real test counts (566 source pytest tests, 55 Node tests, 34 installed-wheel conformance tests); ADR 0003 no longer says "both" for three pin moves, no longer shows a 2026-10-13 update date, and says Creator 0.6.0 was never published.
+- Correct stale documentation after the 0.6.1 release: the CHANGELOG and release notes now date 0.6.1 as published and the release notes install 0.6.1 (was 0.6.0, never published); the release-readiness gate wording gives the real test counts (566 source pytest tests, 55 Node tests, 34 installed-wheel conformance tests); ADR 0003 no longer says "both" for three pin moves, no longer shows a 2026-10-13 update date, and says Creator 0.6.0 was never published.
 
 ## 0.6.1 — 2026-10-27
 - Set up Node 24 in the publish workflow's verify job (`actions/setup-node` v7.1.0, pinned by commit) because `make verify` asserts Node 24 and the runner image ships Node 22. The `v0.6.0` publish run stopped at that step and nothing reached PyPI; the version moves to 0.6.1, which is the first published release of the 0.6 content. The `v0.6.0` tag is left as it is. The verify-and-build steps move into a shared composite action (`.github/actions/verify-build`) that the publish workflow and a new `Release path` pull-request workflow both call, so the release path runs, without any upload, on every pull request that touches it.

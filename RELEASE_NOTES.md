@@ -15,15 +15,15 @@ Use Python 3.14 or newer in a fresh environment:
 
 ```console
 uv venv --python 3.14 .venv
-uv pip install --python .venv/bin/python "zeocreator==0.6.0"
+uv pip install --python .venv/bin/python "zeocreator==0.6.1"
 .venv/bin/zeo-creator doctor
 .venv/bin/zeo-creator help --json
 ```
 
-With pip, install `zeocreator==0.6.0` in a Python 3.14+ virtual environment. Zeocore 0.28.0 and its
+With pip, install `zeocreator==0.6.1` in a Python 3.14+ virtual environment. Zeocore 0.28.0 and its
 host dependencies install automatically. The distribution remains `zeocreator`, the import
 `zeo_creator`, and the CLI `zeo-creator`. Retain a deployment lockfile and verify wheel provenance.
-`make install VERSION=0.6.0` installs this release as a tool and runs `doctor`.
+`make install VERSION=0.6.1` installs this release as a tool and runs `doctor`.
 
 ## CLI changes (breaking)
 
@@ -32,7 +32,7 @@ host dependencies install automatically. The distribution remains `zeocreator`, 
   accepted and changes nothing.
 - Lists are wrapped: `capabilities` answers `{"capabilities": [...]}` (or `"tools"` with
   `--projection openai`), `contracts list` answers `"contracts"`, and `contract-schema` answers the
-  JSON Schema under `json_schema`. `--version` answers `{"ok": true, "zeocreator": "0.6.0", "cli_protocol": "1"}`.
+  JSON Schema under `json_schema`. `--version` answers `{"ok": true, "zeocreator": "0.6.1", "cli_protocol": "1"}`.
 - Exit codes follow Zeocore's `cli_protocol` 1: 0 done, 1 internal error (no detail), 2 invalid
   input, 20 held or refused. **A failed `doctor` check now exits 20, not 1.**
 - A usage error prints its usage on stderr and an `invalid_request` result on stdout, exit 2, and

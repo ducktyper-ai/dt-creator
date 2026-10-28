@@ -20,7 +20,7 @@ sdist metadata, and installed-wheel behavior outside the checkout. All eight
 examples are installed; email programs exercise three isolated publications,
 eight programs and 104 simulated proposals. The portable receipt corpus has 135 cases.
 
-The source gate runs 355 tests. Another 34 conformance tests run outside the
+The source gate runs 566 pytest tests and 55 Node tests (publication-core). Another 34 conformance tests run outside the
 checkout against the installed Core host and Creator wheel, including real
 planner execution, artifact acceptance and refusal paths through a labelled
 IPC test peer. These establish Creator/Core behavior, not deployed Runtime acceptance.

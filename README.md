@@ -7,13 +7,13 @@
 Turn source observations into evolving stories, frozen dossiers, editorial agendas,
 editions, production briefs, reviewed artifacts, commentary, newsletters and corrections.
 
-[![CI](https://github.com/zeroemployeeorg/zeocreator/actions/workflows/ci.yml/badge.svg)](https://github.com/zeroemployeeorg/zeocreator/actions/workflows/ci.yml)
+[![CI](https://github.com/ducktyper-ai/dt-creator/actions/workflows/ci.yml/badge.svg)](https://github.com/ducktyper-ai/dt-creator/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/zeocreator)](https://pypi.org/project/zeocreator/)
 [![Python 3.14+](https://img.shields.io/badge/Python-3.14%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Zeocore 0.11](https://img.shields.io/badge/Zeocore-0.18.0-087f75)](https://pypi.org/project/zeocore/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/zeroemployeeorg/zeocreator/blob/v0.6.0/LICENSE)
+[![Zeocore 0.28](https://img.shields.io/badge/Zeocore-0.28.0-087f75)](https://pypi.org/project/zeocore/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/ducktyper-ai/dt-creator/blob/v0.6.1/LICENSE)
 
-[Documentation](https://zeroemployeeorg.github.io/zeocreator/) · [Quickstart](https://zeroemployeeorg.github.io/zeocreator/getting-started/installation/) · [Examples](https://github.com/zeroemployeeorg/zeocreator/tree/v0.6.0/examples) · [API reference](https://zeroemployeeorg.github.io/zeocreator/reference/contracts/)
+[Documentation](https://ducktyper-ai.github.io/dt-creator/) · [Quickstart](https://ducktyper-ai.github.io/dt-creator/getting-started/installation/) · [Examples](https://github.com/ducktyper-ai/dt-creator/tree/v0.6.1/examples) · [API reference](https://ducktyper-ai.github.io/dt-creator/reference/contracts/)
 
 </div>
 
@@ -52,8 +52,8 @@ flowchart LR
 
 ## Runtime integration
 
-Version 0.6.0 installs Zeocore 0.18.0 with its shared Runtime host. Use the
-[Runtime integration guide](https://zeroemployeeorg.github.io/zeocreator/guides/runtime-host/)
+Version 0.6.1 installs Zeocore 0.28.0 with its shared Runtime host. Use the
+[Runtime integration guide](https://ducktyper-ai.github.io/dt-creator/guides/runtime-host/)
 to export the provider inventory and prepare the real portfolio request.
 Creator/Core conformance is verified; Runtime's Go supervision, durable recovery
 and managed-agent acceptance remain separate integration work.
@@ -63,16 +63,16 @@ and managed-agent acceptance remain separate integration work.
 Install the public `zeocreator` distribution on Python 3.14 or newer:
 
 ```console
-uv add "zeocreator==0.6.0"
+uv add "zeocreator==0.6.1"
 ```
 
 or:
 
 ```console
-python -m pip install "zeocreator==0.6.0"
+python -m pip install "zeocreator==0.6.1"
 ```
 
-Zeocore 0.18.0 is installed automatically. The distribution is `zeocreator`, the
+Zeocore 0.28.0 is installed automatically. The distribution is `zeocreator`, the
 Python import is `zeo_creator`, and the CLI is `zeo-creator`. Earlier Git-only
 installations used the distribution name `zeo-creator`; remove that distribution
 before installing this release, or use a fresh virtual environment.
@@ -160,7 +160,7 @@ turn dossiers into coherent publication decisions.
 One dossier can support a breaking update, a daily briefing, a video brief, a
 social reply and a later newsletter section without silently sharing voice,
 policy or approval across publications. See the
-[continuous editorial model](https://zeroemployeeorg.github.io/zeocreator/concepts/continuous-editorial-operations/).
+[continuous editorial model](https://ducktyper-ai.github.io/dt-creator/concepts/continuous-editorial-operations/).
 
 ```mermaid
 flowchart LR
@@ -183,7 +183,7 @@ zeo-creator contracts export --output=./schemas
 
 Each catalog entry includes the schema's RFC 8785 canonical SHA-256 digest.
 Package, capability, and contract versions evolve independently; the
-[compatibility policy](https://zeroemployeeorg.github.io/zeocreator/reference/contracts/#compatibility-and-version-axes)
+[compatibility policy](https://ducktyper-ai.github.io/dt-creator/reference/contracts/#compatibility-and-version-axes)
 defines when each one changes.
 
 ## The authority boundary
@@ -207,9 +207,9 @@ any private production taxonomy.
 python -m zeo_creator.examples.complete_content_portfolio
 ```
 
-Explore [`reference/examples`](https://github.com/zeroemployeeorg/zeocreator/tree/v0.6.0/reference/examples), follow the
-[portfolio tutorial](https://zeroemployeeorg.github.io/zeocreator/tutorials/content-portfolio/), or read the
-[production adapter guide](https://zeroemployeeorg.github.io/zeocreator/guides/production-adapters/).
+Explore [`reference/examples`](https://github.com/ducktyper-ai/dt-creator/tree/v0.6.1/reference/examples), follow the
+[portfolio tutorial](https://ducktyper-ai.github.io/dt-creator/tutorials/content-portfolio/), or read the
+[production adapter guide](https://ducktyper-ai.github.io/dt-creator/guides/production-adapters/).
 
 ## Development
 
@@ -222,13 +222,13 @@ make doctor      # verify Python, Zeocore, manifests, and projections
 ```
 
 The repository enforces architectural import boundaries and tests installed
-wheel behavior. See [architecture](https://zeroemployeeorg.github.io/zeocreator/concepts/architecture/),
-[canonical digests](https://zeroemployeeorg.github.io/zeocreator/concepts/canonical-digests/), and
-[contributing](https://zeroemployeeorg.github.io/zeocreator/contributing/).
+wheel behavior. See [architecture](https://ducktyper-ai.github.io/dt-creator/concepts/architecture/),
+[canonical digests](https://ducktyper-ai.github.io/dt-creator/concepts/canonical-digests/), and
+[contributing](https://ducktyper-ai.github.io/dt-creator/contributing/).
 
 ## Status
 
-Version 0.6.0 moves to Zeocore 0.18.0 and gives the CLI Zeocore's `cli_protocol` 1 (one JSON line per
+Version 0.6.1 moves to Zeocore 0.28.0 and gives the CLI Zeocore's `cli_protocol` 1 (one JSON line per
 command, fixed exit codes, `help --json`), while preserving all 29 capability IDs, independently reviewed email v4 contracts and 135 portable receipt cases. This remains an early 0.x API: pin the
 package and contract versions. Release publication does not establish live
 HubSpot/Kit interoperability; execution and account qualification belong to the host.
@@ -237,7 +237,7 @@ MIT licensed.
 
 ## Email campaigns and sequences
 
-[Email marketing](https://zeroemployeeorg.github.io/zeocreator/guides/email-marketing/) adds immutable campaigns, linear
+[Email marketing](https://ducktyper-ai.github.io/dt-creator/guides/email-marketing/) adds immutable campaigns, linear
 sequence revisions, dual-format messages, audience summaries and exact delivery
 packages. Runtime and Newsroom collect observations before Creator invocation;
 Zeocore and ZEOconnect own provider lowering and execution. Existing newsletter

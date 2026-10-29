@@ -19,7 +19,7 @@ def prepare(root: Path) -> None:
 
 
 def test_current_release_and_matching_tag() -> None:
-    assert metadata(Path.cwd(), "v0.6.0") == ("0.6.0", "3.14")
+    assert metadata(Path.cwd(), "v0.6.1") == ("0.6.1", "3.14")
 
 
 @pytest.mark.parametrize("tag", ["v0.5.2", "main", "0.5.3", "v0.5.3.dev0"])

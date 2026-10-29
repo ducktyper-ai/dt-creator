@@ -5,7 +5,7 @@ runtime use the same capability registry, request models, and results.
 
 ## Managed Runtime host
 
-For Creator 0.6.0 with Zeocore 0.18.0, use the
+For Creator 0.6.1 with Zeocore 0.28.0, use the
 [shared host integration](runtime-host.md). It exports an exact installed
 inventory and normalizes requests before Runtime admission. Production managed
 invocation goes through Core's host and the live Runtime channel. The direct

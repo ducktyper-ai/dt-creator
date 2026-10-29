@@ -1,8 +1,10 @@
-# zeocreator 0.6.0
+# zeocreator 0.6.1
 
-Release date: set when the tag is cut (the CHANGELOG's 2026-10-13 is a preparation marker, not a release date).
+**0.6.1 is the first published release of this content.** The `v0.6.0` tag was pushed but its publish run stopped at the verify step (the workflow ran Node 22, the gate requires Node 24), so 0.6.0 never reached PyPI. 0.6.1 sets up Node 24 in the publish workflow and changes nothing else.
 
-**The CLI now follows Zeocore's `cli_protocol` 1, and Creator requires Zeocore 0.18.0.**
+Release date: 2026-10-27 (tag `v0.6.1`; the wheel and sdist reached PyPI that day).
+
+**The CLI now follows Zeocore's `cli_protocol` 1, and Creator requires Zeocore 0.28.0.**
 This is a breaking change for anyone who parses the CLI's output or exit codes: read the
 "CLI changes" section before upgrading. The library API, the 29 capability identities and the
 released contract schemas are unchanged.
@@ -13,15 +15,15 @@ Use Python 3.14 or newer in a fresh environment:
 
 ```console
 uv venv --python 3.14 .venv
-uv pip install --python .venv/bin/python "zeocreator==0.6.0"
+uv pip install --python .venv/bin/python "zeocreator==0.6.1"
 .venv/bin/zeo-creator doctor
 .venv/bin/zeo-creator help --json
 ```
 
-With pip, install `zeocreator==0.6.0` in a Python 3.14+ virtual environment. Zeocore 0.18.0 and its
+With pip, install `zeocreator==0.6.1` in a Python 3.14+ virtual environment. Zeocore 0.28.0 and its
 host dependencies install automatically. The distribution remains `zeocreator`, the import
 `zeo_creator`, and the CLI `zeo-creator`. Retain a deployment lockfile and verify wheel provenance.
-`make install VERSION=0.6.0` installs this release as a tool and runs `doctor`.
+`make install VERSION=0.6.1` installs this release as a tool and runs `doctor`.
 
 ## CLI changes (breaking)
 
@@ -30,7 +32,7 @@ host dependencies install automatically. The distribution remains `zeocreator`, 
   accepted and changes nothing.
 - Lists are wrapped: `capabilities` answers `{"capabilities": [...]}` (or `"tools"` with
   `--projection openai`), `contracts list` answers `"contracts"`, and `contract-schema` answers the
-  JSON Schema under `json_schema`. `--version` answers `{"ok": true, "zeocreator": "0.6.0", "cli_protocol": "1"}`.
+  JSON Schema under `json_schema`. `--version` answers `{"ok": true, "zeocreator": "0.6.1", "cli_protocol": "1"}`.
 - Exit codes follow Zeocore's `cli_protocol` 1: 0 done, 1 internal error (no detail), 2 invalid
   input, 20 held or refused. **A failed `doctor` check now exits 20, not 1.**
 - A usage error prints its usage on stderr and an `invalid_request` result on stdout, exit 2, and
@@ -51,9 +53,9 @@ host dependencies install automatically. The distribution remains `zeocreator`, 
 - **Adds a thread linter.** `zeo-creator lint-thread` (output schema `zeocreator.thread-lint/v1`) and
   the `thread-authoring` skill check a numbered post thread structurally. It is a pure command, not a
   registered capability, so the 29 capability identities and the runtime-provider inventory are unchanged.
-- **Requires `zeocore[runtime-host]==0.18.0`** (was 0.11.0). Zeocore 0.15.0 made every runtime-host
+- **Requires `zeocore[runtime-host]==0.28.0`** (was 0.11.0). Zeocore 0.15.0 made every runtime-host
   name Creator uses public, and the runtime-host-v1 protocol files are byte-identical from 0.11.0
-  through 0.18.0. `doctor` reports the check as `zeocore_0_18_0`.
+  through 0.18.0 and again at 0.28.0. `doctor` reports the check as `zeocore_0_28_0`.
 - **Fix:** the reference story-revision strategy now chains same-topic signals in one batch into
   successive revisions (1, 2, ...) with `previous_revision_ref` set, instead of several unrelated
   revision 1s of one story. Reference artifacts and contract digests are unchanged.

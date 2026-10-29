@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "zeocreator"
-version = "0.6.0"
+version = "0.6.1"
 description = "Provider-neutral continuous editorial and creator operations built on Zeocore"
 readme = "README.md"
 requires-python = ">=3.14"
@@ -20,17 +20,17 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "zeocore[runtime-host]==0.18.0",
+  "zeocore[runtime-host]==0.28.0",
   "pydantic>=2.6.0",
   "rfc8785==0.1.4",
   "typer>=0.27.1",
 ]
 
 [project.urls]
-Homepage = "https://github.com/zeroemployeeorg/zeocreator"
-Repository = "https://github.com/zeroemployeeorg/zeocreator"
-Documentation = "https://zeroemployeeorg.github.io/zeocreator/"
-Issues = "https://github.com/zeroemployeeorg/zeocreator/issues"
+Homepage = "https://github.com/ducktyper-ai/dt-creator"
+Repository = "https://github.com/ducktyper-ai/dt-creator"
+Documentation = "https://ducktyper-ai.github.io/dt-creator/"
+Issues = "https://github.com/ducktyper-ai/dt-creator/issues"
 
 [project.scripts]
 zeo-creator = "zeo_creator.cli:main"

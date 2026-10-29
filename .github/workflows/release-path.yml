@@ -1,0 +1,38 @@
+name: Release path
+
+# Runs the publish workflow's verify-and-build steps (Node 24, make setup, make verify,
+# make doctor, wheel smoke, distribution checks) from the shared action, with no upload,
+# so a failure in the release path shows on the pull request and not on the tag.
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/publish.yml
+      - .github/workflows/release-path.yml
+      - .github/actions/verify-build/**
+      - pyproject.toml
+      - uv.lock
+      - Makefile
+      - scripts/**
+      - RELEASE_NOTES.md
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify-and-build:
+    name: verify and build distributions (no upload)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/verify-build
+        with:
+          target: testpypi

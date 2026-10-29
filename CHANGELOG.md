@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Add `zeo_creator.services.length_budgets.check_length_budgets`, a generic deterministic word-budget check: the caller supplies every budget, it names each breach and never trims. Add `zeo_creator.reference.newsletter_rubric`, an **illustrative** newsletter rubric (`example.newsletter`: five generic scored criteria, an 80 of 100 bar, no criterion under 60%) with example budgets for `intro`, `item` and `outro` sections. It is caller-owned data, not a capability or scorer, and not the production policy: the consuming newsroom owns its production criteria, weights, threshold and budgets. No model is called and no registry or manifest changes.
 - Correct stale documentation after the 0.6.1 release: the CHANGELOG and release notes now date 0.6.1 as published and the release notes install 0.6.1 (was 0.6.0, never published); the release-readiness gate wording gives the real test counts (566 source pytest tests, 55 Node tests, 34 installed-wheel conformance tests); ADR 0003 no longer says "both" for three pin moves, no longer shows a 2026-10-13 update date, and says Creator 0.6.0 was never published.
 
 ## 0.6.1 — 2026-10-27

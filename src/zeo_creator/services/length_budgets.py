@@ -41,11 +41,13 @@ def check_length_budgets(
         broken.append(f"preheader: {len(preheader)} characters, at most {preheader_max_chars}")
     total = 0
     for name, value in sections.items():
+        items = [value] if isinstance(value, str) else value
         if name not in budgets:
+            total += sum(words(text) for text in items)
             broken.append(f"{name}: no budget declared")
             continue
         low, high = budgets[name]
-        for index, text in enumerate([value] if isinstance(value, str) else value, start=1):
+        for index, text in enumerate(items, start=1):
             count = words(text)
             total += count
             if not low <= count <= high:

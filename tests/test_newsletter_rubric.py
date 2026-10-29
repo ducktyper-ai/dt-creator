@@ -1,4 +1,4 @@
-"""The illustrative newsletter rubric is valid data and applies its example 90/80 bar."""
+"""The illustrative newsletter rubric is valid data and applies its example 80/60 bar."""
 
 from datetime import UTC, datetime
 
@@ -55,28 +55,28 @@ def run(points: dict[str, int]):
     )
 
 
-ALL = ("relevance", "interest", "concision", "voice", "visual-quality")
+ALL = ("relevance", "clarity", "brevity", "tone", "layout")
 
 
 def test_the_rubric_names_the_five_criteria_and_the_bar() -> None:
     rb = rubric()
     assert [c.criterion_id for c in rb.criteria] == list(ALL)
     assert rb.aggregate_floor is not None
-    assert (rb.aggregate_floor.numerator, rb.aggregate_floor.denominator) == (90, 100)
+    assert (rb.aggregate_floor.numerator, rb.aggregate_floor.denominator) == (80, 100)
 
 
-def test_all_fives_pass_and_a_single_four_still_meets_ninety_percent_when_rounded() -> None:
+def test_all_fives_pass_and_a_single_four_still_meets_the_bar() -> None:
     assert run(dict.fromkeys(ALL, 5)).passed
-    assert run({**dict.fromkeys(ALL, 5), "voice": 4}).passed  # 24/25 = 96%
+    assert run({**dict.fromkeys(ALL, 5), "tone": 4}).passed  # 24/25 = 96%
 
 
-def test_a_dimension_under_eighty_percent_blocks_whatever_the_total() -> None:
-    result = run({**dict.fromkeys(ALL, 5), "voice": 3})  # 23/25 = 92% overall, voice 60%
+def test_a_dimension_under_sixty_percent_blocks_whatever_the_total() -> None:
+    result = run({**dict.fromkeys(ALL, 5), "tone": 2})  # 22/25 = 88% overall, tone 40%
     assert not result.passed
 
 
-def test_four_fours_and_a_five_miss_the_ninety_bar() -> None:
-    assert not run({**dict.fromkeys(ALL, 4), "relevance": 5}).passed  # 21/25 = 84%
+def test_a_total_under_the_bar_fails() -> None:
+    assert not run({**dict.fromkeys(ALL, 3), "relevance": 5}).passed  # 17/25 = 68%
 
 
 def test_the_evaluation_records_which_rubric_it_applied() -> None:

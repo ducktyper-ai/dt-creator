@@ -2,7 +2,7 @@
 
 Newsroom owns the production newsletter criteria, weights, pass threshold, section budgets
 and per-property configuration, and changes them without a Creator release. This example
-shows the shape: five scored criteria, a 90 of 100 bar with no criterion under 80%, and the
+shows the shape: five scored criteria, an 80 of 100 bar with no criterion under 60%, and the
 budgets a caller would pass to `zeo_creator.services.length_budgets.check_length_budgets`.
 Scorers are supplied by the caller; nothing here calls a model. Do not cite
 `example.newsletter` as a house policy.
@@ -21,31 +21,22 @@ from zeo_creator.contracts.rubric import (
 )
 
 CRITERIA = (
-    ("relevance", "Every item answers a question this property's reader actually has."),
-    (
-        "interest",
-        "The lead earns the open and each reading adds something the reader did not have.",
-    ),
-    ("concision", "Every section stays inside its length budget and nothing is padding."),
-    (
-        "voice",
-        "The property's own voice and source policy hold; no sponsor or product endorsement.",
-    ),
-    ("visual-quality", "Hierarchy, spacing and the text-only reading are clean."),
+    ("relevance", "Each item matches what the intended reader is looking for."),
+    ("clarity", "Each section says one thing plainly."),
+    ("brevity", "Every section stays inside its length budget."),
+    ("tone", "The tone is consistent from start to finish."),
+    ("layout", "Headings and spacing are consistent and the text-only reading works."),
 )
 
 # Example budgets: (minimum words, maximum words) per item.
 EXAMPLE_BUDGETS: Mapping[str, tuple[int, int]] = {
-    "lead": (350, 400),
-    "reading": (60, 75),
-    "exercise-step": (25, 35),
-    "pick": (30, 45),
-    "limits-note": (60, 80),
-    "cross-promotion": (0, 50),
+    "intro": (40, 80),
+    "item": (20, 60),
+    "outro": (10, 40),
 }
-EXAMPLE_SUBJECT_MAX_CHARS = 55
-EXAMPLE_PREHEADER_MAX_CHARS = 90
-EXAMPLE_OVERALL_MAX_WORDS = 1300
+EXAMPLE_SUBJECT_MAX_CHARS = 60
+EXAMPLE_PREHEADER_MAX_CHARS = 100
+EXAMPLE_OVERALL_MAX_WORDS = 400
 
 
 def newsletter_rubric(
@@ -67,12 +58,12 @@ def newsletter_rubric(
                 rule_ref=f"newsletter.{name}",
                 guidance=guidance,
                 max_points=5,
-                floor=4,
+                floor=3,
                 weight=1,
             )
             for name, guidance in CRITERIA
         ),
         aggregate_floor=AggregateFloor(
-            numerator=90, denominator=100, rounding=Rounding.HALF_UP_PERCENT
+            numerator=80, denominator=100, rounding=Rounding.HALF_UP_PERCENT
         ),
     )

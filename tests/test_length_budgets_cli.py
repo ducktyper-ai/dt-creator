@@ -36,7 +36,7 @@ def test_every_breach_is_named_and_exits_20() -> None:
         "sections": {"intro": "too short", "item": ["a b c d e f"], "mystery": "x y"},
         "subject": "s" * 61,
         "subject_max_chars": 60,
-        "overall_max_words": 10,
+        "overall_max_words": 5,
     }
     result = run(document)
     assert result.exit_code == 20

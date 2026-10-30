@@ -64,6 +64,17 @@ Print one named contract version, as `{"ok": true, "json_schema": {...}}`:
 zeo-creator contract-schema --name=content-brief --version=1
 ```
 
+## `zeo-creator check-length-budgets`
+
+Check drafted text against word budgets the caller supplies, from a `length-budgets/1`
+JSON file or standard input. It answers `{"ok": true|false, "breaches": [...]}` under
+`zeocreator.length-budgets/v1`; exit `0` when every budget holds, `20` when one is
+broken. See [Check length budgets](../guides/length-budgets.md).
+
+```console
+zeo-creator check-length-budgets --file budgets.json
+```
+
 ## `zeo-creator --version`
 
 ```console
@@ -100,7 +111,7 @@ Other seats and tools operate the CLI through this fixed contract:
   command`, `missing command`, `unknown option`, `missing required option`, `invalid
   option value`, `unknown contract`, and `invalid command line` for anything else), also
   listed by `help --json` as `usage_error_reasons`. A command that validates its own input
-  (`lint-thread`) answers the same shape with its own fixed reason, for example `draft is
+  (`lint-thread`, `check-length-budgets`) answers the same shape with its own fixed reason, for example `draft is
   not valid JSON`; those reasons are not in that list. `next` is the command to run:
   `zeo-creator help --json`, or `zeo-creator contracts list` for an unknown
   contract. Neither names what was sent. An internal error carries only a `next`

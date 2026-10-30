@@ -9,7 +9,10 @@ from zeo_creator.cli import app
 
 runner = CliRunner()
 WORDS = " ".join(["word"] * 50)
-OK = {"budgets": {"intro": [40, 80], "item": [5, 60]}, "sections": {"intro": WORDS, "item": ["a b c d e f"]}}
+OK = {
+    "budgets": {"intro": [40, 80], "item": [5, 60]},
+    "sections": {"intro": WORDS, "item": ["a b c d e f"]},
+}
 
 
 def run(document: object, *, args: tuple[str, ...] = ("--file", "-")):
@@ -58,9 +61,15 @@ def test_reads_a_file(tmp_path) -> None:
         (b"[]", "the document is not a JSON object"),
         (b'{"budgets": {}, "sections": {}, "extra": 1}', None),
         (b'{"budgets": {"a": [3, 1]}, "sections": {}}', "a budget minimum is above its maximum"),
-        (b'{"budgets": {"a": [1]}, "sections": {}}', "each budget must be a [minimum, maximum] pair"),
+        (
+            b'{"budgets": {"a": [1]}, "sections": {}}',
+            "each budget must be a [minimum, maximum] pair",
+        ),
         (b'{"budgets": {"a": [true, 2]}, "sections": {}}', None),
-        (b'{"budgets": {}, "sections": {"a": 3}}', "each section must be a string or a list of strings"),
+        (
+            b'{"budgets": {}, "sections": {"a": 3}}',
+            "each section must be a string or a list of strings",
+        ),
         (b'{"budgets": {}, "sections": {}, "overall_max_words": -1}', None),
         (b'{"budgets": {}, "sections": {}, "subject": 3}', "subject and preheader must be strings"),
     ],

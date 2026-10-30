@@ -160,7 +160,9 @@ def doctor(
 MAX_DRAFT_BYTES = 1_000_000
 
 
-def _read_json_input(file: str, *, noun: str, shape: str, duplicate_error: type[ValueError]) -> object:
+def _read_json_input(
+    file: str, *, noun: str, shape: str, duplicate_error: type[ValueError]
+) -> object:
     """Read one JSON object from a file or stdin, or answer invalid_request and exit 2."""
 
     def no_duplicates(pairs: list[tuple[str, object]]) -> dict[str, object]:

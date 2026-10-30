@@ -16,6 +16,7 @@ from zeo_creator.contract_schemas import (
     read_contract_schema,
 )
 from zeo_creator.registry import capability_manifests, openai_tool_projections
+from zeo_creator.services.length_budgets import LengthBudgetInputError, check_length_budgets_input
 from zeo_creator.thread_lint import ThreadDraftError, lint_thread
 
 app = typer.Typer(
@@ -159,12 +160,33 @@ def doctor(
 MAX_DRAFT_BYTES = 1_000_000
 
 
-def _no_duplicates(pairs: list[tuple[str, object]]) -> dict[str, object]:
-    """A JSON object with a repeated key is refused: readers disagree on which one wins."""
-    keys = [key for key, _ in pairs]
-    if len(keys) != len(set(keys)):
-        raise ThreadDraftError("draft has a duplicate key")
-    return dict(pairs)
+def _read_json_input(file: str, *, noun: str, shape: str, duplicate_error: type[ValueError]) -> object:
+    """Read one JSON object from a file or stdin, or answer invalid_request and exit 2."""
+
+    def no_duplicates(pairs: list[tuple[str, object]]) -> dict[str, object]:
+        keys = [key for key, _ in pairs]
+        if len(keys) != len(set(keys)):
+            raise duplicate_error(f"{noun} has a duplicate key")
+        return dict(pairs)
+
+    try:
+        stream = sys.stdin.buffer if file == "-" else Path(file).open("rb")
+        with stream:
+            raw = stream.read(MAX_DRAFT_BYTES + 1)
+        if len(raw) > MAX_DRAFT_BYTES:
+            raise duplicate_error(f"{noun} is larger than 1 MB")
+        return json.loads(raw.decode("utf-8"), object_pairs_hook=no_duplicates)
+    except OSError, UnicodeDecodeError:
+        _emit("error", _invalid(f"{noun} file could not be read", "check the --file path"))
+        raise typer.Exit(EXIT_INVALID) from None
+    except (ValueError, RecursionError) as exc:
+        # Reading only: a bad number or nesting is the caller's input, not a fault here.
+        if isinstance(exc, duplicate_error):
+            reason, step = str(exc), f"fix the {noun} to match {shape}"
+        else:
+            reason, step = f"{noun} is not valid JSON", f"pass one {shape} JSON object"
+        _emit("error", _invalid(reason, step))
+        raise typer.Exit(EXIT_INVALID) from None
 
 
 @app.command("lint-thread")
@@ -176,24 +198,9 @@ def lint_thread_command(
 ) -> None:
     """Lint a post thread: length, numbering, source, links, repetition. Offline and pure."""
     del json_output
-    try:
-        stream = sys.stdin.buffer if file == "-" else Path(file).open("rb")
-        with stream:
-            raw = stream.read(MAX_DRAFT_BYTES + 1)
-        if len(raw) > MAX_DRAFT_BYTES:
-            raise ThreadDraftError("draft is larger than 1 MB")
-        draft = json.loads(raw.decode("utf-8"), object_pairs_hook=_no_duplicates)
-    except OSError, UnicodeDecodeError:
-        _emit("error", _invalid("draft file could not be read", "check the --file path"))
-        raise typer.Exit(EXIT_INVALID) from None
-    except (ValueError, RecursionError) as exc:
-        # Reading only: a bad number or nesting is the caller's input, not a linter fault.
-        if isinstance(exc, ThreadDraftError):
-            reason, step = str(exc), "fix the draft to match thread-draft/1"
-        else:
-            reason, step = "draft is not valid JSON", "pass one thread-draft/1 JSON object"
-        _emit("error", _invalid(reason, step))
-        raise typer.Exit(EXIT_INVALID) from None
+    draft = _read_json_input(
+        file, noun="draft", shape="thread-draft/1", duplicate_error=ThreadDraftError
+    )
     try:
         result = lint_thread(draft)
     except ThreadDraftError as exc:
@@ -201,6 +208,28 @@ def lint_thread_command(
         raise typer.Exit(EXIT_INVALID) from None
     _emit("thread-lint", result)
     if not result["ok"]:
+        raise typer.Exit(EXIT_REFUSED)
+
+
+@app.command("check-length-budgets")
+def check_length_budgets_command(
+    file: str = typer.Option(
+        ..., "--file", help="A length-budgets/1 JSON file, or - to read standard input."
+    ),
+    json_output: bool = typer.Option(False, "--json", help="Accepted; output is always JSON."),
+) -> None:
+    """Check drafted text against word budgets the caller supplies. Offline, pure, trims nothing."""
+    del json_output
+    document = _read_json_input(
+        file, noun="input", shape="length-budgets/1", duplicate_error=LengthBudgetInputError
+    )
+    try:
+        breaches = check_length_budgets_input(document)
+    except LengthBudgetInputError as exc:
+        _emit("error", _invalid(str(exc), "fix the input to match length-budgets/1"))
+        raise typer.Exit(EXIT_INVALID) from None
+    _emit("length-budgets", {"ok": not breaches, "breaches": list(breaches)})
+    if breaches:
         raise typer.Exit(EXIT_REFUSED)
 
 
@@ -233,6 +262,7 @@ OUTPUT_SCHEMAS = {
     "contract-schema": ("zeocreator.contract-schema/v1",),
     "doctor": ("zeocreator.doctor/v1",),
     "lint-thread": ("zeocreator.thread-lint/v1",),
+    "check-length-budgets": ("zeocreator.length-budgets/v1",),
     # The named exception to cli_protocol 1: one line of canonical inventory bytes.
     "runtime-provider": ("zeocreator.runtime-provider/canonical",),
 }
@@ -319,7 +349,7 @@ INTERNAL_NEXT = "rerun once; if it fails again, report the command to the zeocre
 
 
 # The closed set of reasons a command-line USAGE error gives; help --json lists them.
-# A command that validates its own input (lint-thread) gives its own fixed reasons, not these.
+# A command that validates its own input (lint-thread, check-length-budgets) gives its own fixed reasons, not these.
 USAGE_REASONS = (
     "unknown command",
     "missing command",

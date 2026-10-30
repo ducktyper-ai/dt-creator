@@ -1,0 +1,2424 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Provider-neutral creator operations, governed by design.">
+      
+      
+      
+        <link rel="canonical" href="https://ducktyper-ai.github.io/dt-creator/guides/email-marketing/">
+      
+      
+        <link rel="prev" href="../connectors/">
+      
+      
+        <link rel="next" href="../email-receipt-conformance/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Email marketing - ZEO Creator</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#email-marketing" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="ZEO Creator" class="md-header__button md-logo" aria-label="ZEO Creator" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ZEO Creator
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Email marketing
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="amber"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/ducktyper-ai/dt-creator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ducktyper-ai/dt-creator
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="ZEO Creator" class="md-nav__button md-logo" aria-label="ZEO Creator" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    ZEO Creator
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/ducktyper-ai/dt-creator" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    ducktyper-ai/dt-creator
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ZEO Creator
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../getting-started/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting started
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/first-capability/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Your first capability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorial
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorial
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/content-portfolio/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Build a content portfolio
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How-to guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    How-to guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../connectors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supply source observations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Email marketing
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Email marketing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#concepts-and-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concepts and contracts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#invoke-the-nine-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Invoke the nine capabilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#review-and-readiness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review and readiness
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exact-approval-and-separate-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact approval and separate effects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#publication-isolation-and-data-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Publication isolation and data handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#offline-proof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Offline proof
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-zeocore-integration-dependency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public Zeocore integration dependency
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assessment-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assessment boundaries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#personalized-test-and-production-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Personalized test and production ordering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#email-contract-migration-and-release-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email contract migration and release policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification cost
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#newsletter-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Newsletter compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rendering-an-email-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering an email body
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#receipt-results-and-lifecycle-preconditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Receipt results and lifecycle preconditions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metric-applicability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metric applicability
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../email-receipt-conformance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Shared email receipts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../production-adapters/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrate a production engine
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../delivery-distribution/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validate and prepare distribution
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assess performance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../thread-lint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Lint a post thread
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../length-budgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Check length budgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runner-integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integrate a runner
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime-host/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Call through Runtime
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Concepts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/continuous-editorial-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Continuous editorial operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/contracts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contracts and digests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/canonical-digests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Canonical digest protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/capabilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Capability catalog
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/contracts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contract API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/errors/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Error codes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../reference/cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Project
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/0001-zeocore-version-and-runtime-boundary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Zeocore boundary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/0002-zeocore-runtime-host/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime host decision
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../adr/0003-bounded-zeocore-compatibility/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Bounded Zeocore compatibility (proposed)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-readiness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release readiness
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../removal-report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Legacy removal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#concepts-and-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Concepts and contracts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#invoke-the-nine-capabilities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Invoke the nine capabilities
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#review-and-readiness" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Review and readiness
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exact-approval-and-separate-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exact approval and separate effects
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#publication-isolation-and-data-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Publication isolation and data handling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#offline-proof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Offline proof
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-zeocore-integration-dependency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public Zeocore integration dependency
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assessment-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assessment boundaries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#personalized-test-and-production-ordering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Personalized test and production ordering
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#email-contract-migration-and-release-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Email contract migration and release policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verification cost
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#newsletter-compatibility" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Newsletter compatibility
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#rendering-an-email-body" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering an email body
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#receipt-results-and-lifecycle-preconditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Receipt results and lifecycle preconditions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#metric-applicability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metric applicability
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+    <a href="https://github.com/ducktyper-ai/dt-creator/edit/main/docs/guides/email-marketing.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
+    </a>
+  
+  
+
+
+<h1 id="email-marketing">Email marketing<a class="headerlink" href="#email-marketing" title="Permanent link">&para;</a></h1>
+<!-- Reviewed 2026-09-08. Email v4 discriminates receipt results, lifecycle states and admissible metrics; v1/v2/v3 preparation APIs are retired; original schemas remain archived. -->
+
+<p>Creator designs and evaluates email programs. Zeocore owns the public provider
+contracts and lowering; ZEOconnect executes provider effects; Runtime owns
+approvals, audience authorization, schedules and retries; Newsroom owns durable
+publication history and observations. Any third-party host can implement these
+responsibilities without importing private ZEO packages.</p>
+<h2 id="concepts-and-contracts">Concepts and contracts<a class="headerlink" href="#concepts-and-contracts" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>Public artifact</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Campaign</td>
+<td><code>EmailCampaignPlan</code></td>
+<td>Bounded objective, audience, CTAs, attribution and stopping conditions</td>
+</tr>
+<tr>
+<td>Campaign release</td>
+<td><code>EmailCampaignRelease</code></td>
+<td>Exact campaign, message and sequence membership, CTAs and measurement plan without cyclic digests</td>
+</tr>
+<tr>
+<td>Sequence</td>
+<td><code>EmailSequencePlan</code></td>
+<td>Ordered immutable revision with explicit policy references and delays</td>
+</tr>
+<tr>
+<td>Step</td>
+<td><code>EmailSequenceStepPlan</code></td>
+<td>Stable identity/ordinal, exact message-plan digest, admitted-event delay and freshness</td>
+</tr>
+<tr>
+<td>Message</td>
+<td><code>EmailMessagePlan</code>, <code>EmailMessageDraft</code></td>
+<td>Editorial intent and exact subject, preheader, HTML, plain text and manifests</td>
+</tr>
+<tr>
+<td>Audience intent</td>
+<td><code>AudienceIntent</code></td>
+<td>Segments, inclusions/exclusions, consent, suppression, geography, frequency and cross-publication policy</td>
+</tr>
+<tr>
+<td>Audience snapshot</td>
+<td><code>AudienceSnapshotSummary</code></td>
+<td>Opaque runtime-supplied selection with digest, counts, provider/connection, expiry and drift state</td>
+</tr>
+<tr>
+<td>Review</td>
+<td><code>EmailEditorialReview</code></td>
+<td>Structural checks plus supplied evidence, ready only for human approval</td>
+</tr>
+<tr>
+<td>Delivery</td>
+<td><code>EmailDeliveryPackage</code></td>
+<td>Exact creative material and approval target digest</td>
+</tr>
+<tr>
+<td>Effect intent</td>
+<td><code>ProposedEmailOperation</code></td>
+<td>Separate proposal referring to a public Zeocore <code>CapabilityId</code> and contract digest</td>
+</tr>
+<tr>
+<td>Learning</td>
+<td><code>EmailMetricObservation</code>, <code>EmailProgramAssessment</code></td>
+<td>Receipt-linked aggregate input and qualified conclusions</td>
+</tr>
+</tbody>
+</table>
+<p>A newsletter is a periodic editorial issue sent as a one-off broadcast. A campaign
+need not correspond to a provider-side campaign object. A lifecycle program is
+the broader journey containing entry/exit/conversion/suppression policies; v4 can
+represent it through one linear sequence. HubSpot Sales Sequences are outside
+this model; the integration target is HubSpot Marketing.</p>
+<h2 id="invoke-the-nine-capabilities">Invoke the nine capabilities<a class="headerlink" href="#invoke-the-nine-capabilities" title="Permanent link">&para;</a></h2>
+<p>Use the standard capability registry and typed requests from
+<code>zeo_creator.capabilities.email_marketing</code>. All nine capabilities declare only
+Zeocore's conservative <code>read</code> effect, carry a <code>pure</code> tag, and have no required
+acquisition services or network access:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>creator.plan_email_campaign@4.0.0
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>creator.finalize_email_campaign@4.0.0
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>creator.propose_email_operation@4.0.0
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>creator.plan_email_sequence@4.0.0
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>creator.plan_email_message@4.0.0
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>creator.compose_email_message@4.0.0
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>creator.review_email_message@4.0.0
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>creator.prepare_email_delivery@4.0.0
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>creator.assess_email_program@4.0.0
+</code></pre></div>
+<p>Composition accepts an optional <code>creator.email_strategy</code> implementing
+<code>EmailCreativeStrategy.compose(plan, sections, created_at)</code>. The strategy receives
+only supplied editorial inputs; it is not passed <code>ToolContext</code>, credentials or a
+connector. Its returned scope, input digests and artifact integrity are checked.
+The deterministic strategy copies curated source sections into matching HTML and
+plain text and adds the declared CTAs and compliance footer.</p>
+<h2 id="review-and-readiness">Review and readiness<a class="headerlink" href="#review-and-readiness" title="Permanent link">&para;</a></h2>
+<p>Review covers source lineage, voice, audience policy, subject/body consistency,
+HTML/plain-text consistency, links, CTAs, personalization, accessibility,
+footer/unsubscribe, consent/suppression and claims. Preview and test evidence belong exclusively to delivery preparation. An editorial review can be ready before either external check exists; it does not claim they passed. Optional preview/test requirements do not block editorial review.</p>
+<p>The deterministic reviewer compares visible HTML text with plain text and rejects
+unlisted markup/attributes. This intentionally conservative subset supports text
+and descriptive links; richer email templates need explicit future contract work
+and qualified render validation. Syntactically valid links do not prove remote
+availability. Voice, subject/body consistency, accessibility, link validation and claim review
+require supplied <code>EmailReviewEvidence</code> bound to the exact draft and an expiry.
+The parser checks anchor labels against their declared CTA targets and the unsubscribe target. Exactly one CTA must be primary; sequence intent selects that CTA regardless of position. Missing evidence produces <code>human_needed</code>; it cannot be upgraded by a boolean
+readiness claim. Delivery preparation repeats the checks at preparation time.</p>
+<p>Tokens remain symbolic declarations with missing-value behavior <code>refuse</code>.
+Undeclared or malformed placeholders always block readiness. Declared placeholders
+require externally supplied, exact-draft <code>personalization</code> review evidence proving
+resolution, followed by successful preview/test receipts with structured <code>EmailLoweringEvidence</code>. Each binds an issuer, receipt reference/digest, contract identity/digest, provider/connection/account, connector revision, lowering profile, sender, draft, template mapping, submitted/observed/rendered digests, token coverage, missing-value behavior and covered snapshot. A boolean alone is insufficient. Without that evidence they remain unresolved and
+blocked. Values never enter Creator: the host resolves them outside this package
+and refuses missing required values. Evidence authenticity and complete snapshot
+coverage authenticity must be verified by the runtime under the public lowering contract. Creator checks the supplied coverage and context equalities. The fake renderer refuses all personalization tokens; it never claims copied placeholders are resolved.</p>
+<p>Production preparation requires a current nonempty, unchanged audience snapshot,
+matching consent/suppression digests, ready review, successful preview and a test
+receipt for a separate test audience. A preview may bind the exact production snapshot; only a test-send audience must differ. Test preparation uses a test-only snapshot
+and does not require a previous test-send receipt. Schedule intent must be in the
+future and within snapshot validity. Runtime must recheck freshness and drift at
+dispatch; Creator never evaluates a trigger or schedules work.</p>
+<h2 id="exact-approval-and-separate-effects">Exact approval and separate effects<a class="headerlink" href="#exact-approval-and-separate-effects" title="Permanent link">&para;</a></h2>
+<p><code>EmailDeliveryPackage.material</code> includes the full draft and its binding, subject,
+preheader, HTML/plain-text and manifest digests, sender/reply-to references,
+compliance, audience summary, tracking, schedule intent, campaign/sequence revision,
+review and preview/test evidence, campaign release, execution context and template mapping digest. <code>approval_digest</code> is the RFC 8785 digest of that
+material. It is an approval target, not an approval receipt.</p>
+<p>An operation proposal separately binds editorial effect intent, public Zeocore
+operation identity/version/schema digest, delivery reference and approval digest,
+sequence revision, exact audience, remote target/revision and migration policy
+where applicable. Its own approval digest is RFC 8785 over <code>{material, idempotency_key}</code>. The execution context inside material namespaces the logical operation. Changing a retry key requires new approval and creates a different receipt identity.
+Use separate identities and approvals for create/update draft, test send, schedule,
+immediate broadcast, provision a sequence revision, activate, enrol, pause, cancel, retire and migrate-existing-enrollees. Activation does
+not enrol anyone; test success does not approve production; later or larger
+audiences require new proposals. Remote update/cancel/pause/retire intents require
+an opaque target, observed remote revision digest and normalized <code>EmailRemoteReceipt</code> binding issuer, operation, release and exact execution context. Activation also requires the exact provisioned sequence receipt. Cancellation accepts only a scheduling receipt; update accepts only a draft receipt. Both bind <code>originating_operation</code> and <code>target_delivery</code>, and proposal preparation receives the complete originating proposal. The receipt operation and originating proposal must match exactly. Cancellation cannot name another delivery; draft updates may supply new content only for the same logical message as the target. Cancellation does not require an expired audience or old preview proof to become fresh again.</p>
+<p><code>creator.propose_email_operation@4.0.0</code> and <code>services.email_marketing.propose_operation</code> inspect the actual release, package and sequence. New content effects re-run delivery preparation; cancellation validates its historical target without reauthorizing a send. They enforce exact package/audience/context bindings and schedule semantics, and check enrolment policy and both proposal/resolution times against the enrolment window. The capability does not
+certify support, inspect a provider account, validate a human authorization or
+execute anything. At the handoff the host must resolve every digest-bound artifact,
+check stored revision uniqueness and the receipt-to-provider-object mapping, authenticate evidence issuers and contract digests, recheck audience authorization/freshness/drift at dispatch, resolve the public operation
+contract, refuse unsupported semantics, and obtain fresh effect authority.</p>
+<p>A sequence revision has unique stable step IDs and contiguous ordinals. Editing
+through <code>plan_email_sequence</code> requires the previous revision and increments it.
+A separate <code>provision_sequence_revision</code> operation binds the exact revision and returns the normalized receipt required for activation. Provisioning cannot activate or enrol anyone. The fake lifecycle produces that receipt through an approved simulated operation; it is no longer supplied out of thin air. Existing enrollees retain their original revision by default. Migration requires
+a separate <code>migrate_existing_enrollees</code> effect containing source and target sequence revisions, an exact enrollee snapshot, an explicit policy, and a retain/skip/restart disposition for every source step. The source receipt, provisioned target receipt, and target previous-revision binding must agree. Source kind/sequence and target kind/sequence/context/outcome are checked by direct contract construction as well as the service. Activation and enrolment reject migration material. Runtime determines current remote state and grants separate authority.
+Conditional graphs, CRM mutations, lead scoring and arbitrary workflows are
+outside the linear v4 model.</p>
+<h2 id="publication-isolation-and-data-handling">Publication isolation and data handling<a class="headerlink" href="#publication-isolation-and-data-handling" title="Permanent link">&para;</a></h2>
+<p>All new references include organization, publication, revision and digest. Mixing
+publications in a request, nested reference, review, snapshot or assessment is
+rejected. Shared provider accounts and source material confer no audience-sharing
+permission. Cross-promotion requires an explicit publication-scoped policy and a
+separately resolved snapshot. Caller-supplied profiles hold Rasa, Prof Rod and
+Zero Employee strategy outside the package.</p>
+<p>Contracts have no subscriber email/name/contact-ID/property fields, reject extra
+fields, and reject email-address-shaped prose. This is a structural guard, not a
+universal PII detector: hosts must prevent subscriber records, private identities,
+tracking values and provider response bodies from entering editorial text or
+opaque references. Links use HTTPS without userinfo. Ordinary query parameters and fragments (including video IDs) are allowed; known tracking/subscriber parameter families are refused. This denylist is not a universal detector of encoded private data. Tracking remains a policy reference applied outside Creator.</p>
+<p>Capability failures return a fixed safe code and an allowlisted refusal reason for known domain errors. Unknown validation and injected exception bodies remain opaque.
+Pydantic's raw <code>ValidationError.errors()</code> can contain original input; never persist
+it. Validate before durable logging and retain only safe error classifications.
+Digest equality proves integrity, not consent, evidence authenticity, publication
+ownership or human approval; those attestations are host responsibilities.</p>
+<h2 id="offline-proof">Offline proof<a class="headerlink" href="#offline-proof" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="go">python -m zeo_creator.examples.email_marketing</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="gp"># </span>Compact<span class="w"> </span>three-publication<span class="w"> </span>workflow:
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="go">python -m zeo_creator.reference.email_workflow</span>
+</code></pre></div>
+<p>The compact <code>email_workflow</code> runs all nine capabilities for three isolated publications,
+with four messages and one three-step sequence each. <code>examples/email_marketing.py</code>
+and installed <code>python -m zeo_creator.reference.email_program_suite</code> widen this to eight
+separate bounded programs: Rasa weekly newsletter and learning nurture; Prof Rod weekly
+newsletter, lead-magnet welcome and membership; Zero Employee weekly newsletter,
+orientation and product interest. The caller supplies sanitized identities and objectives;
+these examples contain no private brand strategy. Every program includes matching
+HTML/plain text, a campaign release, test and production preparation, and a partial assessment.
+The effect-family harness exercises all twelve distinct intents through thirteen operations per program: it provisions both source and target sequence revisions and consumes the returned receipts during activation and migration. There are 104 approved simulated operations across eight programs.
+These are orchestration proofs, not editorial or provider acceptance verdicts.</p>
+<p><code>SimulatedEmailHost</code> demonstrates logical idempotency, conflicting reuse refusal
+and ambiguous-outcome reconciliation without resubmission. It is a process-local
+conformance harness, not a production journal. Provider transformations produce
+<code>needs_review</code>. No account, credential, recipient identity, network or live effect
+is involved, and the example's simulated approvals are not human approvals.</p>
+<p>Schemas are available through <code>zeo-creator contracts export</code>. Wheel resources under
+<code>zeo_creator/reference_artifacts</code> include examples, request/response schemas,
+canonical digest vectors and documentation. JavaScript independently verifies the
+Python-generated canonical vector bytes and SHA-256 values.</p>
+<h2 id="public-zeocore-integration-dependency">Public Zeocore integration dependency<a class="headerlink" href="#public-zeocore-integration-dependency" title="Permanent link">&para;</a></h2>
+<p>Creator pins Zeocore 0.28.0 with its shared Runtime host. The host can invoke
+Creator's supplied-input email capabilities; it does not turn Creator proposals
+into authenticated provider execution. Creator references caller-selected public
+operation identities and does not define executable provider operations or copy
+HubSpot/Kit request bodies. The example uses clearly marked <code>example.email</code> identities.</p>
+<p>Live interoperability remains unverified until the shared email contract and
+actual provider lowering are integrated and qualified with this package. A production host must not treat the fake shapes
+or example operation IDs as a connector protocol. Lowering must record Creator
+artifact/revision/digest, connector revision, submitted and observed payload
+digests, transformations/refusals, remote references, idempotency and safe ambiguity.
+Unsupported sequence semantics require refusal. Ambiguous results require
+reconciliation before any retry.</p>
+<h2 id="assessment-boundaries">Assessment boundaries<a class="headerlink" href="#assessment-boundaries" title="Permanent link">&para;</a></h2>
+<p>Each assessment persists its expected metric set, exact observation window and an
+<code>EmailMeasurementPopulation</code> containing the exact release and expected confirmed operation
+receipts supplied by Runtime/Newsroom. Normalized receipts identify their delivery/message
+or sequence. Completeness requires every released message to be represented and every
+expected operation × metric cell to have qualified observations. Omitting an operation
+for a second released message cannot make the release complete. Observations outside the
+declared receipt population are rejected. Multiple operations for one message each need
+coverage. The explicit aggregation policy is <code>per_operation_no_pooling</code>: values remain
+per operation, without silently summing overlapping recipients or incompatible metrics.</p>
+<p>Every observation must bind a confirmed normalized operation receipt, provider/connection
+and campaign release. An assessment accepts a single aggregate cohort and does not pool
+providers or connections. Units are <code>count</code>, <code>rate</code>, or <code>currency</code>; rates must equal their
+explicit numerator/denominator. Missing population cells, conflicting values, incomplete
+coverage or unreliable observations prevent qualified completeness. Qualitative stopping
+conditions remain <code>human_needed</code>; Creator does not execute a runtime stop.</p>
+<h2 id="personalized-test-and-production-ordering">Personalized test and production ordering<a class="headerlink" href="#personalized-test-and-production-ordering" title="Permanent link">&para;</a></h2>
+<p>A personalized message requires audience-specific external evidence twice:</p>
+<ol>
+<li>Resolve tokens against the test snapshot outside Creator and supply qualified lowering evidence.</li>
+<li>Review using that test coverage, prepare the test package with its preview, and authorize a separate test operation.</li>
+<li>Resolve and render against the production snapshot outside Creator using the same execution context and template mapping.</li>
+<li>Produce a second editorial review using production coverage, then prepare production with its preview plus the prior test-send evidence.</li>
+</ol>
+<p>Reusing the test review for production fails because its snapshot coverage differs.
+The regression walkthrough supplies digest-bound external evidence without subscriber
+values; it tests consumption of that evidence, not the truth of a provider rendering.
+The fake renderer still refuses personalized drafts. Runtime must authenticate issuers
+and verify the real mapping/render/snapshot coverage before authorizing effects.</p>
+<h2 id="email-contract-migration-and-release-policy">Email contract migration and release policy<a class="headerlink" href="#email-contract-migration-and-release-policy" title="Permanent link">&para;</a></h2>
+<p>The PyPI package is <code>zeocreator==0.6.1</code>; its nine email capabilities and durable email artifacts use
+major version 4. Published email v1, v2 and v3 schemas remain byte-for-byte available for
+audit. Their preparation APIs are retired from discovery; the twenty original non-email
+capabilities remain unchanged. This explicitly affirms the earlier email v1 retirement:
+these email families existed only as unreleased development commits, and unsafe approvals
+cannot carry forward. Version 0.5.3 is the first PyPI release; it does not make a
+1.x API stability promise or establish authenticated provider interoperability.</p>
+<p>Rebuild current campaign/message/sequence artifacts, finalize a release with a fully
+coordinated CTA set, obtain current audience-specific proof evidence, provision sequence
+revisions explicitly, and prepare new effect approvals. Mutations now require the originating
+proposal and exact target delivery; assessments require a declared operation population.
+The new required provenance fields and changed review semantics receive a new major version
+rather than silently changing schemas already on main.</p>
+<h2 id="verification-cost">Verification cost<a class="headerlink" href="#verification-cost" title="Permanent link">&para;</a></h2>
+<p><code>current()</code> validates each root graph once through Pydantic, including nested digests,
+scopes and type constraints. It rejects silent normalization/repair and unsafe copies;
+it does not recursively JSON-roundtrip every descendant again. There is no process-global
+trust cache. The full eight-program example remains in <code>make verify</code>, executed in process
+without a hardware-dependent per-example deadline. CI retains a fifteen-minute overall
+job bound. Regression tests prove both the single-root validation path and rejection of
+nested corruption with a recomputed ancestor digest.</p>
+<h2 id="newsletter-compatibility">Newsletter compatibility<a class="headerlink" href="#newsletter-compatibility" title="Permanent link">&para;</a></h2>
+<p>Existing <code>AudienceSelection</code>, <code>NewsletterIssuePlan</code>, newsletter draft/review and
+generic publication/performance v1 schemas remain byte-for-byte unchanged.
+<code>PlanEmailMessageRequest.newsletter</code> provides an explicit specialization bridge:
+select an existing subject and preheader variant, retain the issue's audience and
+consent/suppression references, and supply the new message directions, compliance
+and scoped evidence. The resulting plan binds the original newsletter revision.
+No old schema is silently reinterpreted.</p>
+<p>Historical provider integration work includes Zeocore HubSpot PR 53, Kit PR 54
+and follow-up PR 55 at <code>e2b55aa6b1751afb95614e7b5cbab9f339f5f9e6</code>.
+Creator now installs released Zeocore 0.28.0. Those provider changes and the
+shared host do not by themselves establish completed Creator/Runtime email
+wiring or authenticated live interoperability.</p>
+<h2 id="rendering-an-email-body">Rendering an email body<a class="headerlink" href="#rendering-an-email-body" title="Permanent link">&para;</a></h2>
+<p><code>zeo_creator.rendering.render_email_body</code> turns structured blocks into an
+accessible HTML <strong>fragment</strong> for a template's content slot, plus its plain-text
+twin. It never produces a full document: the template owns the frame, brand
+styling and footer.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">zeo_creator.rendering</span><span class="w"> </span><span class="kn">import</span> <span class="n">BodyBlock</span><span class="p">,</span> <span class="n">BodyLink</span><span class="p">,</span> <span class="n">render_email_body</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">body</span> <span class="o">=</span> <span class="n">render_email_body</span><span class="p">(</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">language</span><span class="o">=</span><span class="s2">"en"</span><span class="p">,</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">preheader</span><span class="o">=</span><span class="s2">"Three releases this week"</span><span class="p">,</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">blocks</span><span class="o">=</span><span class="p">(</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>        <span class="n">BodyBlock</span><span class="p">(</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>            <span class="n">heading</span><span class="o">=</span><span class="s2">"What changed"</span><span class="p">,</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>            <span class="n">paragraphs</span><span class="o">=</span><span class="p">(</span><span class="s2">"Three releases shipped."</span><span class="p">,),</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>            <span class="n">links</span><span class="o">=</span><span class="p">(</span><span class="n">BodyLink</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">"Read the notes"</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">"https://example.org/notes"</span><span class="p">),),</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>        <span class="p">),</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    <span class="p">),</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="p">)</span>
+</code></pre></div>
+<ul>
+<li><strong>Escaping:</strong> every text node and attribute is escaped. Braces become <code>&amp;#123;</code> and <code>&amp;#125;</code>, so a template language that evaluates the slot, such as HubSpot's HubL, never sees <code>{{ }}</code> from the copy. The plain text keeps the braces, so don't feed it to a template engine.</li>
+<li><strong>The wrapper:</strong> it declares <code>lang</code> (a BCP 47 tag) and <code>dir</code>, which must be <code>ltr</code> or <code>rtl</code>.</li>
+<li><strong>Structure:</strong> headings are <code>h2</code>, and text is <code>p</code>.</li>
+<li><strong>Links:</strong> they follow the same rule as <code>EmailLink</code>: an absolute https URL with no userinfo, template braces, tracking or subscriber parameters, and no control characters, at most 2048 characters. So the fragment never carries a link the delivery manifest would refuse. A label, including a linked heading, must describe its target, never repeat the URL.</li>
+<li><strong>Images:</strong> they need alternative text unless marked decorative, and they scale to the column.</li>
+<li><strong>Plain text:</strong> it carries every heading, every informative image's alternative text (<code>Image: ...</code>), every paragraph, and every link and heading link as <code>label: url</code>.</li>
+<li><strong>Digests:</strong> <code>html_digest</code> and <code>plain_text_digest</code> are computed exactly as <code>EmailDeliveryMaterial</code> computes them. So the result feeds a <code>NewsletterIssueDraft</code> or an email draft unchanged.</li>
+</ul>
+<p>The renderer applies no voice, lexicon or visual style. It never maps to a provider's draft format: that mapping belongs to the runner's adapter.</p>
+<h2 id="receipt-results-and-lifecycle-preconditions">Receipt results and lifecycle preconditions<a class="headerlink" href="#receipt-results-and-lifecycle-preconditions" title="Permanent link">&para;</a></h2>
+<p>Email v4 replaces independent optional receipt fields with a required <code>result</code>, a
+JSON-Schema/Pydantic union discriminated by <code>kind</code>. <code>draft</code>, <code>scheduled_broadcast</code>,
+<code>broadcast</code>, <code>test_send</code> and <code>cancelled_broadcast</code> carry exact delivery, message-plan
+and audience-snapshot bindings. <code>sequence_revision</code> carries an exact sequence binding,
+effect intent and lifecycle state; only enrolment/migration carry an audience. Result
+variants reject unrelated fields. Each result binds its normalized effect intent;
+test results require test audiences and broadcast results require production audiences.
+Receipt audience provider/connection must match its execution context. Preview evidence
+remains a separate proof contract and cannot masquerade as a remote operation receipt.</p>
+<p>The receipt's <code>operation</code> binds the originating Creator proposal; <code>result.intent</code>
+and its audience/state describe that operation's normalized outcome. The synthetic
+normalizer derives these fields from the actual proposal and package and refuses a
+caller-supplied contradictory kind. Runtime must authenticate the receipt and verify
+all those claims against the real originating operation and provider state. A matching
+local digest alone cannot authenticate any of them.</p>
+<table>
+<thead>
+<tr>
+<th>Proposed effect</th>
+<th>Required prior state</th>
+<th>Confirmed result state</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Provision revision</td>
+<td>No prior remote target</td>
+<td>provisioned</td>
+</tr>
+<tr>
+<td>Activate revision</td>
+<td>provisioned</td>
+<td>active</td>
+</tr>
+<tr>
+<td>Enrol snapshot</td>
+<td>active</td>
+<td>active</td>
+</tr>
+<tr>
+<td>Pause future steps</td>
+<td>active</td>
+<td>paused</td>
+</tr>
+<tr>
+<td>Retire revision</td>
+<td>active or paused</td>
+<td>retired</td>
+</tr>
+<tr>
+<td>Migrate existing enrollees</td>
+<td>paused source and provisioned target</td>
+<td>target remains provisioned</td>
+</tr>
+</tbody>
+</table>
+<p>Migration never activates its target. The explicit migration policy and per-step
+retain/skip/restart dispositions remain required; later activation needs its own
+proposal and authority. A runtime/provider that cannot retain migrated enrolments
+without activating the target must refuse these semantics. The bounded contract has
+no resume-paused effect; activation cannot be repurposed as resume or reactivation.
+Retries reuse the same logical operation, rather than creating another activation.
+Current remote state, revocation and stale receipt reconciliation remain runtime checks.</p>
+<h2 id="metric-applicability">Metric applicability<a class="headerlink" href="#metric-applicability" title="Permanent link">&para;</a></h2>
+<p>A message-bound expected population entry must be a confirmed production <code>broadcast</code>
+result from <code>send_broadcast</code>. Draft, scheduled, test, cancelled, provisioned, activated,
+paused, retired and migrated results cannot establish delivery or engagement metrics.
+A test audience cannot satisfy production coverage, even with a full observation matrix.</p>
+<table>
+<thead>
+<tr>
+<th>Eligible operation result</th>
+<th>Admissible metrics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Production broadcast</td>
+<td>attempted, accepted, delivered, deferred, bounced, complained, unsubscribed, opened, unique_link_clicks, cta_conversions, campaign_conversion, attributed_revenue</td>
+</tr>
+<tr>
+<td>Production enrolment</td>
+<td>sequence_enrolments, step_completion, step_exit</td>
+</tr>
+</tbody>
+</table>
+<p>Observations reject inadmissible pairs during direct construction. The population rejects
+nonmeasurable operations. Its expected matrix contains each operation's applicable metric
+cells only; a requested metric with no observations still leaves an explicit gap. Every
+released message still needs its own production broadcast coverage, so sequence aggregates
+cannot silently cover missing messages. No values are pooled across operations. Provider
+definitions, retrieval provenance, observation windows, coverage, reliability and attribution
+qualifications remain required; a confirmed broadcast receipt alone proves no delivered count.</p>
+<p>Campaign and message CTA plans require unique CTA and CTA-link identities and exactly one
+primary CTA. Message link manifests also require unique link identities. Release coordination
+compares identity-keyed CTA definitions; the same identity may recur unchanged across messages,
+but conflicting definitions and undeclared/unused identities refuse during construction.</p>
+<p>For v3-to-v4 migration, rebuild artifacts and obtain receipts with explicit result, effect,
+audience and lifecycle evidence. Never infer production status or lifecycle state merely
+from a legacy receipt kind, and never relabel a historical approval. Published v3 schemas
+remain frozen for audit. This is an explicit breaking development-contract migration.</p>
+<p>For receipt ingestion, the exact shared result schema and portable host validation
+cases, see <a href="../email-receipt-conformance/">shared receipt conformance</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../connectors/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Supply source observations">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Supply source observations
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../email-receipt-conformance/" class="md-footer__link md-footer__link--next" aria-label="Next: Shared email receipts">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Shared email receipts
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2026 Prof Rod · MIT licensed
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.action.edit", "content.code.annotate", "content.code.copy", "content.tabs.link", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.sections", "navigation.top", "search.highlight", "search.share", "search.suggest"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

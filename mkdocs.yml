@@ -95,6 +95,7 @@ nav:
       - Validate and prepare distribution: guides/delivery-distribution.md
       - Assess performance: guides/performance.md
       - Lint a post thread: guides/thread-lint.md
+      - Check length budgets: guides/length-budgets.md
       - Integrate a runner: guides/runner-integration.md
       - Call through Runtime: guides/runtime-host.md
   - Concepts:

@@ -1,156 +1,89 @@
 # Changelog
 
+All notable changes to ZEO Creator are documented here. The format follows
+[Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Newest first.
+
+## Status
+
+*Current as of 2026-11-20.*
+
+- **What it is:** ZEO Creator (PyPI `zeocreator`, import `zeo_creator`, command `zeo-creator`) is a Python library of creator-domain operations over Zeocore contracts: research synthesis, editorial planning, content briefs, delivery validation, distribution proposals, email-program contracts, performance assessment, and a generic review rubric. It does pure, deterministic transformation. It owns no credentials, scheduling, provider writes or releases.
+- **How alive:** maintained. Last meaningful change 2026-10-30. Current release: 0.6.1 (2026-10-27). Releases so far: 0.5.3, 0.5.4, 0.6.1.
+- **Works today:** 30 registered capabilities; the `zeo-creator` command (JSON-lines output, `help --json`, `doctor`, `capabilities`, `contract-schema`, `lint-thread`, `check-length-budgets`); versioned JSON Schemas shipped in the wheel; offline examples; the Zeocore runtime-host provider (Zeocore 0.28.0).
+- **Known not to work yet:** no live provider interoperability or effects are claimed (email contracts are provider-neutral and simulated offline); the bundled private `publication-core` package is verified offline only, and its declaration type soundness is not qualified; the command line has no newsletter plan, compose or review commands yet (the capabilities exist in the library); the runtime-provider command still prints its original bytes without `ok`.
+- **Check it yourself:** `make verify` (the full gate: release consistency, tests, types, lint, docs, digest vectors, built-wheel checks; run it on a Linux host). `make doctor` checks your prerequisites. Python 3.14 or newer and Node 24 are required.
+
 ## Unreleased
-- Add `zeo-creator check-length-budgets` (output schema `zeocreator.length-budgets/v1`; input `length-budgets/1`), the generic word-budget check as a command, so an agent or any caller can check a draft without importing Python. JSON on stdout, the error schema for malformed input, exit 0 within budget, 20 when a budget is broken, 2 for invalid input. It is listed in `help --json`; it is not a capability, so `capabilities`, the registry and the provider inventory are unchanged. `lint-thread` now shares the same input reader; its output is unchanged.
-- Add `zeo_creator.services.length_budgets.check_length_budgets`, a generic deterministic word-budget check: the caller supplies every budget, it names each breach and never trims. Add `zeo_creator.reference.newsletter_rubric`, an **illustrative** newsletter rubric (`example.newsletter`: five generic scored criteria, an 80 of 100 bar, no criterion under 60%) with example budgets for `intro`, `item` and `outro` sections. It is caller-owned data, not a capability or scorer, and not the production policy: the consuming newsroom owns its production criteria, weights, threshold and budgets. No model is called and no registry or manifest changes.
-- Correct stale documentation after the 0.6.1 release: the CHANGELOG and release notes now date 0.6.1 as published and the release notes install 0.6.1 (was 0.6.0, never published); the release-readiness gate wording gives the real test counts (566 source pytest tests, 55 Node tests, 34 installed-wheel conformance tests); ADR 0003 no longer says "both" for three pin moves, no longer shows a 2026-10-13 update date, and says Creator 0.6.0 was never published.
+
+### Added
+- `zeo-creator check-length-budgets`: a generic word-budget check as a command. The caller supplies every budget; it names each breach and never trims. JSON on stdout; exit 0 within budget, 20 when a budget is broken, 2 for invalid input. Also available as `zeo_creator.services.length_budgets.check_length_budgets`. Output schema `zeocreator.length-budgets/v1`. It is not a capability, so the capability list and the runtime-provider inventory are unchanged. `lint-thread` now shares its input reader; its output is unchanged.
+- An illustrative newsletter rubric (`example.newsletter`: five generic scored criteria, an 80-of-100 bar, no criterion under 60%) with example budgets for intro, item and outro sections. It is example data, not a scorer and not production policy.
+
+### Fixed
+- Release notes and the release-readiness text now describe 0.6.1 correctly, including that 0.6.0 was never published, with the true test counts.
 
 ## 0.6.1 — 2026-10-27
-- Set up Node 24 in the publish workflow's verify job (`actions/setup-node` v7.1.0, pinned by commit) because `make verify` asserts Node 24 and the runner image ships Node 22. The `v0.6.0` publish run stopped at that step and nothing reached PyPI; the version moves to 0.6.1, which is the first published release of the 0.6 content. The `v0.6.0` tag is left as it is. The verify-and-build steps move into a shared composite action (`.github/actions/verify-build`) that the publish workflow and a new `Release path` pull-request workflow both call, so the release path runs, without any upload, on every pull request that touches it.
 
-- The PR smoke job no longer persists the checkout token in the workspace (`persist-credentials: false` on `actions/checkout` in `.github/workflows/ci.yml`; Council P3 on the smoke cut).
-- Add offline CANDIDATE-only publication-core archive/index verification, isolated consumer and refusal tests; package/runtime/declaration identities stay unchanged and declaration type soundness remains unqualified.
-- Move the exact Zeocore pin to `zeocore[runtime-host]==0.28.0` (approved by the Architect, ans_4b0508f0991cd9c5). The doctor check id is `zeocore_0_28_0`. The pin, lock, guards and mirrors are the only change.
-- Add the generic review rubric: the `ReviewRubric` and `RubricScorecard` contracts and the pure, fail-closed capability `creator.evaluate_rubric@1.0.0` (the 30th capability; the runtime-provider inventory changes). Creator ships the shape and the engine only: no rubric instance, scorer, lexicon, persona or profile.
-- Point repository, documentation, badge and package-metadata links at `ducktyper-ai/dt-creator` and `ducktyper-ai.github.io/dt-creator` after the repository moved to the `ducktyper-ai` organization and was renamed in place (same repository id). The PyPI name `zeocreator`, the `zeo_creator` import, the `zeo-creator` CLI and every schema id are unchanged. The PyPI trusted publisher must be bound to the new repository name before a release; the old Pages address stops resolving.
+This is the first published release of the 0.6 content. The `v0.6.0` tag was created on 2026-10-13, but its publish run stopped before upload, so 0.6.0 never reached PyPI.
 
-Same content as 0.6.0 plus the publish-workflow Node 24 setup above; 0.6.0 was tagged but never published. 0.6.1 reached PyPI on 2026-10-27 from the `v0.6.1` tag.
+### Changed (breaking for anyone who parses command output)
+- Command output follows Zeocore's `cli_protocol` 1. Every command except `runtime-provider` prints exactly one JSON line on stdout, carrying `ok` and a `schema` id such as `zeocreator.<thing>/v1`. Lists are wrapped (`capabilities` answers `{"ok": true, "capabilities": [...]}`, `contracts list` answers `contracts`, `contract-schema` answers `json_schema`, `--version` carries `cli_protocol`). The tables are gone; `--json` is still accepted and changes nothing. A usage error prints usage on stderr and an `invalid_request` result on stdout.
+- Exit codes: 0 success, 1 internal error (no detail printed), 2 invalid input, 20 a failed check. A failing `doctor` check now exits 20, not 1.
+- Requires `zeocore[runtime-host]==0.28.0` (was 0.11.0). The `doctor` check is named `zeocore_0_28_0`.
+- The repository, documentation and package-metadata links point at the repository's new home after it moved and was renamed. The PyPI name, the import, the command and every schema id are unchanged.
+- Builds can write outside the checkout through `DIST_DIR` and `SITE_DIR`.
+- Dropped the direct `rich` dependency; Typer still installs it.
+- The publish path verifies with Node 24 (the 0.6.0 run stopped for lack of it), and a shared verify-and-build step also runs, without uploading, on every pull request that touches the release path.
 
-## 0.6.0 — 2026-10-13 (tagged, never published)
+### Added
+- 30th capability, `creator.evaluate_rubric@1.0.0`, with the `ReviewRubric` and `RubricScorecard` contracts: a pure, fail-closed rubric engine. It ships the shape and the engine only, with no rubric instance, scorer or persona.
+- Thread authoring: `zeo-creator lint-thread` and `zeo_creator.thread_lint`, a deterministic structural linter for numbered post threads (280-character limit counted as NFC code points with URLs as 23, numbering, link dependence, repeated last post, caller-supplied forbidden phrases). It rejects control, ambiguous-space and similar characters and duplicate JSON keys. Output schema `zeocreator.thread-lint/v1`; exit 0 clean, 20 findings, 2 invalid. Ships with a `thread-authoring` skill.
+- `zeo-creator help --json`: a machine catalogue of every command, option, exit code and output schema.
+- `doctor` lists each failing check with the command that fixes it, under `next`; invalid requests carry a fixed `reason` and a `next` command, never the input.
+- `zeo_creator.rendering.render_email_body`: a pure renderer from structured blocks to an accessible, escaped HTML fragment, with a plain-text twin and digests that match `EmailDeliveryMaterial`.
+- `make install VERSION=X.Y.Z` installs a published release as a tool and runs `doctor`.
+- Shared JCS test vectors and a decision record on bounded Zeocore compatibility; a contributors charter written for agents first.
+- A private publication-core package (Node 24, zero dependencies) imported with its history, with contract and failure-path tests in `make verify`; offline archive and index verification for candidates. It is never part of the Python wheel.
 
-- Add the `thread-authoring` skill (`skills/thread-authoring/SKILL.md`) with `zeo-creator lint-thread` and `zeo_creator.thread_lint`, a deterministic structural linter for a numbered post thread (`thread-draft/1`): 280-character limit counted as NFC code points with URLs as 23, numbering, source outside the posts, link dependence, a repeating last post, and caller-supplied forbidden phrases. It reports what needs a reviewer under `needs_review`. Output schema `zeocreator.thread-lint/v1`; exits 0 clean, 20 findings, 2 invalid. It refuses control, default-ignorable, unassigned and ambiguous-space characters and a post hidden inside another, and rejects duplicate JSON keys. Not a registered capability; the runtime-provider inventory is unchanged.
-- Import the five-commit publication-core history without squash, then separately neutralize the private zero-dependency ESM package at `packages/publication-core/`. Its Node 24 contract/export and failure-path tests run in `make verify`; actual Python wheel and sdist checks refuse inclusion of `packages/`. No Python contract/version, provider, npm dependency, release or consumer adoption changes.
-- Add `CONTRIBUTING.md`, a contributors charter written for agents first (how to propose, what is welcome, owner-only areas, how to build and submit, response times), linked from `AGENTS.md`.
-- Point repository, documentation, badge and package-metadata links at `zeroemployeeorg/zeocreator` and `zeroemployeeorg.github.io/zeocreator` after the repository move; the old GitHub Pages address no longer resolves. Version tags and commit pins are unchanged.
-- State the required PyPI trusted publisher and that its current configuration is unverified since the move.
-- **CLI output follows Zeocore's `cli_protocol` 1.** Every command except `runtime-provider` prints exactly one JSON line on stdout, the result, which carries `ok`. Lists are wrapped: `capabilities` answers `{"ok": true, "capabilities": [...]}` (or `"tools"` with `--projection openai`), `contracts list` answers `"contracts"`, `contract-schema` answers `"json_schema"`, and `--version` answers `{"ok": true, "zeocreator": ..., "cli_protocol": "1"}`. Every result also names its schema id. The tables are gone; `--json` is still accepted and changes nothing. A usage error prints its usage on stderr and an `invalid_request` result on stdout; running with no command is a usage error.
-- **Exit codes follow `cli_protocol` 1** (catch-up: merged in #20 without an entry): a failed `doctor` check exits 20, not 1; 1 is an internal error, with `{"ok": false, "outcome": "internal"}` and no detail; 2 is invalid input.
-- `runtime-provider` keeps its canonical bytes, without `ok`, until Runtime confirms a reader for the JSON-lines form; then it changes in one release.
-- Add `make install VERSION=X.Y.Z`, which installs a published release as a tool and runs `doctor` (catch-up: merged in #20 without an entry).
-- Publishing runs in the GitHub environments `pypi` and `testpypi`, so an upload waits for approval once the environment requires a reviewer.
-- Drop the direct `rich` dependency, which the CLI no longer uses; Typer still installs it.
-- **Agentic experience (standard v1):** `zeo-creator help --json` is a machine catalogue of every command, option, exit code and output schema id. Every result carries `"schema": "zeocreator.<thing>/v1"`. `contract-schema` now answers the schema under `json_schema` (unreleased rename; `schema` is the id). Shell-completion options are gone.
-- `make verify` can write its builds outside the checkout: `DIST_DIR` and `SITE_DIR` (defaults `dist` and `site`) set where `uv build` and `mkdocs` write, and the distribution checks read `ZEOCREATOR_DIST_DIR`.
-- **Next steps (standard v1, rules 6 and 7):** `doctor` lists each failing check with the command that fixes it, under `next`. An invalid request carries a fixed `reason` and a `next` command, never the input. The unknown-contract `message` (unreleased) becomes `reason`.
-- Email links refuse a backslash, which browsers read as a path separator but URL parsers don't, so a link can't show one host and open another. This applies to `EmailLink` and the body renderer alike.
-- Add `zeo_creator.rendering.render_email_body`, a pure renderer from structured blocks to an accessible, escaped HTML fragment for a template slot, with its plain-text twin and digests that match `EmailDeliveryMaterial`.
-- **Require `zeocore[runtime-host]==0.28.0`** (was 0.11.0; qualified at 0.15.0 and 0.18.0, then moved to 0.28.0 because the consuming newsroom's draft path needs it; the runtime-host-v1 protocol files are byte-identical at 0.15.0, 0.18.0 and 0.28.0). Zeocore 0.15.0 made every runtime-host name Creator uses public. `doctor` reports the check as `zeocore_0_28_0`.
-- **Fix:** the reference story-revision strategy chains same-topic signals in one batch into successive revisions (1, 2, ...) with `previous_revision_ref` set, instead of several unrelated revision 1s of one story. Reference artifacts and contract digests are unchanged.
-- **Fix:** `extract_editorial_signals`, `update_story_revisions` and `build_story_dossier` refuse an injected strategy's output that cites a signal, source, revision, story or lineage reference that is not an input of the same call.
-- Add the shared JCS test vectors v1 and wire rule 7 (a digest covers the fully materialized contract), and ADR 0003 on bounded Zeocore compatibility.
+### Fixed
+- The reference story-revision strategy chains same-topic signals in one batch into successive revisions instead of several unrelated first revisions.
+- Signal, revision and dossier capabilities refuse an injected strategy's output that cites a reference that is not an input of the same call.
+- Email links refuse a backslash, which browsers treat as a path separator but URL parsers do not, so a link could not show one host and open another.
+
+### Security
+- The pull-request smoke job no longer keeps the checkout token in the workspace.
 
 ## 0.5.4 — 2026-09-10
 
-- Upgrade to the released `zeocore[runtime-host]==0.11.0` dependency.
-- Add canonical installed-provider inventory and strict normalized request helpers.
-- Expose the existing 29-capability factory to the shared Runtime host.
-- Package an offline portfolio invocation example and document exact launch/artifact bindings.
-- Exercise the installed host, real Creator planner and refusal paths through a labelled test peer.
-- Preserve business schemas, email receipt cases and the boundary to Runtime authority.
-- Verify all eight installed examples and 135 receipt cases in local, CI and index smoke gates.
-- Update PyPI installation, CLI, Runtime host and release documentation for 0.5.4.
+### Changed
+- Requires the released `zeocore[runtime-host]==0.11.0`.
+
+### Added
+- Canonical installed-provider inventory and strict, normalized request helpers; the existing 29-capability factory is exposed to the shared runtime host.
+- An offline portfolio invocation example and documentation of exact launch and artifact bindings; all eight installed examples and 135 receipt cases are verified in the gates.
 
 ## 0.5.3 — 2026-09-09
 
-- First PyPI release as `zeocreator`; preserve the `zeo_creator` import and `zeo-creator` CLI.
-- Ship the independently accepted email v4 implementation: nine input-only email capabilities, exact receipt validation and 135 portable conformance cases.
-- Preserve all prior schema and corpus bytes and the twenty original non-email capabilities.
-- Package all seven runnable examples and their reference data for use without a checkout.
-- Add PyPI installation, migration, quickstart and release documentation plus complete release notes.
-- Add tag-bound OIDC publishing, full pre-publication verification, exact-version index smoke tests and automatic GitHub Releases following Zeocore.
-- Keep Zeocore pinned to 0.9.0; no live HubSpot/Kit interoperability or effects are claimed.
+First release on PyPI as `zeocreator` (import `zeo_creator`, command `zeo-creator`).
 
-The entries below record the earlier Git-only development history.
+### Added
+- Email v4: nine input-only email capabilities, exact receipt validation and 135 portable conformance cases, over the twenty original non-email capabilities.
+- Seven runnable examples and their reference data packaged for use without a checkout.
+- Tag-bound trusted publishing with full pre-publication verification, exact-version index smoke tests and automatic GitHub releases.
+- PyPI installation, migration, quickstart and release documentation.
 
-## 0.5.3.dev0 — 2026-09-09
+No live provider interoperability or effects are claimed. Zeocore stays pinned to 0.9.0.
 
-- Require explicit corpus version selection so legacy exporters cannot overwrite v1 with v2 data.
-- Add exporter v8 for the current build while retaining historical script and corpus bytes.
-- Clarify when cancellation proposal preparation must omit its package argument.
-- Preserve the reviewed v4 contracts and all 135 v2 conformance cases unchanged.
+## Development history before the first release (2026-09-05 to 2026-09-09)
 
-## 0.5.2.dev0 — 2026-09-08
+These lines were tracked in git only and were not published.
 
-- Reject prior receipts whose normalized draft effect contradicts their originating proposal.
-- Preserve the specific safe refusal through proposal capability results.
-- Publish corpus v2 with 135 cases covering every result kind/effect and portable binding substitutions.
-- Include proposal and package schemas; retain the historical v1 corpus and every existing schema byte.
-- Prove the reviewers' lax and partial validators pass v1 but fail v2. No live effects or release.
-
-## 0.5.1.dev0 — 2026-09-08
-
-- Bind consumed normalized receipts to exact proposals, content, audience and remote targets.
-- Correct simulated migration receipts to return the target sequence object.
-- Export the existing v4 result union and 36 portable behavioral conformance cases.
-- Verify conformance from the installed wheel; retain every prior schema byte.
-- Preserve uncertain outcomes and historical evidence without authorizing effects.
-
-## 0.5.0.dev0
-
-- Introduce explicit email v4 receipt results with a kind discriminator, normalized effect,
-  exact audience and lifecycle state; preserve every existing v1/v2/v3 schema byte.
-- Enforce sequence transition preconditions and prevent migration from activating its target.
-- Restrict production metric observations/populations to applicable broadcast or enrolment results.
-- Validate CTA identity uniqueness and one primary at direct contract construction and release coordination.
-- Return safe stale_email_artifact classification for nested validation failures.
-- Add direct-construction and full lifecycle/metric matrix regression coverage. No live effects or PyPI release.
-
-## 0.4.0.dev0 — 2026-09-07
-
-- Introduce explicit email v3 schemas while preserving all published v1/v2 schemas.
-- Close sequence provisioning and activation provenance, including migration target receipts.
-- Bind cancellation and draft updates to the originating proposal and target delivery.
-- Move preview/test checks exclusively to delivery readiness; coordinate all campaign CTAs.
-- Require expected operation and release-message coverage for complete assessments.
-- Validate root graphs once, preserve nested integrity checks, and remove the example's hardware-dependent deadline.
-- Exercise audience-specific personalized review ordering with supplied evidence.
-
-
-## 0.3.0.dev0 — 2026-09-07
-
-- Replace email preparation APIs with explicit v2 contracts; preserve all v1 schemas.
-- Bind logical operation keys, provider context, actual package material and acyclic campaign releases before approval.
-- Require lowering provenance, immutable remote mutation receipts and explicit per-step migration authority.
-- Correct CTA/accessibility review, ordinary query links, preview audience handling and safe refusal reasons.
-- Persist assessment expectations and provenance; reject mixed cohorts and qualify conflicts.
-- Add reviewer counterexamples and eight independent publication programs with all eleven simulated effects.
-
-
-All notable changes to ZEO Creator are documented here.
-
-## Development inception — 2026-09-07
-
-- Add versioned provider-neutral email campaigns, linear sequences, messages, reviews,
-  audience snapshots, exact delivery packages, effect intents and aggregate assessments.
-- Register seven input-only email capabilities alongside all existing v1 capabilities.
-- Preserve newsletter schemas and add an explicit common-message specialization path.
-- Ship three-publication offline conformance, schemas, digest vectors and documentation
-  in the wheel. Live Zeocore email interoperability remains pending its public contract.
-- Clarify that Runtime/Newsroom acquire and persist observations before Creator invocation.
-- No dependency upgrade, PyPI publication or live provider execution.
-
-## 0.2.0.dev0 — 2026-09-05
-
-- Harden evidence lineage, delivery attestations, canonical digests, timestamps,
-  performance semantics, and distribution packaging for product-readiness.
-- Replace producer-specific public contracts with `ContentBrief`, extensible
-  content kinds, artifact bundles, declarative attestations, and opaque extensions.
-- Generalize portfolio planning to explicit windows and caller-supplied quantities.
-- Ship versioned JSON Schemas in the wheel with list, inspect, and export commands.
-- Replace branded factory fixtures with neutral two-publication examples.
-- Rename `DailyPerformanceAssessment` to cadence-neutral `PerformanceAssessment`.
-- Replace shared publication payloads with destination-specific distribution
-  variants that bind channel, selected artifacts, content, accessibility text,
-  optional extensions, and schedules.
-- Add RFC 8785 schema digests and an explicit package/capability/schema
-  compatibility policy to the bundled contract catalog.
-- Add the continuous editorial kernel: source observations, signals, immutable
-  story revisions, frozen dossiers, agendas, publication slots, and editions.
-- Add provider-neutral commentary, newsletter, journalism, human-review, and
-  correction contracts with deterministic reference strategies.
-- Expand the registry to twenty independently composable capabilities without
-  adding workflow persistence, scheduling, credentials, or publishing authority.
-
-## 0.1.0 — 2026-09-05
-
-- Establish the initial six-capability creator-operations contract foundation.
+- **0.5.3.dev0 (09-09):** explicit corpus-version selection so legacy exporters cannot overwrite the v1 corpus; clarified when cancellation proposals omit their package.
+- **0.5.2.dev0 (09-08):** reject prior receipts whose normalized effect contradicts their proposal; corpus v2 with 135 cases covering every result kind and effect; historical v1 bytes retained.
+- **0.5.1.dev0 (09-08):** bind consumed receipts to exact proposals, content, audience and remote targets; export the v4 result union and 36 behavioral cases.
+- **0.5.0.dev0 (09-08):** explicit email v4 receipt results (kind, normalized effect, exact audience, lifecycle state); sequence transition rules; unique call-to-action identity.
+- **0.4.0.dev0 (09-07):** explicit email v3 schemas; bind cancellation and draft updates to their proposal; delivery-readiness checks; complete-assessment coverage rules.
+- **0.3.0.dev0 (09-07):** explicit email v2 contracts with logical operation keys, provenance and acyclic campaign releases; immutable remote receipts.
+- **Email inception (09-07):** provider-neutral email campaigns, sequences, messages, reviews, delivery packages and aggregate assessments, with three-publication offline conformance.
+- **0.2.0.dev0 (09-05):** hardened evidence lineage, canonical digests and packaging; generic `ContentBrief` and destination-specific distribution contracts; versioned JSON Schemas in the wheel; continuous editorial kernel; commentary, newsletter, journalism, review and correction contracts; twenty capabilities.
+- **0.1.0 (09-05):** the first six-capability foundation.

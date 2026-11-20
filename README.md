@@ -214,11 +214,12 @@ Explore [`reference/examples`](https://github.com/ducktyper-ai/dt-creator/tree/v
 ## Development
 
 ```console
+make help        # first-time guide; make help-all lists every target
 make setup       # install the locked environment
 make verify      # lint, strict typing, tests, references, docs, package checks
 make examples    # run every credential-free example
 make docs-serve  # serve documentation locally
-make doctor      # verify Python, Zeocore, manifests, and projections
+make doctor      # check tools, environment, Python, Zeocore, manifests, projections (changes nothing)
 ```
 
 The repository enforces architectural import boundaries and tests installed

@@ -9,8 +9,8 @@ description = "Provider-neutral continuous editorial and creator operations buil
 readme = "README.md"
 requires-python = ">=3.14"
 license = "MIT"
-authors = [{ name = "ProfRodAI" }]
-maintainers = [{ name = "ProfRodAI" }]
+authors = [{ name = "Dreamhuggers Pte. Ltd." }]
+maintainers = [{ name = "Dreamhuggers Pte. Ltd." }]
 keywords = ["creator-operations", "editorial-operations", "newsroom", "zeocore", "pydantic"]
 classifiers = [
   "Development Status :: 3 - Alpha",

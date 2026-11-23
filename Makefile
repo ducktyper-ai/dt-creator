@@ -85,7 +85,7 @@ doctor: ## Check every prerequisite and report pass or fix lines; changes nothin
 	if [ -f uv.lock ]; then ok "uv.lock present"; else bad "uv.lock missing: restore it from git"; fi; \
 	if [ -d .venv ]; then ok ".venv present"; else bad ".venv missing: run make setup"; fi; \
 	echo "Package checks (zeo-creator doctor)"; \
-	if [ -d .venv ]; then $(UV) run --no-sync zeo-creator doctor --json || fail=1; \
+	if [ -d .venv ]; then PYTHONDONTWRITEBYTECODE=1 .venv/bin/zeo-creator doctor --json || fail=1; \
 	else echo "  skipped: needs .venv"; fi; \
 	echo "Environment variables: none required. DIST_DIR and SITE_DIR are optional build-output paths."; \
 	if [ $$fail -eq 0 ]; then echo "doctor: all prerequisites ok"; else echo "doctor: fix the lines above, then rerun"; exit 1; fi

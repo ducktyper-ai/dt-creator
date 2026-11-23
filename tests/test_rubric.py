@@ -513,3 +513,140 @@ def test_points_above_max_points_are_refused() -> None:
     rb = rubric()
     with pytest.raises(CreatorDomainError, match="exceed"):
         run(rb, [card(rb, {**GOOD, "hook": 6})])
+
+
+# --- guards that the first review found untested ---
+
+
+def test_rubric_contract_validators_refuse_incoherent_shapes() -> None:
+    with pytest.raises(ValidationError, match="needs max_points, floor and weight"):
+        Criterion(criterion_id="x", kind="scored", rule_ref="r", guidance="g", max_points=5)
+    with pytest.raises(ValidationError, match="exceed one"):
+        AggregateFloor(numerator=11, denominator=10)
+    with pytest.raises(ValidationError, match="whole percent over 100"):
+        AggregateFloor(numerator=7, denominator=10, rounding="half_up_percent")
+    with pytest.raises(ValidationError, match="languages must be unique"):
+        rubric(languages=("en", "en"))
+    with pytest.raises(ValidationError, match="needs at least one scored criterion"):
+        rubric((must("m"),), aggregate_floor=AggregateFloor(numerator=1, denominator=2))
+    with pytest.raises(ValidationError, match="must name a criterion"):
+        masthead(declared_weight_changes=("nope",))
+    with pytest.raises(ValidationError, match="against a base rubric"):
+        rubric(declared_weight_changes=("hook",))
+
+
+def test_scorecard_contract_validators_refuse_incoherent_shapes() -> None:
+    both = dict(criterion_id="hook", state="scored", reason="r", points=3, passed=True)
+    with pytest.raises(ValidationError, match="exactly one of points and passed"):
+        CriterionScore(**both)  # type: ignore[arg-type]
+    with pytest.raises(ValidationError, match="neither points nor a pass"):
+        CriterionScore(criterion_id="hook", state="unknown", reason="r", points=1)
+    rb = rubric()
+    twice = card(rb, {"hook": 4}).scores * 2
+    with pytest.raises(ValidationError, match="each criterion once"):
+        RubricScorecard(
+            **{**card(rb, GOOD).model_dump(exclude={"content_digest"}), "scores": twice}
+        )
+    with pytest.raises(ValidationError, match="no human participation"):
+        RubricScorecard(
+            **{
+                **card(rb, GOOD).model_dump(exclude={"content_digest"}),
+                "human_participation_ref": "ref",
+            }
+        )
+    with pytest.raises(ValidationError, match="only a human scorecard re-scores"):
+        RubricScorecard(
+            **{
+                **card(rb, GOOD).model_dump(exclude={"content_digest"}),
+                "overrides_ref": card(rb, GOOD).ref(),
+            }
+        )
+
+
+def test_evaluate_rubric_refuses_malformed_scorecard_sets() -> None:
+    rb = rubric()
+    primary = card(rb, GOOD)
+    with pytest.raises(CreatorDomainError, match="exactly one primary"):
+        run(rb, [])
+    with pytest.raises(CreatorDomainError, match="exactly one primary"):
+        run(rb, [primary, card(rb, GOOD, sid="sc2")])
+    human = card(rb, GOOD, sid="sc1", role="human", overrides=primary.ref())
+    with pytest.raises(CreatorDomainError, match="unique"):
+        run(rb, [primary, human])
+    other_subject = RubricScorecard(
+        **{
+            **primary.model_dump(exclude={"content_digest"}),
+            "scorecard_id": "sc9",
+            "subject": ManifestSubject(brief_id="b9", manifest_id="m9", content_digest=DIGEST),
+        }
+    )
+    with pytest.raises(CreatorDomainError, match="different subject"):
+        run(rb, [other_subject])
+    other_scope = RubricScorecard(
+        **{**primary.model_dump(exclude={"content_digest"}), "publication_id": "elsewhere"}
+    )
+    with pytest.raises(CreatorDomainError, match="publication scope"):
+        run(rb, [other_scope])
+    foreign = card(rb, {**GOOD, "ghost": 4})
+    with pytest.raises(CreatorDomainError, match="criterion the rubric does not have"):
+        run(rb, [foreign])
+
+
+def test_a_score_of_the_wrong_kind_is_refused() -> None:
+    rb = rubric()
+    with pytest.raises(CreatorDomainError, match="not by points"):
+        run(rb, [card(rb, {**GOOD, "no-fabrication": 4})])
+    with pytest.raises(CreatorDomainError, match="not pass or fail"):
+        run(rb, [card(rb, {**GOOD, "hook": True})])
+
+
+def test_an_unknown_score_never_passes_even_as_a_human_rescoring() -> None:
+    rb = rubric()
+    primary = card(rb, GOOD)
+    unknown = CriterionScore(
+        criterion_id="no-fabrication", state="unknown", reason="r", evidence=evidence()
+    )
+    human = card(rb, {"no-fabrication": unknown}, sid="h1", role="human", overrides=primary.ref())
+    result = run(rb, [primary, human])
+    assert not result.passed and result.findings[0].kind == FindingKind.UNKNOWN_SCORE
+
+
+def test_half_up_percent_rounds_a_half_point_up_and_a_lower_total_down() -> None:
+    def wide(a: int, b: int) -> object:
+        crit = tuple(
+            Criterion(
+                criterion_id=cid,
+                kind="scored",
+                rule_ref=f"rule.{cid}",
+                guidance="g",
+                max_points=100,
+                floor=0,
+                weight=1,
+            )
+            for cid in ("a", "b")
+        )
+        rb = rubric(
+            crit,
+            aggregate_floor=AggregateFloor(
+                numerator=50, denominator=100, rounding="half_up_percent"
+            ),
+        )
+        return run(rb, [card(rb, {"a": a, "b": b})])
+
+    assert wide(50, 49).passed  # type: ignore[attr-defined]  # 99/200 = 49.5% rounds up to 50
+    assert not wide(49, 49).passed  # type: ignore[attr-defined]  # 98/200 = 49%
+
+
+def test_a_masthead_on_another_medium_is_refused() -> None:
+    other = masthead()
+    with pytest.raises(CreatorDomainError, match="same medium"):
+        run_masthead(
+            rubric(
+                other.criteria,
+                scope="masthead",
+                rubric_id="masthead.other",
+                medium="article",
+                base_rubric_ref=house().ref(),
+                aggregate_floor=AggregateFloor(numerator=6, denominator=10),
+            )
+        )

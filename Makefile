@@ -29,7 +29,7 @@ help: ## Show this first-time guide (make help-all lists every target)
 	@echo ""
 	@echo "Useful next: make test | make lint | make typecheck | make build | make examples | make reference"
 	@echo "Where things go: DIST_DIR (default dist) holds builds and SITE_DIR (default site) the docs; make clean removes both."
-	@echo "Releases: make release-candidate and make release explain the route; a seat never cuts one. Run the gate on the Linux build host."
+	@echo "Releases: make release-candidate and make release explain the route; releases are not cut from this repository. Run the gate on the Linux build host."
 	@echo "Git hooks: make hooks"
 	@echo "Every target: make help-all"
 
@@ -156,8 +156,8 @@ release-candidate: ## Not run on a laptop: a candidate is built once on a Linux 
 	@echo "Locally, make build shows what a build produces. Never run this on the Mac mini." >&2
 	@exit 2
 
-release: ## Not run by a seat: the merger promotes the approved candidate's bytes after the signature (vX.Y.Z)
-	@echo "release: refused here. A release is the approved candidate's bytes promoted by the merger after the signature; it is never rebuilt and a seat never cuts it." >&2
+release: ## Not run from this repository: the approved candidate is promoted by the release process (vX.Y.Z)
+	@echo "release: refused here. A release is the approved candidate promoted unchanged by the release process; it is never rebuilt or cut from this repository." >&2
 	@exit 2
 
 release-check: ## Check release consistency

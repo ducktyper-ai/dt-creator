@@ -20,7 +20,8 @@ make verify
 | `make examples` | Run every public example |
 | `make docs-serve` | Serve the documentation with live reload |
 | `make reference` | Regenerate JSON schemas and neutral reference artifacts |
-| `make doctor` | Check Python, Zeocore, manifests, and projections |
+| `make help` | Show the first-time guide; `make help-all` lists every target |
+| `make doctor` | Check tools, environment, Python, Zeocore, manifests, and projections; changes nothing (run `make setup` first) |
 
 ## Architecture rules
 

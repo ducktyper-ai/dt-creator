@@ -24,7 +24,7 @@ All notable changes to ZEO Creator are documented here. The format follows
 
 ## 0.6.1 — 2026-10-27
 
-This is the first published release of the 0.6 content. The `v0.6.0` tag was created on 2026-10-13, but its publish run stopped before upload, so 0.6.0 never reached PyPI.
+This is the first published release of the 0.6 content. The 0.6.0 version was prepared on 2026-10-13. The `v0.6.0` tag was created on 2026-10-26, and its publish run stopped before upload, so 0.6.0 never reached PyPI.
 
 ### Changed (breaking for anyone who parses command output)
 - Command output follows Zeocore's `cli_protocol` 1. Every command except `runtime-provider` prints exactly one JSON line on stdout, carrying `ok` and a `schema` id such as `zeocreator.<thing>/v1`. Lists are wrapped (`capabilities` answers `{"ok": true, "capabilities": [...]}`, `contracts list` answers `contracts`, `contract-schema` answers `json_schema`, `--version` carries `cli_protocol`). The tables are gone; `--json` is still accepted and changes nothing. A usage error prints usage on stderr and an `invalid_request` result on stdout.

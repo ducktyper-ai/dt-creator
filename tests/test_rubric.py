@@ -571,7 +571,7 @@ def test_evaluate_rubric_refuses_malformed_scorecard_sets() -> None:
     with pytest.raises(CreatorDomainError, match="exactly one primary"):
         run(rb, [primary, card(rb, GOOD, sid="sc2")])
     human = card(rb, GOOD, sid="sc1", role="human", overrides=primary.ref())
-    with pytest.raises(CreatorDomainError, match="unique"):
+    with pytest.raises(CreatorDomainError, match="scorecard identifiers must be unique"):
         run(rb, [primary, human])
     other_subject = RubricScorecard(
         **{
@@ -612,14 +612,14 @@ def test_an_unknown_score_never_passes_even_as_a_human_rescoring() -> None:
 
 
 def test_half_up_percent_rounds_a_half_point_up_and_a_lower_total_down() -> None:
-    def wide(a: int, b: int) -> object:
+    def wide(a: int, b: int, top: int = 100) -> object:
         crit = tuple(
             Criterion(
                 criterion_id=cid,
                 kind="scored",
                 rule_ref=f"rule.{cid}",
                 guidance="g",
-                max_points=100,
+                max_points=top,
                 floor=0,
                 weight=1,
             )
@@ -635,6 +635,10 @@ def test_half_up_percent_rounds_a_half_point_up_and_a_lower_total_down() -> None
 
     assert wide(50, 49).passed  # type: ignore[attr-defined]  # 99/200 = 49.5% rounds up to 50
     assert not wide(49, 49).passed  # type: ignore[attr-defined]  # 98/200 = 49%
+    # 197/400 = 49.25% must round down to 49%, so only a half-point rounds up.
+    assert not wide(98, 99, top=200).passed  # type: ignore[attr-defined]
+    # 199/400 = 49.75% is above the half-point and rounds up to 50%.
+    assert wide(99, 100, top=200).passed  # type: ignore[attr-defined]
 
 
 def test_a_masthead_on_another_medium_is_refused() -> None:
